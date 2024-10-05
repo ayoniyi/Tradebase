@@ -1,0 +1,145 @@
+@import "../../styles/mixins";
+
+.container {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 2;
+  padding: 1em 0;
+  //background: #fff;
+}
+.content {
+  @include flexRegular(row, space-between);
+  width: 85%;
+  max-width: 1200px;
+  margin: 0 auto;
+  //border: 1px solid rgb(160, 45, 45);
+}
+
+.logo {
+  width: 20%;
+}
+.nav {
+  width: 25%;
+  //border: 1px solid rgb(187, 126, 126);
+  //font-family: "Helvetica";
+}
+.navLinks {
+  @include flexRegular(row, space-between);
+  p {
+    font-size: 1.2em;
+  }
+}
+
+.navBtn {
+  width: 20%;
+  display: flex;
+  justify-content: flex-end;
+
+  button {
+    @include btnRegular(60%);
+    min-width: 135px;
+    font-size: 1em;
+  }
+}
+
+// ----- sm screen
+.smContent {
+  display: none;
+  width: 100%;
+  margin: 0;
+}
+.smLogo {
+  width: 50%;
+  padding-left: 5px;
+  //border: 1px solid rgb(160, 45, 45);
+  img {
+    width: 90%;
+    max-width: 140px;
+  }
+}
+.hamburger {
+  width: 10%;
+  img {
+    width: 30px;
+  }
+  //border: 1px solid rgb(160, 45, 45);
+}
+.menu {
+  position: absolute;
+  padding: 1em 0;
+  top: 0;
+  right: -100vw;
+  width: 100vw;
+  height: 100vh;
+  overflow: auto;
+  background: radial-gradient(circle, #e5faff 0%, #fff1f1 55%, #fefdf8 100%);
+}
+.close {
+  position: absolute;
+  right: 1em;
+}
+.menuBody {
+  @include flexRegular(column, center);
+  padding: 5em 0;
+  //opacity: 0;
+  transform: scale(0.6);
+}
+.menuLinks {
+  //font-family: "Helvetica";
+  list-style: none;
+
+  li {
+    text-align: center;
+    font-weight: lighter;
+
+    margin-bottom: 3em;
+  }
+}
+.menuBtn {
+  margin-top: 1em;
+  button {
+    @include btnRegular(60%);
+    min-width: 135px;
+    font-size: 1em;
+  }
+}
+// --------- sm screen
+
+//@media max-width: 1080px 768px, 485px,
+@media (max-width: 1080px) {
+  .content {
+    width: 95%;
+  }
+  .nav {
+    width: 40%;
+  }
+  .logo {
+    img {
+      width: 100%;
+    }
+  }
+}
+@media (max-width: 768px) {
+  .container {
+    padding: 1em;
+  }
+  .content {
+    width: 100%;
+  }
+
+  .nav {
+    width: 45%;
+  }
+}
+@media (max-width: 500px) {
+  .container {
+    padding: 0;
+  }
+  .content {
+    display: none;
+  }
+  .smContent {
+    @include flexRegular(row, space-between);
+  }
+}

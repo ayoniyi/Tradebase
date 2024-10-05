@@ -1,0 +1,20 @@
+@font-face {
+  font-family: Clash-Light;
+  src: url(/fonts/clash/clashLight.woff), url(/fonts/clash/clashLight.woff2);
+}
+@font-face {
+  font-family: Clash-Reg;
+  src: url(/fonts/clash/clashRegular.ttf) format("ttf"),
+    url(/fonts/clash/clashRegular.woff) format("woff"),
+    url(/fonts/clash/clashRegular.woff2) format("woff2");
+}
+@font-face {
+  font-family: Clash-SemiBold;
+  src: url(/fonts/clash/clashSemibold.woff2),
+    url(/fonts/clash/clashSemibold.woff2);
+}
+@font-face {
+  font-family: Clash-Bold;
+  src: url(/fonts/clash/clashBold.woff) format("woff"),
+    url(/fonts/clash/clashBold.woff2) format("woff2");
+}

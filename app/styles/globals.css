@@ -1,0 +1,42 @@
+html,
+body {
+  font-display: swap;
+  font-family: Clash-Reg;
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+body {
+  background: radial-gradient(circle, #e5faff 0%, #fff1f1 55%, #fefdf8 100%);
+  /* color: var(--foreground); */
+}
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+a {
+  text-decoration: none;
+  color: inherit;
+  text-decoration: none;
+}
+button {
+  cursor: pointer;
+}
+
+li {
+  list-style: none;
+}
+input,
+select,
+textarea {
+  font-size: 100%;
+}
+
+input {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+input[type="radio"] {
+  -webkit-appearance: radio;
+}
