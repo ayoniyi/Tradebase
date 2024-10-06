@@ -21,14 +21,21 @@
   width: 50%;
   //border: 1px solid red;
   h1 {
-    font-size: 3em;
+    font-size: 4em;
+    letter-spacing: -4px;
+    //font-family: $thin;
+    //font-family: "Helvetica Neue 700", sans-serif;
+    font-weight: 400;
     span {
       color: $blueMain;
     }
   }
   p {
-    margin: 1em 0;
+    margin: 0.5em 0 1em 0;
     font-size: 1.6em;
+    color: #667185;
+    width: 90%;
+    font-weight: 400;
   }
   button {
     @include btnRegular(40%);
@@ -37,7 +44,7 @@
   }
 }
 .heroTxt {
-  width: 75%;
+  width: 95%;
 }
 .heroImg {
   position: absolute;

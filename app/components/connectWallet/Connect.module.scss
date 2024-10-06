@@ -1,0 +1,30 @@
+@import "../../styles/mixins";
+@import "../../styles/variables";
+
+.modal {
+  padding: 2em 0;
+  position: absolute;
+  z-index: 4;
+  left: 32.5vw;
+  right: 32.5vw;
+  width: 35vw;
+  top: 20vh;
+  max-width: 500px;
+  background: #fff;
+  border-radius: 28px;
+}
+.modalContent {
+  margin: 0 auto;
+  //width: 90%;
+}
+.modalTop {
+  @include flexRegular(row, space-between);
+  border-bottom: 1px solid #d0d5dda3;
+  padding: 0 1.5em 1.5em 1.5em;
+  p {
+    color: #344054;
+  }
+  svg {
+    cursor: pointer;
+  }
+}

@@ -1,4 +1,5 @@
 @import "../../styles/mixins";
+@import "../../styles/variables";
 
 .container {
   position: fixed;
@@ -20,9 +21,9 @@
   width: 20%;
 }
 .nav {
-  width: 25%;
+  width: 28%;
   //border: 1px solid rgb(187, 126, 126);
-  //font-family: "Helvetica";
+  font-family: $thin;
 }
 .navLinks {
   @include flexRegular(row, space-between);
@@ -36,11 +37,11 @@
   display: flex;
   justify-content: flex-end;
 
-  button {
-    @include btnRegular(60%);
-    min-width: 135px;
-    font-size: 1em;
-  }
+  // button {
+  //   @include btnRegular(60%);
+  //   min-width: 135px;
+  //   font-size: 1em;
+  // }
 }
 
 // ----- sm screen

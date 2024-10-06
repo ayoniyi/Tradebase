@@ -1,10 +1,36 @@
 @font-face {
+  font-family: Neue-Thin;
+  src: url(/fonts/neue/NeueThin.otf);
+}
+@font-face {
+  font-family: Neue-Light;
+  src: url(/fonts/neue/NeueLight.otf);
+}
+@font-face {
+  font-family: Neue-Reg;
+  src: url(/fonts/neue/NeueRoman.otf);
+}
+@font-face {
+  font-family: Neue-Medium;
+  src: url(/fonts/neue/NeueMedium.otf);
+}
+@font-face {
+  font-family: Neue-Bold;
+  src: url(/fonts/neue/NeueBold.otf);
+}
+@font-face {
+  font-family: Neue-Black;
+  src: url(/fonts/neue/NeueBlack.otf);
+}
+
+/* @font-face {
   font-family: Clash-Light;
   src: url(/fonts/clash/clashLight.woff), url(/fonts/clash/clashLight.woff2);
 }
 @font-face {
   font-family: Clash-Reg;
-  src: url(/fonts/clash/clashRegular.ttf) format("ttf"),
+  src:
+    url(/fonts/clash/clashRegular.ttf) format("ttf"),
     url(/fonts/clash/clashRegular.woff) format("woff"),
     url(/fonts/clash/clashRegular.woff2) format("woff2");
 }
@@ -15,6 +41,7 @@
 }
 @font-face {
   font-family: Clash-Bold;
-  src: url(/fonts/clash/clashBold.woff) format("woff"),
+  src:
+    url(/fonts/clash/clashBold.woff) format("woff"),
     url(/fonts/clash/clashBold.woff2) format("woff2");
-}
+} */

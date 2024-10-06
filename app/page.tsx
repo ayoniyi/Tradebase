@@ -20,21 +20,6 @@ export default function Home() {
   // };
   ///// ----
 
-  ///// ----
-  // export const config = createConfig({
-  //   chains: [baseSepolia],
-  //   connectors: [
-  //     coinbaseWallet({
-  //       appName: "Tradebase",
-  //       chainId: baseSepolia.id,
-  //       preference: 'smartWalletOnly'
-  //   ],
-  //   transports: {
-  //     [baseSepolia.id]: http(),
-  //   },
-  // });
-  ///// ----
-
   return (
     <div>
       <Landing />

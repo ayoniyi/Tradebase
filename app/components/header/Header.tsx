@@ -5,6 +5,7 @@ import Logo from "@/app/logo.svg";
 import Link from "next/link";
 
 import HeaderMobile from "./HeaderMobile";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
 
 const Header = () => {
   return (
@@ -21,7 +22,7 @@ const Header = () => {
             </Link>
             <Link href="/about">
               {" "}
-              <p>About</p>
+              <p>About us</p>
             </Link>
             <Link href="/marketplace">
               {" "}
@@ -34,7 +35,8 @@ const Header = () => {
           </div>
         </nav>
         <div className={style.navBtn}>
-          <button>Create trade</button>
+          {/* <button>Create trade</button> */}
+          <ConnectButton />
         </div>
       </div>
       <HeaderMobile />

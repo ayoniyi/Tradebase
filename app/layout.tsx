@@ -1,19 +1,12 @@
 import type { Metadata } from "next";
-//import localFont from "next/font/local";
 import "./styles/globals.css";
 import "./styles/fonts.css";
+import "@rainbow-me/rainbowkit/styles.css";
 import Favicon from "@/app/favicon.svg";
-
-// const geistSans = localFont({
-//   src: "./fonts/GeistVF.woff",
-//   variable: "--font-geist-sans",
-//   weight: "100 900",
-// });
-// const geistMono = localFont({
-//   src: "./fonts/GeistMonoVF.woff",
-//   variable: "--font-geist-mono",
-//   weight: "100 900",
-// });
+import { cookieToInitialState } from "wagmi";
+import { rainbowConfig } from "./utils/wagmi";
+import { headers } from "next/headers";
+import { Providers } from "./providers";
 
 export const metadata: Metadata = {
   title: "Tradebase",
@@ -26,9 +19,15 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // const initialState = cookieToInitialState(
+  //   rainbowConfig(),
+  //   headers().get("cookie")
+  // );
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <Providers>{children}</Providers>
+      </body>
     </html>
   );
 }

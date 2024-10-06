@@ -55,7 +55,7 @@ const HeaderMobile = () => {
               <Link href="">Home </Link>
             </li>
             <li>
-              <Link href="">About</Link>
+              <Link href="">About us</Link>
             </li>
             <li>
               <Link href="">Marketplace</Link>
