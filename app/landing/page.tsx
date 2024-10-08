@@ -13,10 +13,12 @@ const Landing = () => {
   const { isConnected } = useAccount();
   const [showConnect, setShowConnect] = useState(false);
   const [showCreate, setShowCreate] = useState(false);
+
   const handleClose = () => {
     setShowConnect(false);
     setShowCreate(false);
   };
+
   const handleCreate = () => {
     setShowConnect(false);
     setShowCreate(true);
@@ -39,7 +41,11 @@ const Landing = () => {
     <>
       <AnimatePresence mode="wait">
         {showConnect && (
-          <Connect handleClose={handleClose} handleCreate={handleCreate} />
+          <Connect
+            action="createTrade"
+            handleClose={handleClose}
+            handleCreate={handleCreate}
+          />
         )}
         {showCreate && <Create handleClose={handleClose} />}
       </AnimatePresence>

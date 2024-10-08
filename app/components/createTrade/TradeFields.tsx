@@ -1,14 +1,38 @@
 import SelectToken from "../TextInput/SelectTokens";
 import style from "./Create.module.scss";
+import AnimatedTabs from "../tabs/Animatedtabs";
 
 import Image from "next/image";
 import bETH from "./beth.png";
 
 const TradeFields = (props: any) => {
+  //const tabs = ["Private sale", "Public sale"];
   return (
     <>
       <div className={style.tokenTrade}>
-        <h4>Token Swap</h4>
+        {/* <h4>Token Swap</h4> */}
+        <div className={style.tabsContainer}>
+          <div
+            className={
+              props.userInput.tradeType === "Private sale"
+                ? style.tab + " " + style.activeTab
+                : style.tab
+            }
+            onClick={() => props.handleTradeType("Private sale")}
+          >
+            <p>Private sale</p>
+          </div>
+          <div
+            className={
+              props.userInput.tradeType === "Public sale"
+                ? style.tab + " " + style.activeTab
+                : style.tab
+            }
+            onClick={() => props.handleTradeType("Public sale")}
+          >
+            <p>Public sale</p>
+          </div>
+        </div>
         <div className={style.tokenFields}>
           <div className={style.tkField}>
             <div className={style.tkTop}>

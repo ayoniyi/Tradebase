@@ -1,0 +1,49 @@
+.tabsContainer {
+  display: flex;
+  justify-content: center;
+  //margin-top: 50px;
+  margin-top: 10px;
+}
+
+.tabs {
+  position: relative;
+  display: flex;
+  width: 300px;
+  background-color: #fff;
+  border: 2px solid black;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.tab {
+  flex: 1;
+  text-align: center;
+  padding: 10px 20px;
+  cursor: pointer;
+  position: relative;
+  transition: color 0.3s;
+}
+
+.active {
+  color: white;
+}
+
+.tab:not(.active) {
+  color: black;
+  background-color: white;
+}
+
+.activeTabIndicator {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 100%;
+  width: 33.33%;
+  background-color: black;
+  z-index: 0;
+  transition: transform 0.3s ease-in-out;
+}
+
+.tabContent {
+  z-index: 1; /* Ensure tab text stays above the indicator */
+}

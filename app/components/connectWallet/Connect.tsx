@@ -57,12 +57,15 @@ const Connect = (props: any) => {
   });
 
   if (docsQuery.data?.docs && docsQuery?.data?.docs?.length >= 1) {
-    //setIsRegistered(true);
+    //
     const docList = docsQuery?.data?.docs.map((doc: any) => ({
       ...doc.data(),
       docId: doc.id,
     }));
-    props.handleCreate();
+    //props?.closeConnect();
+    if (props.action === "createTrade") {
+      props.handleCreate();
+    }
   } else {
     // register new user
     //collect email and create user and address

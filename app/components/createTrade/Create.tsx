@@ -25,13 +25,15 @@ const Create = (props: any) => {
 
   interface Trade {
     tokenSelling: string;
-    tokenSaleAmount: number;
-    tokenSalePrice: number;
+    tokenSaleAmount: number | null;
+    tokenSalePrice: number | null;
+    tradeType: string;
   }
   const [userInput, setUserInput] = useState<Trade>({
     tokenSelling: "", // token user is selling
-    tokenSaleAmount: 0, // amount of token user is selling
-    tokenSalePrice: 0, // price seller receives for token,
+    tokenSaleAmount: 0.0, // amount of token user is selling
+    tokenSalePrice: 0.0, // price seller receives for token,
+    tradeType: "Private sale",
   });
 
   const inputHandler = (event: any) => {
@@ -70,6 +72,13 @@ const Create = (props: any) => {
       tokenSelling: selectedOption.symbol,
     });
     //alert(selectedOption.symbol);
+  };
+
+  const handleTradeType = (type: string) => {
+    setUserInput({
+      ...userInput,
+      tradeType: type,
+    });
   };
 
   return (
@@ -138,6 +147,7 @@ const Create = (props: any) => {
               />
             </svg>
           </div>
+
           {tradeOption === "" ? (
             <div className={style.modalTrade}>
               <h3>What type of trade is this?</h3>
@@ -180,6 +190,7 @@ const Create = (props: any) => {
                 inputHandler={inputHandler}
                 tokenHandler={tokenHandler}
                 userInput={userInput}
+                handleTradeType={handleTradeType}
               />
             </div>
           )}

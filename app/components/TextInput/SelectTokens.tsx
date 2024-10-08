@@ -1,3 +1,4 @@
+import { useQuery } from "@tanstack/react-query";
 import React, { useEffect, useState } from "react";
 import Select from "react-select";
 
@@ -14,27 +15,34 @@ const SelectToken: React.FC<SelectTokenProps> = ({ tokenHandler }) => {
   const [tokens, setTokens] = useState<Token[]>([]);
   const [defaultToken, setDefaultToken] = useState<Token | null>(null);
 
-  useEffect(() => {
-    const fetchTokens = async () => {
-      try {
-        const response = await fetch(
-          "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd"
-        );
-        const data = await response.json();
-        const tokenData = data.map((token: any) => ({
-          id: token.id,
-          symbol: token.symbol.toUpperCase(),
-          image: token.image,
-        }));
-        setTokens(tokenData);
-        setDefaultToken(tokenData[0]);
-      } catch (error) {
-        console.error("Error fetching tokens:", error);
-      }
-    };
+  //   useEffect(() => {
+  //     fetchTokens();
+  //   }, []);
+  const fetchTokens = async () => {
+    try {
+      const response = await fetch(
+        "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd"
+      );
+      const data = await response.json();
+      const tokenData = data.map((token: any) => ({
+        id: token.id,
+        symbol: token.symbol.toUpperCase(),
+        image: token.image,
+      }));
+      setTokens(tokenData);
+      setDefaultToken(tokenData[0]);
+    } catch (error) {
+      console.error("Error fetching tokens:", error);
+    }
+  };
+  const tokensQuery = useQuery({
+    queryKey: ["tokens"],
+    queryFn: fetchTokens,
+    staleTime: 1000 * 60 * 5, // Cache data for 5 minutes
+    //cacheTime: 1000 * 60 * 10, // Keep unused data for 10 minutes
+  });
 
-    fetchTokens();
-  }, []);
+  console.log("tks", tokensQuery?.data);
 
   const customStyles = {
     option: (provided: any) => ({
