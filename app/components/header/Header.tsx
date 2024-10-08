@@ -35,8 +35,8 @@ const Header = () => {
           </div>
         </nav>
         <div className={style.navBtn}>
-          {/* <button>Create trade</button> */}
-          <ConnectButton />
+          <button>Create trade</button>
+          {/* <ConnectButton /> */}
         </div>
       </div>
       <HeaderMobile />

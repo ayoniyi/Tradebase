@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./styles/globals.css";
 import "./styles/fonts.css";
+//import "./styles/selectTk.css";
 import "@rainbow-me/rainbowkit/styles.css";
 import Favicon from "@/app/favicon.svg";
 import { cookieToInitialState } from "wagmi";

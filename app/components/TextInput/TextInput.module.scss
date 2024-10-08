@@ -1,0 +1,114 @@
+@import "../../styles/mixins";
+@import "../../styles/variables";
+
+.inputBox {
+  //border: 1px solid red;
+  font-family: "Inter";
+  width: 100%;
+}
+.label {
+  p {
+    margin: 0.5em 0 0.5em 0;
+    font-size: 0.88em;
+    color: #000;
+  }
+}
+.field,
+.fieldBig {
+  @include inputRegular;
+  max-width: 100% !important;
+
+  background: #f0f2f5;
+
+  &::placeholder {
+    color: #9ca3af;
+    font-size: 0.96em;
+    font-family: "Inter";
+    // font-family: Satoshi-Reg;
+  }
+
+  &::-ms-input-placeholder {
+    /* Edge 12 -18 */
+    color: #9ca3af;
+    font-size: 0.96em;
+    font-family: "Inter";
+  }
+}
+.fieldBig {
+  height: 105px;
+  padding: 1em;
+  font-size: 0.96em;
+  font-family: "Inter";
+}
+.selectField {
+  @include inputRegular;
+
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-image: url("./drop.svg");
+  background-repeat: no-repeat;
+  background-position: right 13px bottom 0.85em;
+}
+.dateField {
+  input {
+    //@include inputRegular;
+    max-width: 100% !important;
+
+    //border: 1px solid #e5e7eb !important;
+    border-radius: 6px !important;
+    width: 100%;
+    max-width: 100%;
+
+    // height: 48px;
+    outline: none;
+    transition: 0.18s ease-in;
+    padding-left: 1em;
+    //color: $textColor !important;
+    background: none;
+    // &:focus {
+    //   border: 1.5px solid $primaryColor !important;
+    // }
+    height: 24px !important;
+    &::placeholder {
+      color: #9ca3af !important;
+      font-size: 0.96em !important;
+      //font-family: Satoshi-Reg !important;
+    }
+
+    &::-ms-input-placeholder {
+      /* Edge 12 -18 */
+      color: #9ca3af;
+      font-size: 0.96em;
+      font-family: "Inter";
+    }
+  }
+}
+
+.inputBox {
+  input[type="date"]::-webkit-inner-spin-button,
+  input[type="date"]::-webkit-calendar-picker-indicator {
+    //display: none;
+    opacity: 0;
+    -webkit-appearance: none;
+    padding: 0 1em;
+    //font-family: Satoshi-Reg !important;
+  }
+  input[type="date"] {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-image: url("./calendar.svg");
+    background-repeat: no-repeat;
+    background-position: right 0.9em bottom 1.2em;
+  }
+}
+
+// .small {
+//   width: 90%;
+//   @include inputRegular;
+// }
+// .regular {
+//   width: 100%;
+//   @include inputRegular;
+// }

@@ -38,8 +38,9 @@
     font-weight: 400;
   }
   button {
-    @include btnRegular(40%);
+    @include btnRegular(25%);
     min-width: 135px;
+    max-width: 150px;
     font-size: 1em;
   }
 }

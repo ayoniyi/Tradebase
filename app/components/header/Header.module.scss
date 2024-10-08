@@ -5,7 +5,7 @@
   position: fixed;
   top: 0;
   width: 100%;
-  z-index: 2;
+  //z-index: 1;
   padding: 1em 0;
   //background: #fff;
 }
@@ -37,11 +37,11 @@
   display: flex;
   justify-content: flex-end;
 
-  // button {
-  //   @include btnRegular(60%);
-  //   min-width: 135px;
-  //   font-size: 1em;
-  // }
+  button {
+    @include btnRegular(60%);
+    min-width: 135px;
+    font-size: 1em;
+  }
 }
 
 // ----- sm screen
