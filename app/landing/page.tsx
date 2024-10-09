@@ -10,7 +10,7 @@ import Create from "../components/createTrade/Create";
 import { useAccount } from "wagmi";
 
 const Landing = () => {
-  const { isConnected } = useAccount();
+  const { isConnected, isDisconnected } = useAccount();
   const [showConnect, setShowConnect] = useState(false);
   const [showCreate, setShowCreate] = useState(false);
 
@@ -30,12 +30,16 @@ const Landing = () => {
 
   const handleModals = () => {
     if (isConnected) {
+      setShowConnect(false);
       setShowCreate(true);
     } else {
-      //setShowCreate(true);
+      setShowCreate(false);
       setShowConnect(true);
     }
+    //setShowConnect(true);
   };
+
+  // console.log(isConnected, "isConnected");
 
   return (
     <>

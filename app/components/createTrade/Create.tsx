@@ -1,23 +1,37 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import style from "./Create.module.scss";
 import { motion } from "framer-motion";
 import { createFunc, overlayFunc } from "@/app/utils/motion";
 import { useDisconnect } from "wagmi";
 import { shortenHex } from "@/app/utils/formatting";
 import { useAccount } from "wagmi";
-import SelectField from "../TextInput/Select";
+//import SelectField from "../TextInput/Select";
 import TradeFields from "./TradeFields";
 import Image from "next/image";
+import { useDropzone } from "react-dropzone";
 
 import Token from "./token.svg";
 import Digital from "./digital.svg";
 import Physical from "./physical.svg";
+import TradeCreated from "./TradeCreated";
 
 const Create = (props: any) => {
   const { address } = useAccount();
   const [showDisconnect, setShowDisconnect] = useState(false);
   const { disconnect } = useDisconnect();
   const [tradeOption, setTradeOption] = useState("");
+  const [tradeCreated, setTradeCreated] = useState(false);
+
+  const [userInput, setUserInput] = useState<Trade>({
+    tokenSelling: "", // token user is selling
+    tokenSaleAmount: 0.0, // amount of token user is selling
+    tokenSalePrice: 0.0, // price seller receives for token,
+    tradeType: "Private sale",
+  });
+  const [file, setFile] = useState({
+    parent: null,
+    item: null,
+  });
 
   const removeOption = () => {
     setTradeOption("");
@@ -29,12 +43,6 @@ const Create = (props: any) => {
     tokenSalePrice: number | null;
     tradeType: string;
   }
-  const [userInput, setUserInput] = useState<Trade>({
-    tokenSelling: "", // token user is selling
-    tokenSaleAmount: 0.0, // amount of token user is selling
-    tokenSalePrice: 0.0, // price seller receives for token,
-    tradeType: "Private sale",
-  });
 
   const inputHandler = (event: any) => {
     const { name, value } = event.target;
@@ -81,6 +89,30 @@ const Create = (props: any) => {
     });
   };
 
+  const onDrop = useCallback((acceptedFiles: any) => {
+    //console.log("size", acceptedFiles);
+    //  console.log("size", acceptedFiles);
+    setFile({
+      parent: acceptedFiles,
+      item: acceptedFiles[0],
+    });
+  }, []);
+
+  const { getRootProps, getInputProps } = useDropzone({ onDrop });
+
+  const handleFile = (parent: any, item: any) => {
+    setFile({
+      parent: parent || null,
+      item: item || null,
+    });
+  };
+
+  const createTrade = () => {
+    // create trade here
+
+    setTradeCreated(true);
+  };
+
   return (
     <>
       <motion.div
@@ -94,7 +126,11 @@ const Create = (props: any) => {
       ></motion.div>
 
       <motion.div
-        className={style.modal}
+        className={
+          tradeOption === "Physical item" || tradeOption === "Digital product"
+            ? style.modalLong
+            : style.modal
+        }
         key="modal"
         variants={createFunc}
         initial="hidden"
@@ -133,6 +169,11 @@ const Create = (props: any) => {
                 <p>Disconnect</p>
               )}
             </div>
+            {tradeOption !== "" ? (
+              <p className={style.optionTitle}>{tradeOption}</p>
+            ) : (
+              ""
+            )}
             <svg
               onClick={props.handleClose}
               width="16"
@@ -153,7 +194,7 @@ const Create = (props: any) => {
               <h3>What type of trade is this?</h3>
               <div className={style.tradeOptions}>
                 <div
-                  onClick={() => setTradeOption("Token")}
+                  onClick={() => setTradeOption("Token swap")}
                   className={style.tradeOption}
                 >
                   <Image src={Token} alt="token" />
@@ -169,15 +210,13 @@ const Create = (props: any) => {
                   <h4 className={style.physicalOpt}>Physical item</h4>
                   <p>Securely purchase physical items with our escrow.</p>
                 </div>
-                <div className={style.tradeOption}>
+                <div
+                  onClick={() => setTradeOption("Digital product")}
+                  className={style.tradeOption}
+                >
                   <Image src={Digital} alt="digital products" />
 
-                  <h4
-                    onClick={() => setTradeOption("Digital product")}
-                    className={style.digitalOpt}
-                  >
-                    Digital product
-                  </h4>
+                  <h4 className={style.digitalOpt}>Digital product</h4>
                   <p>Securely purchase digital items with our escrow.</p>
                 </div>
               </div>
@@ -191,9 +230,15 @@ const Create = (props: any) => {
                 tokenHandler={tokenHandler}
                 userInput={userInput}
                 handleTradeType={handleTradeType}
+                createTrade={createTrade}
+                rootProps={{ ...getRootProps() }}
+                inputProps={{ ...getInputProps() }}
+                handleFile={handleFile}
+                file={file}
               />
             </div>
           )}
+          {tradeCreated && <TradeCreated />}
         </div>
       </motion.div>
     </>

@@ -12,9 +12,11 @@
   height: 100vh;
   transition: 0.1s ease-in-out;
 }
-.modal {
+.modal,
+.modalLong {
+  transition: 0.1s ease-in-out;
   padding: 2em 0;
-  position: absolute;
+  position: fixed;
   z-index: 5;
   left: 35vw;
   right: 35vw;
@@ -23,6 +25,11 @@
   max-width: 500px;
   background: #fff;
   border-radius: 28px;
+  overflow: scroll;
+}
+.modalLong {
+  top: 7vh;
+  height: 88vh;
 }
 .modalContent {
   margin: 0 auto;
@@ -43,6 +50,10 @@
 .modalTop2 {
   border-bottom: 1px solid #d0d5dda3;
   padding-bottom: 1em;
+}
+.optionTitle {
+  margin-right: -4em;
+  font-size: 1.2em;
 }
 .connectedBx {
   cursor: pointer;
@@ -100,7 +111,8 @@
   color: #dd524d;
 }
 
-.tokenTrade {
+.tokenTrade,
+.productTrade {
   h4 {
     color: #00000097;
     text-align: center;
@@ -192,10 +204,63 @@
   }
 }
 .createBtn {
+  transition: 0.1s ease-in;
   margin-top: 1em;
   @include btnRegular(100%);
 }
 .backBtn {
   margin-top: 1em;
   @include btnOutline(100%);
+}
+
+.productFields {
+  margin: 1.4em auto 1em auto;
+  width: 95%;
+  input {
+    margin-bottom: 1em;
+  }
+}
+.uploadContainer {
+  p {
+    font-size: 0.88em;
+  }
+}
+.uploadBx {
+  position: relative;
+  margin: 0.5em 0 0.8em 0;
+  @include flexRegular(column, center);
+  border: 1px solid #d0d5dd;
+  border-radius: 16px;
+  padding: 1em;
+  border: 1.5px dashed #d0d5dd;
+  //   p {
+  //     margin-left: 10px;
+  //     color: #000000b4;
+  //   }
+}
+
+.uploadTxtOne {
+  font-weight: 300;
+  //font-family: "Inter";
+  line-height: 35px;
+  color: #475367;
+  span {
+    //color: $primaryPurple;
+    color: $blueMain;
+    cursor: pointer;
+    font-weight: 500;
+  }
+}
+.uploadTxtTwo {
+  font-weight: 200;
+  color: #98a2b3;
+  padding-bottom: 1em;
+  //color: ;
+}
+.fileImg {
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+  max-width: 100px;
+  min-height: 100px;
 }

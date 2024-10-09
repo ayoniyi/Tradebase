@@ -13,21 +13,49 @@ import Success from "./success.svg";
 import { shortenHex } from "@/app/utils/formatting";
 
 import TextInput from "../TextInput/TextInput";
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "@/app/utils/firebase";
-import { useDocsQuery } from "@/app/utils/functions/firebaseFunctions";
+import {
+  useDocsQuery,
+  useSetDoc,
+} from "@/app/utils/functions/firebaseFunctions";
 import { useQuery } from "@tanstack/react-query";
+import toast from "react-hot-toast";
 
 const Connect = (props: any) => {
   const [showDisconnect, setShowDisconnect] = useState(false);
   const [isRegistered, setIsRegistered] = useState(false);
+  const [email, setEmail] = useState("");
 
   //const account = useAccount();
   const { address, isConnected, connector: activeConnector } = useAccount();
-  const { connectors, connect, status, error, isLoading, pendingConnector } =
-    useConnect();
+
   const { disconnect } = useDisconnect();
+
+  const { connectors, connect, status, error, isLoading, pendingConnector } =
+    useConnect({
+      onSuccess: (data: any) => {
+        console.log("data", data);
+        // if (data.chain.unsupported) {
+        //   disconnect();
+        //   toast.error(`Chain not supported, please switch to supported chain`, {
+        //     duration: 3000,
+        //   });
+        // } else {
+        //   toast.success(`Wallet connected successfully. `, { duration: 5000 });
+        //   //setIsChainSupported(true);
+        // }
+        console.log("Connect", data);
+      },
+      onError: (error: any) => {
+        console.log("Error", error);
+      },
+      onSettled: (data: any, error: any) => {
+        console.log("Connection attempt settled. Data:", data, "Error:", error);
+      },
+    });
+
   const supportedWallets = connectors.filter(
     (connector: any, index: any, arr: any) => {
       if (connector.name === "WalletConnect") {
@@ -39,22 +67,42 @@ const Connect = (props: any) => {
       return ["MetaMask", "Coinbase Wallet"].includes(connector.name);
     }
   );
+
   const sw = supportedWallets.slice(0, 3);
+  const removeBeforeAt = (email: string) => {
+    const atIndex = email.indexOf("@");
+    return email.slice(0, atIndex);
+  };
 
   const docCollectionRef = query(
     collection(db, "users"),
     where("address", "==", address || "")
   );
+  const newUserRef = collection(db, "users");
 
-  //const docsQuery = useDocsQuery("userDocs", docCollectionRef);
+  const docsQuery = useDocsQuery(
+    ["users", isConnected, address],
+    docCollectionRef
+  );
+  const createFn = () => {
+    if (props.action === "createTrade") {
+      props.handleCreate();
+    }
+  };
+  const userMutation = useSetDoc(newUserRef, createFn);
 
-  const docsQuery = useQuery({
-    queryKey: ["users", isConnected, address],
-    queryFn: () =>
-      getDocs(docCollectionRef).then((res) => {
-        return res;
-      }),
-  });
+  const handleRegister = (e: any) => {
+    e.preventDefault();
+    // register new user
+    const userInfo = {
+      name: removeBeforeAt(email),
+      address: address,
+      email: email,
+    };
+    userMutation.mutate(userInfo);
+
+    //console.log("userMutation", userMutation);
+  };
 
   if (docsQuery.data?.docs && docsQuery?.data?.docs?.length >= 1) {
     //
@@ -62,19 +110,18 @@ const Connect = (props: any) => {
       ...doc.data(),
       docId: doc.id,
     }));
-    //props?.closeConnect();
+    // console.log("docsQuery", docList);
+
     if (props.action === "createTrade") {
       props.handleCreate();
     }
   } else {
-    // register new user
-    //collect email and create user and address
-    //create user on firestore
-    //   await setDoc(doc(db, "users", res.user.uid), {
-    //     name:"",
-    //     address: userAddress,
-    //     email: userInput.email,
-    //   });
+    //prompt user to add email
+    // toast("Please enter your email", {
+    //   icon: " ℹ️",
+    //   duration: 6500,
+    // });
+    //alert("Please enter your email");
   }
 
   // console.log("docsQuery", docsQuery);
@@ -219,19 +266,23 @@ const Connect = (props: any) => {
               <Image src={Success} alt="Success" />
               <Image src={Logo} alt="Tradebase" /> */}
               {!isRegistered ? (
-                <div className={style.emailBody}>
-                  {/* <h3>Email address</h3> */}
+                <form className={style.emailBody} onSubmit={handleRegister}>
                   <TextInput
                     labelName="Email address"
                     inputName="email"
                     type="email"
                     placeHolder="Enter email here"
                     ariaLabel="email"
-                    //inputHandler={inputHandler}
+                    inputHandler={(e) => setEmail(e.target.value)}
                   />
                   <p>Email is required to contact you in case of disputes.</p>
-                  <button>Proceed</button>
-                </div>
+                  <button
+                    type="submit"
+                    disabled={email.length < 3 || userMutation?.isPending}
+                  >
+                    Proceed
+                  </button>
+                </form>
               ) : (
                 ""
               )}

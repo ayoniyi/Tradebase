@@ -8,6 +8,7 @@ import { cookieToInitialState } from "wagmi";
 import { rainbowConfig } from "./utils/wagmi";
 import { headers } from "next/headers";
 import { Providers } from "./providers";
+import Toasts from "./components/Toasts";
 
 export const metadata: Metadata = {
   title: "Tradebase",
@@ -26,6 +27,7 @@ export default function RootLayout({
   // );
   return (
     <html lang="en">
+      <Toasts />
       <body>
         <Providers>{children}</Providers>
       </body>
