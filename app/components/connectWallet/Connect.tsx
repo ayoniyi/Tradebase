@@ -13,14 +13,14 @@ import Success from "./success.svg";
 import { shortenHex } from "@/app/utils/formatting";
 
 import TextInput from "../TextInput/TextInput";
-import { use, useEffect, useState } from "react";
+import { use, useCallback, useEffect, useState } from "react";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "@/app/utils/firebase";
 import {
   useDocsQuery,
   useSetDoc,
 } from "@/app/utils/functions/firebaseFunctions";
-import { useQuery } from "@tanstack/react-query";
+//import { useQuery } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 
 const Connect = (props: any) => {
@@ -34,27 +34,55 @@ const Connect = (props: any) => {
   const { disconnect } = useDisconnect();
 
   const { connectors, connect, status, error, isLoading, pendingConnector } =
-    useConnect({
-      onSuccess: (data: any) => {
-        console.log("data", data);
-        // if (data.chain.unsupported) {
-        //   disconnect();
-        //   toast.error(`Chain not supported, please switch to supported chain`, {
-        //     duration: 3000,
-        //   });
-        // } else {
-        //   toast.success(`Wallet connected successfully. `, { duration: 5000 });
-        //   //setIsChainSupported(true);
-        // }
-        console.log("Connect", data);
-      },
-      onError: (error: any) => {
-        console.log("Error", error);
-      },
-      onSettled: (data: any, error: any) => {
-        console.log("Connection attempt settled. Data:", data, "Error:", error);
-      },
-    });
+    useConnect();
+  //{
+  // onSuccess: (data: any) => {
+  //   alert("connect");
+  //   console.log("data", data);
+  //   // if (data.chain.unsupported) {
+  //   //   disconnect();
+  //   //   toast.error(`Chain not supported, please switch to supported chain`, {
+  //   //     duration: 3000,
+  //   //   });
+  //   // } else {
+  //   //   toast.success(`Wallet connected successfully. `, { duration: 5000 });
+  //   //   //setIsChainSupported(true);
+  //   // }
+  //   console.log("Connect", data);
+  // },
+  // onError: (error: any) => {
+  //   alert("connect???");
+  //   console.log("Error", error);
+  // },
+  // onSettled: (data: any, error: any) => {
+  //   alert("connect!!");
+  //   console.log("Connection attempt settled. Data:", data, "Error:", error);
+  // },
+  // onSuccess: (data: any) => {
+  //   console.log("Connection Successful:", data);
+  // },
+
+  // onError: (error: any) => {
+  //   console.log("Connection Failed:", error);
+  // },
+  // onSettled: (data: any, error: any) => {
+  //   console.log("Connection attempt settled. Data:", data, "Error:", error);
+  // },
+  // onMutate: (data: any) => {
+  //   console.log("Connection attempt settled.  Error:", data);
+  // },
+  //}
+  const handleConnect = useCallback(
+    async (connector: any) => {
+      try {
+        const { account, chain } = await connect(connector);
+        console.log("Connected:", account ? account : "", chain);
+      } catch (error) {
+        console.error("Connection error:", error);
+      }
+    },
+    [connect]
+  );
 
   const supportedWallets = connectors.filter(
     (connector: any, index: any, arr: any) => {
@@ -84,12 +112,44 @@ const Connect = (props: any) => {
     ["users", isConnected, address],
     docCollectionRef
   );
+
+  if (docsQuery.data?.docs && docsQuery?.data?.docs?.length >= 1) {
+    //
+    const docList = docsQuery?.data?.docs.map((doc: any) => ({
+      ...doc.data(),
+      docId: doc.id,
+    }));
+    console.log("docsQuery", docList);
+    props.handleCreate();
+    if (props.action === "createTrade") {
+      props.handleCreate();
+    }
+  } else {
+    //prompt user to add email
+    // toast("Please enter your email", {
+    //   icon: " ℹ️",
+    //   duration: 6500,
+    // });
+    //alert("Please enter your email");
+  }
   const createFn = () => {
     if (props.action === "createTrade") {
       props.handleCreate();
     }
   };
   const userMutation = useSetDoc(newUserRef, createFn);
+
+  useEffect(() => {
+    if (isConnected) {
+      // Handle connected state
+      console.log("Wallet connected");
+      toast.success(`Wallet connected successfully. `, { duration: 5000 });
+      // console.log(docsQuery.data?.docs, "qu");
+    } else {
+      // Handle disconnected state
+      console.log("Wallet disconnected");
+    }
+  }, [isConnected]);
 
   const handleRegister = (e: any) => {
     e.preventDefault();
@@ -103,26 +163,6 @@ const Connect = (props: any) => {
 
     //console.log("userMutation", userMutation);
   };
-
-  if (docsQuery.data?.docs && docsQuery?.data?.docs?.length >= 1) {
-    //
-    const docList = docsQuery?.data?.docs.map((doc: any) => ({
-      ...doc.data(),
-      docId: doc.id,
-    }));
-    // console.log("docsQuery", docList);
-
-    if (props.action === "createTrade") {
-      props.handleCreate();
-    }
-  } else {
-    //prompt user to add email
-    // toast("Please enter your email", {
-    //   icon: " ℹ️",
-    //   duration: 6500,
-    // });
-    //alert("Please enter your email");
-  }
 
   // console.log("docsQuery", docsQuery);
   // console.log("docsList", docList);
@@ -177,7 +217,7 @@ const Connect = (props: any) => {
                     ${!connector.ready || isLoading ? "disable2" : ""} 
                     `}
                     key={connector?.id}
-                    onClick={() => connect({ connector })}
+                    onClick={() => handleConnect({ connector })}
                   >
                     <div className={style.walletImg} suppressHydrationWarning>
                       <Image
