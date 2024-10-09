@@ -14,7 +14,10 @@ export const useDocsQuery = (queryKey: any, docsCollectionRef: any) => {
 };
 
 //mutate docs
-export const useSetDoc = (docsCollectionRef: any, successFunction: any) => {
+export const useSetDoc = (
+  docsCollectionRef: any,
+  successFunction: any | null
+) => {
   return useMutation({
     mutationFn: async (info: any) => addDoc(docsCollectionRef, info),
     onError: (err) => {

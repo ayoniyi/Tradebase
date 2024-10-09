@@ -42,7 +42,7 @@ const SelectToken: React.FC<SelectTokenProps> = ({ tokenHandler }) => {
     //cacheTime: 1000 * 60 * 10, // Keep unused data for 10 minutes
   });
 
-  console.log("tks", tokensQuery?.data);
+  //console.log("tks", tokensQuery?.data);
 
   const customStyles = {
     option: (provided: any) => ({

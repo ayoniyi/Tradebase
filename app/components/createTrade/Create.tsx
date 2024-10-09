@@ -14,6 +14,10 @@ import Token from "./token.svg";
 import Digital from "./digital.svg";
 import Physical from "./physical.svg";
 import TradeCreated from "./TradeCreated";
+import { collection } from "firebase/firestore";
+import { db } from "@/app/utils/firebase";
+import { useSetDoc } from "@/app/utils/functions/firebaseFunctions";
+import toast from "react-hot-toast";
 
 const Create = (props: any) => {
   const { address } = useAccount();
@@ -21,6 +25,14 @@ const Create = (props: any) => {
   const { disconnect } = useDisconnect();
   const [tradeOption, setTradeOption] = useState("");
   const [tradeCreated, setTradeCreated] = useState(false);
+  const [isValidated, setIsValidated] = useState(false);
+
+  interface Trade {
+    tokenSelling: string;
+    tokenSaleAmount: number | null;
+    tokenSalePrice: number | null;
+    tradeType: string;
+  }
 
   const [userInput, setUserInput] = useState<Trade>({
     tokenSelling: "", // token user is selling
@@ -37,17 +49,9 @@ const Create = (props: any) => {
     setTradeOption("");
   };
 
-  interface Trade {
-    tokenSelling: string;
-    tokenSaleAmount: number | null;
-    tokenSalePrice: number | null;
-    tradeType: string;
-  }
-
   const inputHandler = (event: any) => {
     const { name, value } = event.target;
-    //console.log(value);
-    //console.log(userInput);
+
     if (name === "tokenSaleAmount" || name === "tokenSalePrice") {
       let letters = /[a-zA-Z]/;
       let specialChars = /[`!@#$%^&*()_+\-=\[\]{};':"\\|,<>\/?~]/;
@@ -59,12 +63,18 @@ const Create = (props: any) => {
         dots?.length >= 2 ||
         value.length > 12
       ) {
-        //console.log(value);
+        console.log(value);
       } else {
-        setUserInput({
+        const updatedInputs = {
           ...userInput,
-          [event.target.name]: sanitzedValue,
-        });
+          [name]: value,
+        };
+        setUserInput(updatedInputs);
+        const isFormValid =
+          updatedInputs.tokenSaleAmount! > 0 &&
+          updatedInputs.tokenSalePrice! > 0;
+
+        setIsValidated(isFormValid);
       }
     } else {
       setUserInput({
@@ -79,7 +89,6 @@ const Create = (props: any) => {
       ...userInput,
       tokenSelling: selectedOption.symbol,
     });
-    //alert(selectedOption.symbol);
   };
 
   const handleTradeType = (type: string) => {
@@ -107,10 +116,36 @@ const Create = (props: any) => {
     });
   };
 
-  const createTrade = () => {
-    // create trade here
-
+  const tradeSucess = () => {
     setTradeCreated(true);
+  };
+  const createTrade = (e: any) => {
+    e.preventDefault();
+    // create trade here
+    if (userInput.tokenSelling === "") {
+      toast.error("Please select a token to sell.", {
+        duration: 4500,
+      });
+    } else {
+      tradeSucess();
+      // const newTradeRef = collection(db, "trades");
+      // const tradeMutation = useSetDoc(newTradeRef, tradeSucess);
+      // if (tradeOption === "Token swap") {
+      //   const { tokenSaleAmount, tokenSalePrice, tokenSelling, tradeType } =
+      //     userInput;
+      //   const tradeInfo = {
+      //     tradeOption: "Token swap",
+      //     tradeType: tradeType,
+      //     tokenToBeSold: tokenSelling,
+      //     amountOfToken: tokenSaleAmount,
+      //     price: tokenSalePrice,
+      //     sellerId: "",
+      //     sellerAddress: "",
+      //     sellerEmail: "",
+      //   };
+      //   tradeMutation.mutate(tradeInfo);
+      // }
+    }
   };
 
   return (
@@ -223,19 +258,24 @@ const Create = (props: any) => {
             </div>
           ) : (
             <div className={style.modalTrade}>
-              <TradeFields
-                tradeOption={tradeOption}
-                removeOption={removeOption}
-                inputHandler={inputHandler}
-                tokenHandler={tokenHandler}
-                userInput={userInput}
-                handleTradeType={handleTradeType}
-                createTrade={createTrade}
-                rootProps={{ ...getRootProps() }}
-                inputProps={{ ...getInputProps() }}
-                handleFile={handleFile}
-                file={file}
-              />
+              {!tradeCreated ? (
+                <TradeFields
+                  tradeOption={tradeOption}
+                  removeOption={removeOption}
+                  inputHandler={inputHandler}
+                  tokenHandler={tokenHandler}
+                  userInput={userInput}
+                  handleTradeType={handleTradeType}
+                  rootProps={{ ...getRootProps() }}
+                  inputProps={{ ...getInputProps() }}
+                  handleFile={handleFile}
+                  file={file}
+                  isValidated={isValidated}
+                  createTrade={createTrade}
+                />
+              ) : (
+                <div className={style.created}></div>
+              )}
             </div>
           )}
           {tradeCreated && <TradeCreated />}

@@ -29,8 +29,8 @@ button {
   cursor: pointer;
 }
 button:disabled {
-  background: #e5faff;
-  opacity: 0.3;
+  /* background: #e5faff; */
+  opacity: 0.5;
   cursor: not-allowed;
 }
 

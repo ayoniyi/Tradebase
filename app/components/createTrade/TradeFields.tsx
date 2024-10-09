@@ -75,11 +75,19 @@ const TradeFields = (props: any) => {
             </div>
 
             {props.userInput.tradeType === "Private sale" ? (
-              <button className={style.createBtn} onClick={props.removeOption}>
+              <button
+                disabled={!props.isValidated}
+                className={style.createBtn}
+                onClick={props.createTrade}
+              >
                 Create trade
               </button>
             ) : props.userInput.tradeType === "Public sale" ? (
-              <button className={style.createBtn} onClick={props.removeOption}>
+              <button
+                disabled={!props.isValidated}
+                className={style.createBtn}
+                onClick={props.createTrade}
+              >
                 Create ad
               </button>
             ) : (

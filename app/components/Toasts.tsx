@@ -11,7 +11,7 @@ const Toasts = () => {
         },
         success: {
           iconTheme: {
-            primary: "#9c21f4",
+            primary: "#1671d9",
             secondary: "#fff",
           },
         },
