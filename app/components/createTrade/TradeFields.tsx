@@ -43,14 +43,14 @@ const TradeFields = (props: any) => {
                 <p>I'm selling</p>
               </div>
               <div className={style.tkBody}>
-                <SelectToken tokenHandler={props.tokenHandler} />
+                <SelectToken tokenHandler={props?.tokenHandler} />
                 <input
                   className={style.tkVal}
                   type="text"
                   placeholder="0.00"
                   name="tokenSaleAmount"
                   onChange={props.inputHandler}
-                  value={props.userInput.tokenSaleAmount}
+                  value={props?.userInput?.tokenSaleAmount}
                 />
               </div>
             </div>
@@ -69,18 +69,23 @@ const TradeFields = (props: any) => {
                   placeholder="0.00"
                   name="tokenSalePrice"
                   onChange={props.inputHandler}
-                  value={props.userInput.tokenSalePrice}
+                  value={props?.userInput?.tokenSalePrice}
                 />
               </div>
             </div>
 
             {props.userInput.tradeType === "Private sale" ? (
               <button
-                disabled={!props.isValidated || props.tradeMutation.isPending}
+                disabled={
+                  !props.isValidated ||
+                  props.tradeMutation.isPending ||
+                  props.fileMutation.isPending
+                }
                 className={style.createBtn}
                 onClick={props.createTrade}
               >
-                {props.tradeMutation.isPending ? (
+                {props.tradeMutation.isPending ||
+                props.fileMutation.isPending ? (
                   <CircularProgress color="inherit" size="20px" />
                 ) : (
                   "Create trade"
@@ -88,11 +93,16 @@ const TradeFields = (props: any) => {
               </button>
             ) : props.userInput.tradeType === "Public sale" ? (
               <button
-                disabled={!props.isValidated || props.tradeMutation.isPending}
+                disabled={
+                  !props.isValidated ||
+                  props.tradeMutation.isPending ||
+                  props.fileMutation.isPending
+                }
                 className={style.createBtn}
                 onClick={props.createTrade}
               >
-                {props.tradeMutation.isPending ? (
+                {props.tradeMutation.isPending ||
+                props.fileMutation.isPending ? (
                   <CircularProgress color="inherit" size="20px" />
                 ) : (
                   "Create ad"
@@ -197,31 +207,59 @@ const TradeFields = (props: any) => {
               type="text"
               placeHolder="Enter product name"
               ariaLabel="product name"
-              //inputHandler={inputHandler}
+              value={props?.userInput?.productName}
+              inputHandler={props.inputHandler}
             />
             <TextArea
               labelName="Product description"
               inputName="description"
               placeHolder="Enter product description"
               ariaLabel="product description"
-              // value={userInput.description}
-              // inputHandler={inputHandler}
+              value={props?.userInput?.description}
+              inputHandler={props.inputHandler}
             />
             <TextInput
-              labelName="Price"
+              labelName="Price (ETH)"
               inputName="productPrice"
               type="text"
               placeHolder="Enter price"
               ariaLabel="product price"
-              //inputHandler={inputHandler}
+              value={props?.userInput?.productPrice}
+              inputHandler={props.inputHandler}
             />
             {props.userInput.tradeType === "Private sale" ? (
-              <button className={style.createBtn} onClick={props.removeOption}>
-                Create trade
+              <button
+                className={style.createBtn}
+                disabled={
+                  !props.isValidated ||
+                  props.tradeMutation.isPending ||
+                  props.fileMutation.isPending
+                }
+                onClick={props.createTrade}
+              >
+                {props.tradeMutation.isPending ||
+                props.fileMutation.isPending ? (
+                  <CircularProgress color="inherit" size="20px" />
+                ) : (
+                  "Create trade"
+                )}
               </button>
             ) : props.userInput.tradeType === "Public sale" ? (
-              <button className={style.createBtn} onClick={props.removeOption}>
-                Create ad
+              <button
+                className={style.createBtn}
+                disabled={
+                  !props.isValidated ||
+                  props.tradeMutation.isPending ||
+                  props.fileMutation.isPending
+                }
+                onClick={props.createTrade}
+              >
+                {props.tradeMutation.isPending ||
+                props.fileMutation.isPending ? (
+                  <CircularProgress color="inherit" size="20px" />
+                ) : (
+                  "Create ad"
+                )}
               </button>
             ) : (
               ""
@@ -322,31 +360,59 @@ const TradeFields = (props: any) => {
               type="text"
               placeHolder="Enter product name"
               ariaLabel="product name"
-              //inputHandler={inputHandler}
+              value={props?.userInput?.productName}
+              inputHandler={props.inputHandler}
             />
             <TextArea
               labelName="Product description"
               inputName="description"
               placeHolder="Enter product description"
               ariaLabel="product description"
-              // value={userInput.description}
-              // inputHandler={inputHandler}
+              value={props?.userInput?.description}
+              inputHandler={props.inputHandler}
             />
             <TextInput
-              labelName="Price"
+              labelName="Price (ETH)"
               inputName="productPrice"
               type="text"
               placeHolder="Enter price"
               ariaLabel="product price"
-              //inputHandler={inputHandler}
+              value={props?.userInput?.productPrice}
+              inputHandler={props.inputHandler}
             />
             {props.userInput.tradeType === "Private sale" ? (
-              <button className={style.createBtn} onClick={props.removeOption}>
-                Create trade
+              <button
+                className={style.createBtn}
+                disabled={
+                  !props.isValidated ||
+                  props.tradeMutation.isPending ||
+                  props.fileMutation.isPending
+                }
+                onClick={props.createTrade}
+              >
+                {props.tradeMutation.isPending ||
+                props.fileMutation.isPending ? (
+                  <CircularProgress color="inherit" size="20px" />
+                ) : (
+                  "Create trade"
+                )}
               </button>
             ) : props.userInput.tradeType === "Public sale" ? (
-              <button className={style.createBtn} onClick={props.removeOption}>
-                Create ad
+              <button
+                className={style.createBtn}
+                disabled={
+                  !props.isValidated ||
+                  props.tradeMutation.isPending ||
+                  props.fileMutation.isPending
+                }
+                onClick={props.createTrade}
+              >
+                {props.tradeMutation.isPending ||
+                props.fileMutation.isPending ? (
+                  <CircularProgress color="inherit" size="20px" />
+                ) : (
+                  "Create ad"
+                )}
               </button>
             ) : (
               ""

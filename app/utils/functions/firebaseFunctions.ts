@@ -1,6 +1,7 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { collection, query, getDocs, where, addDoc } from "firebase/firestore";
 import toast from "react-hot-toast";
+import upload from "../upload";
 
 // fetch docs
 export const useDocsQuery = (queryKey: any, docsCollectionRef: any) => {
@@ -30,6 +31,27 @@ export const useSetDoc = (
     onSuccess: (res) => {
       console.log("app res", res);
       // user update payload
+      successFunction();
+    },
+  });
+};
+
+//upload image
+export const useFileUpload = (
+  upFile: any,
+  progress: any,
+  successFunction: any | null
+) => {
+  return useMutation({
+    mutationFn: async () => upload(upFile, progress),
+    onError: (err) => {
+      console.log("err", err);
+      toast.error("Sorry, an error occured", {
+        duration: 6500,
+      });
+    },
+    onSuccess: (res) => {
+      //
       successFunction();
     },
   });

@@ -4,8 +4,9 @@ import style from "./Connect.module.scss";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { modalFunc, overlayFunc } from "@/app/utils/motion";
+import { UserContext } from "@/app/context/UserContext";
 
-import Logo from "@/app/logo.svg";
+//import Logo from "@/app/logo.svg";
 import Metamask from "./metamask.svg";
 import Wc from "./wc.svg";
 import Coinbase from "./coinbase.svg";
@@ -13,7 +14,7 @@ import Success from "./success.svg";
 import { shortenHex } from "@/app/utils/formatting";
 
 import TextInput from "../TextInput/TextInput";
-import { use, useCallback, useEffect, useState } from "react";
+import { use, useCallback, useContext, useEffect, useState } from "react";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "@/app/utils/firebase";
 import {
@@ -27,7 +28,7 @@ const Connect = (props: any) => {
   const [showDisconnect, setShowDisconnect] = useState(false);
   const [isRegistered, setIsRegistered] = useState(false);
   const [email, setEmail] = useState("");
-
+  const [userState, setUserState] = useContext<any>(UserContext);
   //const account = useAccount();
   const { address, isConnected, connector: activeConnector } = useAccount();
 
@@ -117,20 +118,17 @@ const Connect = (props: any) => {
     //
     const docList = docsQuery?.data?.docs.map((doc: any) => ({
       ...doc.data(),
-      docId: doc.id,
+      userId: doc.id,
     }));
-    console.log("docsQuery", docList);
-    props.handleCreate();
+    //console.log("docsQuery", docList[0]);
+    setUserState({
+      ...userState,
+      user: docList[0],
+    });
+    //props.handleCreate();
     if (props.action === "createTrade") {
       props.handleCreate();
     }
-  } else {
-    //prompt user to add email
-    // toast("Please enter your email", {
-    //   icon: " ℹ️",
-    //   duration: 6500,
-    // });
-    //alert("Please enter your email");
   }
   const createFn = () => {
     if (props.action === "createTrade") {
@@ -160,13 +158,7 @@ const Connect = (props: any) => {
       email: email,
     };
     userMutation.mutate(userInfo);
-
-    //console.log("userMutation", userMutation);
   };
-
-  // console.log("docsQuery", docsQuery);
-  // console.log("docsList", docList);
-  //}
 
   return (
     <>

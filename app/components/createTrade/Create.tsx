@@ -1,10 +1,11 @@
-import { useCallback, useState } from "react";
+import { use, useCallback, useContext, useState } from "react";
 import style from "./Create.module.scss";
 import { motion } from "framer-motion";
 import { createFunc, overlayFunc } from "@/app/utils/motion";
 import { useDisconnect } from "wagmi";
 import { shortenHex } from "@/app/utils/formatting";
 import { useAccount } from "wagmi";
+import { UserContext } from "@/app/context/UserContext";
 //import SelectField from "../TextInput/Select";
 import TradeFields from "./TradeFields";
 import Image from "next/image";
@@ -16,29 +17,50 @@ import Physical from "./physical.svg";
 import TradeCreated from "./TradeCreated";
 import { collection } from "firebase/firestore";
 import { db } from "@/app/utils/firebase";
-import { useSetDoc } from "@/app/utils/functions/firebaseFunctions";
+import {
+  useFileUpload,
+  useSetDoc,
+} from "@/app/utils/functions/firebaseFunctions";
 import toast from "react-hot-toast";
+import { useMutation } from "@tanstack/react-query";
+import upload from "@/app/utils/upload";
 
 const Create = (props: any) => {
   const { address } = useAccount();
+  const [userState] = useContext<any>(UserContext);
   const [showDisconnect, setShowDisconnect] = useState(false);
   const { disconnect } = useDisconnect();
   const [tradeOption, setTradeOption] = useState("");
   const [tradeCreated, setTradeCreated] = useState(false);
   const [isValidated, setIsValidated] = useState(false);
+  const [progress, setProgress] = useState();
+  const [fileUrl, setFileUrl] = useState("");
+
+  //console.log("user>>", userState);
 
   interface Trade {
     tokenSelling: string;
     tokenSaleAmount: number | null;
     tokenSalePrice: number | null;
     tradeType: string;
+    productName: string;
+    productImageLink: string;
+    description: string;
+    productPrice: number | null;
   }
 
   const [userInput, setUserInput] = useState<Trade>({
+    // for tokens
     tokenSelling: "", // token user is selling
     tokenSaleAmount: 0.0, // amount of token user is selling
     tokenSalePrice: 0.0, // price seller receives for token,
-    tradeType: "Private sale",
+    tradeType: "Private sale", // public or private
+
+    // for physical or digital products
+    productName: "",
+    productImageLink: "",
+    description: "",
+    productPrice: 0,
   });
   const [file, setFile] = useState({
     parent: null,
@@ -63,17 +85,38 @@ const Create = (props: any) => {
         dots?.length >= 2 ||
         value.length > 12
       ) {
-        console.log(value);
+        //console.log(value);
       } else {
         const updatedInputs = {
           ...userInput,
-          [name]: value,
+          [name]: sanitzedValue,
         };
         setUserInput(updatedInputs);
         const isFormValid =
           updatedInputs.tokenSaleAmount! > 0 &&
           updatedInputs.tokenSalePrice! > 0;
 
+        setIsValidated(isFormValid);
+      }
+    } else if (name === "productPrice") {
+      let letters = /[a-zA-Z]/;
+      let specialChars = /[`!@#$%^&*()_+\-=\[\]{};':"\\|,<>\/?~]/;
+      let dots = value.match(/\./g);
+      let sanitzedValue = value.replace(/\s+/g, "");
+      if (
+        letters.test(value) ||
+        specialChars.test(value) ||
+        dots?.length >= 2 ||
+        value.length > 12
+      ) {
+        //console.log(value);
+      } else {
+        const updatedInputs = {
+          ...userInput,
+          [name]: sanitzedValue,
+        };
+        setUserInput(updatedInputs);
+        const isFormValid = updatedInputs.productPrice! > 0;
         setIsValidated(isFormValid);
       }
     } else {
@@ -125,35 +168,77 @@ const Create = (props: any) => {
 
   const newTradeRef = collection(db, "trades");
   const tradeMutation = useSetDoc(newTradeRef, tradeSucess);
+  const fileMutation = useMutation({
+    mutationFn: async () => upload(file.item, setProgress),
+    onError: (err) => {
+      console.log("err", err);
+      toast.error("Sorry, an error occured", {
+        duration: 6500,
+      });
+    },
+    onSuccess: (res: any) => {
+      console.log("url res", res);
+      console.log("progress", progress);
+      setFileUrl(res);
+      const { productName, tradeType, description, productPrice } = userInput;
+      const { userId, name, email } = userState?.user;
+      const tradeInfo = {
+        tradeOption: tradeOption,
+        tradeType: tradeType,
+        productName: productName,
+        productImage: res,
+        description: description,
+        price: productPrice,
+        sellerId: userId,
+        sellerName: name,
+        sellerAddress: userState?.user?.address,
+        sellerEmail: email,
+      };
+      tradeMutation.mutate(tradeInfo);
+    },
+  });
+
   const createTrade = (e: any) => {
     e.preventDefault();
     // create trade here
-    if (userInput.tokenSelling === "") {
-      toast.error("Please select a token to sell.", {
-        duration: 4500,
-      });
-    } else {
-      // tradeSucess();
 
-      if (tradeOption === "Token swap") {
+    if (tradeOption === "Token swap") {
+      if (userInput.tokenSelling === "") {
+        toast.error("Please select a token to sell.", {
+          duration: 4500,
+        });
+      } else {
         const { tokenSaleAmount, tokenSalePrice, tokenSelling, tradeType } =
           userInput;
+        const { userId, name, address, email } = userState?.user;
         const tradeInfo = {
           tradeOption: "Token swap",
           tradeType: tradeType,
           tokenToBeSold: tokenSelling,
           amountOfToken: tokenSaleAmount,
           price: tokenSalePrice,
-          sellerId: "",
-          sellerAddress: "",
-          sellerEmail: "",
+          sellerId: userId,
+          sellerName: name,
+          sellerAddress: address,
+          sellerEmail: email,
         };
         tradeMutation.mutate(tradeInfo);
       }
-      tradeMutation.isPending &&
-        toast.loading("Creating trade...", {
-          duration: 6500,
+    } else if (
+      tradeOption === "Physical item" ||
+      tradeOption === "Digital product"
+    ) {
+      if (
+        userInput.productName === "" ||
+        userInput.description === "" ||
+        file.item === null
+      ) {
+        toast.error("Please fill out all the fields.", {
+          duration: 4500,
         });
+      } else {
+        fileMutation.mutate();
+      }
     }
   };
 
@@ -281,6 +366,7 @@ const Create = (props: any) => {
                   file={file}
                   isValidated={isValidated}
                   tradeMutation={tradeMutation}
+                  fileMutation={fileMutation}
                   createTrade={createTrade}
                 />
               ) : (
@@ -289,7 +375,11 @@ const Create = (props: any) => {
             </div>
           )}
           {tradeCreated && (
-            <TradeCreated tradeOption={tradeOption} userInput={userInput} />
+            <TradeCreated
+              tradeOption={tradeOption}
+              userInput={userInput}
+              file={file}
+            />
           )}
         </div>
       </motion.div>

@@ -4,9 +4,9 @@ import "./styles/fonts.css";
 //import "./styles/selectTk.css";
 import "@rainbow-me/rainbowkit/styles.css";
 import Favicon from "@/app/favicon.svg";
-import { cookieToInitialState } from "wagmi";
-import { rainbowConfig } from "./utils/wagmi";
-import { headers } from "next/headers";
+// import { cookieToInitialState } from "wagmi";
+// import { rainbowConfig } from "./utils/wagmi";
+// import { headers } from "next/headers";
 import { Providers } from "./providers";
 import Toasts from "./components/Toasts";
 

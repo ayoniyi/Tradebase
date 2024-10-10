@@ -7,6 +7,7 @@ import { WagmiProvider } from "wagmi";
 //import { rainbowConfig } from "@/app/utils/wagmi";
 import { base, baseSepolia } from "wagmi/chains";
 import { getDefaultConfig, RainbowKitProvider } from "@rainbow-me/rainbowkit";
+import { UserContextProvider } from "./context/UserContext";
 
 export function Providers(props: { children: ReactNode; initialState?: any }) {
   const wcprojectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID;
@@ -17,15 +18,17 @@ export function Providers(props: { children: ReactNode; initialState?: any }) {
     appName: "Tradebase",
     projectId: wcprojectId || "",
     chains: [base, baseSepolia],
-    ssr: true, // If your dApp uses server side rendering (SSR)
+    ssr: true,
   });
 
   return (
     <WagmiProvider config={config} initialState={props.initialState}>
       <QueryClientProvider client={queryClient}>
-        <RainbowKitProvider showRecentTransactions={true}>
-          {props.children}
-        </RainbowKitProvider>
+        <UserContextProvider>
+          <RainbowKitProvider showRecentTransactions={true}>
+            {props.children}
+          </RainbowKitProvider>
+        </UserContextProvider>
       </QueryClientProvider>
     </WagmiProvider>
   );
