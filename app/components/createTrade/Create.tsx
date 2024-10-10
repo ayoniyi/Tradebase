@@ -117,8 +117,14 @@ const Create = (props: any) => {
   };
 
   const tradeSucess = () => {
+    toast.success("Trade created successfully!", {
+      duration: 4500,
+    });
     setTradeCreated(true);
   };
+
+  const newTradeRef = collection(db, "trades");
+  const tradeMutation = useSetDoc(newTradeRef, tradeSucess);
   const createTrade = (e: any) => {
     e.preventDefault();
     // create trade here
@@ -127,24 +133,27 @@ const Create = (props: any) => {
         duration: 4500,
       });
     } else {
-      tradeSucess();
-      // const newTradeRef = collection(db, "trades");
-      // const tradeMutation = useSetDoc(newTradeRef, tradeSucess);
-      // if (tradeOption === "Token swap") {
-      //   const { tokenSaleAmount, tokenSalePrice, tokenSelling, tradeType } =
-      //     userInput;
-      //   const tradeInfo = {
-      //     tradeOption: "Token swap",
-      //     tradeType: tradeType,
-      //     tokenToBeSold: tokenSelling,
-      //     amountOfToken: tokenSaleAmount,
-      //     price: tokenSalePrice,
-      //     sellerId: "",
-      //     sellerAddress: "",
-      //     sellerEmail: "",
-      //   };
-      //   tradeMutation.mutate(tradeInfo);
-      // }
+      // tradeSucess();
+
+      if (tradeOption === "Token swap") {
+        const { tokenSaleAmount, tokenSalePrice, tokenSelling, tradeType } =
+          userInput;
+        const tradeInfo = {
+          tradeOption: "Token swap",
+          tradeType: tradeType,
+          tokenToBeSold: tokenSelling,
+          amountOfToken: tokenSaleAmount,
+          price: tokenSalePrice,
+          sellerId: "",
+          sellerAddress: "",
+          sellerEmail: "",
+        };
+        tradeMutation.mutate(tradeInfo);
+      }
+      tradeMutation.isPending &&
+        toast.loading("Creating trade...", {
+          duration: 6500,
+        });
     }
   };
 
@@ -271,6 +280,7 @@ const Create = (props: any) => {
                   handleFile={handleFile}
                   file={file}
                   isValidated={isValidated}
+                  tradeMutation={tradeMutation}
                   createTrade={createTrade}
                 />
               ) : (
@@ -278,7 +288,9 @@ const Create = (props: any) => {
               )}
             </div>
           )}
-          {tradeCreated && <TradeCreated />}
+          {tradeCreated && (
+            <TradeCreated tradeOption={tradeOption} userInput={userInput} />
+          )}
         </div>
       </motion.div>
     </>

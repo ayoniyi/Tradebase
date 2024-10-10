@@ -1,7 +1,7 @@
 import SelectToken from "../TextInput/SelectTokens";
 import style from "./Create.module.scss";
 import TextInput from "../TextInput/TextInput";
-import { IconButton } from "@mui/material";
+import { CircularProgress, IconButton } from "@mui/material";
 import { Trash } from "../Icons";
 
 import Image from "next/image";
@@ -76,19 +76,27 @@ const TradeFields = (props: any) => {
 
             {props.userInput.tradeType === "Private sale" ? (
               <button
-                disabled={!props.isValidated}
+                disabled={!props.isValidated || props.tradeMutation.isPending}
                 className={style.createBtn}
                 onClick={props.createTrade}
               >
-                Create trade
+                {props.tradeMutation.isPending ? (
+                  <CircularProgress color="inherit" size="20px" />
+                ) : (
+                  "Create trade"
+                )}
               </button>
             ) : props.userInput.tradeType === "Public sale" ? (
               <button
-                disabled={!props.isValidated}
+                disabled={!props.isValidated || props.tradeMutation.isPending}
                 className={style.createBtn}
                 onClick={props.createTrade}
               >
-                Create ad
+                {props.tradeMutation.isPending ? (
+                  <CircularProgress color="inherit" size="20px" />
+                ) : (
+                  "Create ad"
+                )}
               </button>
             ) : (
               ""

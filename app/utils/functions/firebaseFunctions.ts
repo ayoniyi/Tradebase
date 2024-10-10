@@ -26,6 +26,7 @@ export const useSetDoc = (
         duration: 6500,
       });
     },
+
     onSuccess: (res) => {
       console.log("app res", res);
       // user update payload

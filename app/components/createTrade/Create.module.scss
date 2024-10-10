@@ -203,12 +203,20 @@
     height: 20px;
   }
 }
-.createBtn {
+.createBtn,
+.shareBtn {
   transition: 0.1s ease-in;
   margin-top: 1em;
   @include btnRegular(100%);
 }
-.backBtn {
+.shareBtn {
+  @include flexRegular(row, center);
+  img {
+    margin-right: 1em;
+  }
+}
+.backBtn,
+.viewBtn {
   margin-top: 1em;
   @include btnOutline(100%);
 }
@@ -264,3 +272,58 @@
   max-width: 100px;
   min-height: 100px;
 }
+
+// ------ Trade created
+.tradeDesc {
+  padding: 1em 2em;
+
+  border-bottom: 0.5px solid #d0d5dd;
+}
+.tradeStatus {
+  @include flexRegular(row, flex-start);
+  img {
+    margin-right: 0.5em;
+  }
+  p {
+    color: #475367;
+
+    font-weight: 400;
+    font-size: 1.13em;
+  }
+}
+.tradeTitle {
+  margin: 0.8em 0;
+  color: #475367ac;
+  span {
+    color: #1d2739;
+  }
+}
+.tradeTxt {
+  p {
+    font-size: 0.98em;
+    font-weight: 100;
+    color: #667185;
+  }
+}
+
+.tradeBreakdown {
+  padding: 1.5em 2em 1em 2em;
+  border-bottom: 0.5px solid #d0d5dd;
+}
+.breakRow {
+  @include flexRegular(row, space-between);
+  margin-bottom: 0.5em;
+  p {
+    &:nth-child(1) {
+      color: #98a2b3;
+    }
+    &:nth-child(2) {
+      color: #1d2739;
+    }
+  }
+}
+.shareBtns {
+  margin-top: 1em;
+  padding: 0 2em;
+}
+// --------- Created
