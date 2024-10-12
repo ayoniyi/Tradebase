@@ -1,0 +1,171 @@
+@import "../styles/mixins";
+@import "../styles/variables";
+
+.overlay {
+  width: 100%;
+  position: fixed;
+  top: 0;
+  background: #1712145a;
+  backdrop-filter: blur(8px);
+  z-index: 5;
+  width: 100vw;
+  height: 100vh;
+  transition: 0.1s ease-in-out;
+}
+.modal,
+.modalLong {
+  transition: 0.1s ease-in-out;
+  padding: 2em 0;
+  position: fixed;
+  z-index: 5;
+  left: 35vw;
+  right: 35vw;
+  width: 30vw;
+  top: 12vh;
+  max-width: 500px;
+  background: #fff;
+  border-radius: 28px;
+  overflow: scroll;
+}
+.modalLong {
+  top: 7vh;
+  height: 88vh;
+}
+.modalContent {
+  margin: 0 auto;
+  //width: 90%;
+}
+.modalTop,
+.modalTop2 {
+  @include flexRegular(row, space-between);
+
+  padding: 0 1.5em;
+  p {
+    color: #344054;
+  }
+  svg {
+    cursor: pointer;
+  }
+}
+.modalTop2 {
+  border-bottom: 1px solid #d0d5dda3;
+  padding-bottom: 1em;
+}
+.optionTitle {
+  margin-right: -4em;
+  font-size: 1.2em;
+}
+.connectedBx {
+  cursor: pointer;
+  background: #eef6ff;
+  border-radius: 12px;
+  // padding: 0.5em 1.5em;
+  @include flexRegular(row, center);
+  width: 151px;
+  height: 40px;
+  p {
+    font-size: 0.9em;
+    margin-left: 0.6em;
+    color: #1671d9;
+  }
+}
+.modalTrade {
+  width: 90%;
+  margin: 1em auto;
+  h3 {
+    font-size: 1em;
+  }
+}
+.tradeOptions {
+  margin: 1em 0;
+  // border: 1px solid #d0d5dda3;
+  @include gridRegular(3%);
+  grid-template-columns: repeat(2, 47%);
+}
+
+.tradeDesc {
+  padding: 1em 2em;
+
+  border-bottom: 0.5px solid #d0d5dd;
+}
+.trImg {
+  margin: 1em 0;
+  @include flexRegular(column, center);
+  img {
+    border-radius: 28px;
+    object-fit: cover;
+    width: 100%;
+    max-width: 110px;
+    min-height: 90px;
+  }
+  p {
+    color: #1d2739;
+    margin-top: 10px;
+    font-weight: 400;
+    font-size: 1.13em;
+  }
+}
+.tradeStatus {
+  @include flexRegular(row, flex-start);
+  img {
+    margin-right: 0.5em;
+  }
+  p {
+    color: #475367;
+
+    font-weight: 400;
+    font-size: 1.13em;
+  }
+}
+.tradeTitle {
+  margin: 0.8em 0;
+  color: #475367ac;
+  span {
+    color: #1d2739;
+  }
+}
+.tradeTxt {
+  p {
+    font-size: 0.98em;
+    font-weight: 100;
+    color: #667185;
+  }
+}
+
+.tradeBreakdown {
+  padding: 1.5em 2em 1em 2em;
+  border-bottom: 0.5px solid #d0d5dd;
+}
+.breakRow {
+  @include flexRegular(row, space-between);
+  margin-bottom: 0.5em;
+  p {
+    &:nth-child(1) {
+      color: #98a2b3;
+    }
+    &:nth-child(2) {
+      color: #1d2739;
+    }
+  }
+}
+.shareBtns {
+  margin-top: 1em;
+  padding: 0 2em;
+}
+.createBtn,
+.shareBtn {
+  transition: 0.1s ease-in;
+  margin-top: 1em;
+  @include btnRegular(100%);
+}
+.shareBtn {
+  @include flexRegular(row, center);
+  img {
+    margin-right: 1em;
+  }
+}
+.backBtn,
+.viewBtn {
+  margin-top: 1em;
+  @include btnOutline(100%);
+}

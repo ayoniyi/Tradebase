@@ -8,8 +8,23 @@ export const useDocsQuery = (queryKey: any, docsCollectionRef: any) => {
   return useQuery({
     queryKey: [queryKey],
     queryFn: () =>
-      getDocs(docsCollectionRef).then((res) => {
+      getDocs(docsCollectionRef).then((res: any) => {
         return res;
+      }),
+  });
+};
+export const fetchDocsQuery = (queryKey: any, docsCollectionRef: any) => {
+  return useQuery({
+    queryKey: [queryKey],
+    queryFn: () =>
+      getDocs(docsCollectionRef).then((res: any) => {
+        //return res;
+        const docList = res?.docs.map((doc: any) => ({
+          ...doc.data(),
+          userId: doc.id,
+        }));
+
+        return docList;
       }),
   });
 };

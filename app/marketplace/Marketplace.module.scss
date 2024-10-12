@@ -1,0 +1,22 @@
+@import "../styles/mixins";
+@import "../styles/variables";
+
+.container {
+  @include flexRegular(column, center);
+  width: 85%;
+  max-width: 1200px;
+  margin: 6em auto 0 auto;
+  padding: 1.5em 0;
+  border: 1px solid #bcc;
+}
+.content {
+  width: 90%;
+  margin: auto;
+}
+
+.tradeGrid {
+  margin: 1.5em auto;
+  @include gridRegular(5.5%);
+  grid-template-columns: 28% 28% 28%;
+  //grid-gap: 30px;
+}
