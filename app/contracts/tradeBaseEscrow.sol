@@ -38,18 +38,29 @@ contract EscrowV2 {
         _;
     }
 
-    // function createEscrow(address payable _seller, address payable _arbiter, uint256 _amount) external {
-    //     require(_amount > 0, "Invalid amount");
-    //     transactionCounter++;
-    //     Transaction storage transaction = transactions[transactionCounter];
-    //     transaction.buyer = payable(msg.sender);
-    //     transaction.seller = _seller;
-    //     transaction.arbiter = _arbiter;
-    //     transaction.amount = _amount;
-    //     transaction.state = EscrowState.Created;
+    // Helper function to convert uint256 to string
+    function uint2str(uint256 _i) internal pure returns (string memory) {
+        if (_i == 0) {
+            return "0";
+        }
+        uint256 j = _i;
+        uint256 len;
+        while (j != 0) {
+            len++;
+            j /= 10;
+        }
+        bytes memory bstr = new bytes(len);
+        uint256 k = len;
+        while (_i != 0) {
+            k = k-1;
+            uint8 temp = (48 + uint8(_i - _i / 10 * 10));
+            bytes1 b1 = bytes1(temp);
+            bstr[k] = b1;
+            _i /= 10;
+        }
+        return string(bstr);
+    }
 
-    //     emit EscrowCreated(transactionCounter, msg.sender, _seller, _arbiter, _amount);
-    // }
 
     function createEscrow(address payable _seller, address payable _arbiter, uint256 _amount) external {
         require(_amount > 0, "Invalid amount");
@@ -59,36 +70,62 @@ contract EscrowV2 {
         transaction.seller = _seller;
         transaction.arbiter = _arbiter;
 
-        // Append 18 zeros to the end of the value to convert it to wei
-        transaction.amount = _amount * 1e18;
+        
 
         transaction.state = EscrowState.Created;
 
         emit EscrowCreated(transactionCounter, msg.sender, _seller, _arbiter, _amount);
     }
 
-    function depositFunds(uint256 transactionId) external payable onlyBuyer(transactionId) inState(transactionId, EscrowState.Created) {
-        require(msg.value > 0, "Invalid amount");
-        require(msg.value == transactions[transactionId].amount, "Deposit amount does not match the escrow amount");
-        
-        //uint256 amount = (msg.value) / 2;
-        transactions[transactionId].amount = msg.value;
-        transactions[transactionId].state = EscrowState.Funded;
+    
 
-        emit FundsDeposited(transactionId, msg.sender, msg.value);
-        emit EscrowAmountChanged(transactionId, transactions[transactionId].amount);
-        emit BalanceChanged(transactionId, address(this).balance);
-    }
+    // function depositFunds(uint256 transactionId) external payable onlyBuyer(transactionId) inState(transactionId, EscrowState.Created) {
+    //     require(msg.value > 0, "Invalid amount");
+    //     require(msg.value == transactions[transactionId].amount, "Deposit amount does not match the escrow amount");
+        
+    //     //uint256 amount = (msg.value) / 2;
+    //     transactions[transactionId].amount = msg.value;
+    //     transactions[transactionId].state = EscrowState.Funded;
+
+    //     emit FundsDeposited(transactionId, msg.sender, msg.value);
+    //     emit EscrowAmountChanged(transactionId, transactions[transactionId].amount);
+    //     emit BalanceChanged(transactionId, address(this).balance);
+    // }
+
+    function depositFunds(uint256 transactionId) external payable onlyBuyer(transactionId) inState(transactionId, EscrowState.Created) {
+    require(msg.value > 0, "Invalid amount");
+
+    // Check if the deposited amount matches the escrow amount and provide both values in the error message
+    require(
+        msg.value == transactions[transactionId].amount,
+        string(
+            abi.encodePacked(
+                "Deposit amount does not match the escrow amount. Sent: ", 
+                uint2str(msg.value), 
+                " wei, Expected: ", 
+                uint2str(transactions[transactionId].amount), 
+                " wei"
+            )
+        )
+    );
+    
+    transactions[transactionId].amount = msg.value;
+    transactions[transactionId].state = EscrowState.Funded;
+
+    emit FundsDeposited(transactionId, msg.sender, msg.value);
+    emit EscrowAmountChanged(transactionId, transactions[transactionId].amount);
+    emit BalanceChanged(transactionId, address(this).balance);
+}
 
     function completeTransaction(uint256 transactionId) external onlyBuyer(transactionId) inState(transactionId, EscrowState.Funded) {
     // Ensure the contract's balance is sufficient
     require(address(this).balance >= transactions[transactionId].amount, "Insufficient contract balance");
 
-    // Calculate the payment to the seller (99% of the escrow amount)
+    // Calculate the payment to the seller (95% of the escrow amount)
     uint256 payment = (transactions[transactionId].amount * 95) / 100;
     //uint256 payment = (transactions[transactionId].amount);
 
-    // Calculate the payment to the arbiter (1% of the escrow amount)
+    // Calculate the payment to the arbiter (5% of the escrow amount)
     uint256 fee = transactions[transactionId].amount - payment;
 
     // Transfer funds to the seller and arbiter
@@ -103,10 +140,10 @@ contract EscrowV2 {
 
 
     function arbiterCompleteTransaction(uint256 transactionId) external onlyArbiter(transactionId) inState(transactionId, EscrowState.Funded) {
-        // Calculate the payment to the seller (99% of the escrow amount)
+        // Calculate the payment to the seller (95% of the escrow amount)
         uint256 payment = (transactions[transactionId].amount * 95) / 100;
 
-        // Calculate the payment to the arbiter (1% of the escrow amount)
+        // Calculate the payment to the arbiter (5% of the escrow amount)
         uint256 fee = transactions[transactionId].amount - payment;
 
         // Transfer funds to the seller and arbiter

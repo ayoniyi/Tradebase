@@ -40,6 +40,7 @@ const TradeModal = (props: any) => {
       );
     };
     onCreateEscrow();
+
     const onDeposit = async () => {
       contract?.on("FundsDeposited", (id: any, sender: any, amount: any) => {
         console.log("emitting deposit!");
@@ -47,15 +48,23 @@ const TradeModal = (props: any) => {
       });
     };
     onDeposit();
+
+    const onTransactionComplete = async () => {
+      contract?.on("TransactionCompleted", (id: any, seller: any) => {
+        console.log("emitting transaction completed!");
+        console.log("values", id, seller);
+      });
+    };
+    onTransactionComplete();
   }, [contract]);
+
+  const contractAddress = "0xd6560c88Bb3A11d8555d11510482D5A06834990d";
 
   const provider = new Web3Provider(window.ethereum);
   const signer = provider.getSigner();
-  const contractObj = new ethers.Contract(
-    "0x3d61093b878Fd84109b1d9C6Da9630623c95dDEF",
-    ABI,
-    signer
-  );
+  const contractObj = new ethers.Contract(contractAddress, ABI, signer);
+
+  const depAmount = ethers.utils.parseEther("0.02");
 
   const createEscrow = async () => {
     if (address) {
@@ -65,9 +74,10 @@ const TradeModal = (props: any) => {
 
         setContract(contractObj);
         const call = await contractObj.createEscrow(
-          "0xDC67b06e481535a820590F4a3D4211eA7880C56D",
-          "0xA5662057627E19ed67bdbfe2c6C4Dcb8409f77Dd",
-          200000000000000,
+          "0x20810f449A750F36345DE17d4a35EAdAD503Da90", // seller
+          "0xA45eF0134e9f2F1f639A0d48C550deBc215CB760", // arbiter
+          depAmount,
+
           {
             gasLimit: 5000000,
           }
@@ -86,22 +96,32 @@ const TradeModal = (props: any) => {
   const depositAmount = async () => {
     try {
       setContract(contractObj);
-      //0x06
-      const amountInWei = ethers.utils.parseEther("20000000000000");
-      //   const gasEstimate = await contractObj.estimateGas.depositFunds(6, {
-      //     value: amountInWei,
-      //   });
 
-      // Add a buffer to the gas estimate (e.g., 10%)
-      //   const gasLimit =
-      //     gasEstimate.toNumber() + Math.round(gasEstimate.toNumber() * 0.1);
-
-      const call = await contractObj.depositFunds(6, {
-        value: "20000000000000",
-        gasLimit: 100000,
+      const call = await contractObj.depositFunds("1", {
+        value: depAmount,
+        gasLimit: 5000000,
       });
       await call.wait();
       console.log("deposit amount>>", call);
+    } catch (err: any) {
+      console.log("err", err);
+      if (err.code === "CALL_EXCEPTION") {
+        console.error(
+          "Transaction reverted, likely due to contract logic failure or a failed require statement."
+        );
+      }
+    }
+  };
+
+  const releaseFunds = async () => {
+    try {
+      setContract(contractObj);
+
+      const call = await contractObj.completeTransaction("1", {
+        gasLimit: 5000000,
+      });
+      await call.wait();
+      console.log("release funds>>", call);
     } catch (err: any) {
       console.log("err", err);
       if (err.code === "CALL_EXCEPTION") {
@@ -235,7 +255,9 @@ const TradeModal = (props: any) => {
                 <button onClick={depositAmount} className={style.shareBtn}>
                   Deposit amount
                 </button>
-                <button className={style.shareBtn}>Release funds</button>
+                <button onClick={releaseFunds} className={style.shareBtn}>
+                  Release funds
+                </button>
                 <button className={style.viewBtn}>Cancel</button>
               </div>
             </div>
