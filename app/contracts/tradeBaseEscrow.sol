@@ -70,14 +70,13 @@ contract EscrowV2 {
         transaction.seller = _seller;
         transaction.arbiter = _arbiter;
 
-        
+        // Store the escrow amount (in wei)
+        transaction.amount = _amount;
 
         transaction.state = EscrowState.Created;
 
         emit EscrowCreated(transactionCounter, msg.sender, _seller, _arbiter, _amount);
     }
-
-    
 
     // function depositFunds(uint256 transactionId) external payable onlyBuyer(transactionId) inState(transactionId, EscrowState.Created) {
     //     require(msg.value > 0, "Invalid amount");
