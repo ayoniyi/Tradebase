@@ -21,6 +21,7 @@ import Escrow from "./escrow.svg";
 import { useConnect } from "wagmi";
 import { baseSepolia } from "viem/chains";
 import { injected } from "wagmi/connectors";
+import Link from "next/link";
 
 const TradeModal = (props: any) => {
   const { address } = useAccount();
@@ -148,7 +149,12 @@ const TradeModal = (props: any) => {
       ></motion.div>
 
       <motion.div
-        className={style.modalLong}
+        className={
+          props.currentTrade?.tradeOption === "Physical item" ||
+          props?.setCurrentTrade?.tradeOption === "Digital product"
+            ? style.modal
+            : style.modal
+        }
         key="modal"
         variants={modalFunc2}
         initial="hidden"
@@ -252,13 +258,16 @@ const TradeModal = (props: any) => {
                 <button onClick={createEscrow} className={style.shareBtn}>
                   Create escrow
                 </button>
-                <button onClick={depositAmount} className={style.shareBtn}>
+                <Link href={`/trade/${props?.currentTrade?.userId}`}>
+                  Trade
+                </Link>
+                {/* <button onClick={depositAmount} className={style.shareBtn}>
                   Deposit amount
                 </button>
                 <button onClick={releaseFunds} className={style.shareBtn}>
                   Release funds
                 </button>
-                <button className={style.viewBtn}>Cancel</button>
+                <button className={style.viewBtn}>Cancel</button> */}
               </div>
             </div>
           ) : props?.currentTrade?.tradeOption === "Physical item" ||
@@ -266,12 +275,12 @@ const TradeModal = (props: any) => {
             <div className={style.tradeCreated}>
               <div className={style.trImg}>
                 <Image
-                  src={URL.createObjectURL(props?.file?.item)}
+                  src={props?.currentTrade?.productImage}
                   width={130}
                   height={130}
-                  alt={props.userInput.productName}
+                  alt={props?.currentTrade?.productImage}
                 />
-                <p>{props.userInput.productName}</p>
+                <p>{props?.currentTrade?.productName}</p>
               </div>
               <div className={style.tradeDesc}>
                 <div className={style.tradeStatus}>
@@ -284,9 +293,9 @@ const TradeModal = (props: any) => {
                 </p>
                 <div className={style.tradeTxt}>
                   <p>
-                    Funds will be held in a latent wallet until buyer confirms
-                    receipt of product(s), the funds would be realeased to you
-                    thereafter.
+                    Funds will be held in a latent wallet until you confirm
+                    receipt of product(s), the funds would be realeased to the
+                    seller thereafter.
                   </p>
                 </div>
               </div>
@@ -303,7 +312,7 @@ const TradeModal = (props: any) => {
               </div>
               <div className={style.shareBtns}>
                 <button className={style.shareBtn}>Create escrow</button>
-                <button className={style.viewBtn}>Cancel</button>
+                {/* <button className={style.viewBtn}>Cancel</button> */}
               </div>
             </div>
           ) : (

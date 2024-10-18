@@ -1,5 +1,12 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { collection, query, getDocs, where, addDoc } from "firebase/firestore";
+import {
+  collection,
+  query,
+  getDocs,
+  where,
+  addDoc,
+  getDoc,
+} from "firebase/firestore";
 import toast from "react-hot-toast";
 import upload from "../upload";
 
@@ -25,6 +32,17 @@ export const fetchDocsQuery = (queryKey: any, docsCollectionRef: any) => {
         }));
 
         return docList;
+      }),
+  });
+};
+
+// fetch single doc
+export const useDocQuery = (queryKey: any, docsCollectionRef: any) => {
+  return useQuery({
+    queryKey: [queryKey],
+    queryFn: () =>
+      getDoc(docsCollectionRef).then((res: any) => {
+        return res;
       }),
   });
 };

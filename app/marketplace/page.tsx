@@ -2,16 +2,18 @@
 import React, { useState } from "react";
 import style from "./Marketplace.module.scss";
 import Header from "../components/header/Header";
-import TradeCard from "../components/TradeCard/Trade";
+import TradeCard from "../components/TradeCard/TokenCard";
 import { fetchDocsQuery } from "../utils/functions/firebaseFunctions";
 import { collection } from "firebase/firestore";
 import { db } from "../utils/firebase";
 import TradeModal from "./TradeModal";
 import { AnimatePresence } from "framer-motion";
+import ProductCard from "../components/TradeCard/ProductCard";
 
 const Marketplace = () => {
   const [showModal, setShowModal] = useState(false);
   const [currentTrade, setCurrentTrade] = useState<any>();
+  const [tradeType, setTradeType] = useState("Tokens");
   //fetch trades
   const tradesCollectionRef = collection(db, "trades");
   const tradesQuery = fetchDocsQuery(["tradesQuery"], tradesCollectionRef);
@@ -34,16 +36,86 @@ const Marketplace = () => {
       <Header />
       <div className={style.container}>
         <div className={style.content}>
-          <h2>Trades</h2>
-          <div className={style.tradeGrid}>
-            {tradesQuery?.data?.map((trade: any) => (
-              <TradeCard
-                key={trade?.userId}
-                trade={trade}
-                handleTrade={handleTrade}
-              />
-            ))}
+          <div className={style.top}>
+            <h2>Marketplace</h2>
+            <div className={style.tabsContainer}>
+              <div
+                className={
+                  tradeType === "Tokens"
+                    ? style.tab + " " + style.activeTab
+                    : style.tab
+                }
+                onClick={() => setTradeType("Tokens")}
+              >
+                <p>Tokens</p>
+              </div>
+              <div
+                className={
+                  tradeType === "Digital products"
+                    ? style.tab + " " + style.activeTab
+                    : style.tab
+                }
+                onClick={() => setTradeType("Digital products")}
+              >
+                <p>Digital products</p>
+              </div>
+              <div
+                className={
+                  tradeType === "Physical item"
+                    ? style.tab + " " + style.activeTab
+                    : style.tab
+                }
+                onClick={() => setTradeType("Physical item")}
+              >
+                <p>Physical products</p>
+              </div>
+            </div>
           </div>
+          {tradeType === "Tokens" ? (
+            <div className={style.tradeGrid}>
+              {tradesQuery?.data?.map((trade: any) =>
+                trade?.tradeOption === "Token swap" ? (
+                  <TradeCard
+                    key={trade?.userId}
+                    trade={trade}
+                    handleTrade={handleTrade}
+                  />
+                ) : (
+                  ""
+                )
+              )}
+            </div>
+          ) : tradeType === "Digital products" ? (
+            <div className={style.tradeGrid}>
+              {tradesQuery?.data?.map((trade: any) =>
+                trade?.tradeOption === "Digital product" ? (
+                  <ProductCard
+                    key={trade?.userId}
+                    trade={trade}
+                    handleTrade={handleTrade}
+                  />
+                ) : (
+                  ""
+                )
+              )}
+            </div>
+          ) : tradeType === "Physical item" ? (
+            <div className={style.tradeGrid}>
+              {tradesQuery?.data?.map((trade: any) =>
+                trade?.tradeOption === "Physical item" ? (
+                  <ProductCard
+                    key={trade?.userId}
+                    trade={trade}
+                    handleTrade={handleTrade}
+                  />
+                ) : (
+                  ""
+                )
+              )}
+            </div>
+          ) : (
+            ""
+          )}
         </div>
       </div>
     </>

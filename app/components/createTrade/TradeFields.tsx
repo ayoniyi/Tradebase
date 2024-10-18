@@ -14,7 +14,7 @@ const TradeFields = (props: any) => {
     <>
       {props.tradeOption === "Token swap" ? (
         <div className={style.tokenTrade}>
-          {/* <h4>Token Swap</h4> */}
+          {/* <h4>Token swap</h4> */}
           <div className={style.tabsContainer}>
             <div
               className={

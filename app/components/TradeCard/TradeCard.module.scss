@@ -19,14 +19,15 @@
   border-radius: 12px;
   //border: 1px solid rgba(225, 51, 166, 0.72);
   padding: 1.3em 1em;
+  //border: 1px solid $blueMain;
   //   width: 24%;
 }
 .cardTop {
   @include flexRegular(row, space-between);
 }
 .topRight {
-  background: #f9d5ff;
-  border-radius: 36px;
+  background: #c1deff;
+  //border-radius: 36px;
   padding: 7px 10px;
   width: 35%;
   @include flexRegular(row, center);
@@ -75,6 +76,14 @@
   @include flexRegular(row, flex-end);
   align-items: flex-end;
   align-self: flex-end;
+}
+.cardBtn {
+  @include flexRegular(row, flex-end);
+  button {
+    @include btnRegular(35%);
+    height: 35px;
+    font-size: 0.9em;
+  }
 }
 @media (max-width: 930px) {
   .topRight {

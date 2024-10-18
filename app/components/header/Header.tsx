@@ -16,7 +16,7 @@ const Header = () => {
         </div>
         <nav className={style.nav}>
           <div className={style.navLinks}>
-            <Link href="/">
+            {/* <Link href="/">
               {" "}
               <p>Home</p>
             </Link>
@@ -31,11 +31,12 @@ const Header = () => {
             <Link href="/#faq">
               {" "}
               <p>FAQs</p>
-            </Link>
+            </Link> */}
           </div>
         </nav>
         <div className={style.navBtn}>
           <button>Create trade</button>
+          <button>Marketplace</button>
           {/* <ConnectButton /> */}
         </div>
       </div>

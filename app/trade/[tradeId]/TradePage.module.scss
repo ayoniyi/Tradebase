@@ -1,86 +1,35 @@
-@import "../styles/mixins";
-@import "../styles/variables";
+@import "../../styles/mixins";
+@import "../../styles/variables";
 
-.overlay {
-  width: 100%;
-  position: fixed;
-  top: 0;
-  background: #1712145a;
-  backdrop-filter: blur(8px);
-  z-index: 5;
-  width: 100vw;
-  height: 100vh;
-  transition: 0.1s ease-in-out;
+.container {
+  @include flexRegular(column, center);
+  width: 85%;
+  max-width: 1200px;
+  margin: 6em auto 0 auto;
+  padding: 1.5em 0;
+  // border: 1px solid #000;
 }
-.modal,
-.modalLong {
-  transition: 0.1s ease-in-out;
-  padding: 2em 0;
-  position: fixed;
-  z-index: 5;
-  left: 35vw;
-  right: 35vw;
-  width: 30vw;
-  top: 12vh;
-  max-width: 500px;
-  background: #fff;
-  border-radius: 28px;
-  overflow: scroll;
-}
-.modalLong {
-  top: 7vh;
-  height: 88vh;
-}
-.modalContent {
-  margin: 0 auto;
-  //width: 90%;
-}
-.modalTop,
-.modalTop2 {
-  @include flexRegular(row, space-between);
 
-  padding: 0 1.5em;
-  p {
-    color: #344054;
-  }
-  svg {
-    cursor: pointer;
-  }
-}
-.modalTop2 {
-  border-bottom: 1px solid #d0d5dda3;
-  padding-bottom: 1em;
-}
-.optionTitle {
-  margin-right: -4em;
-  font-size: 1.2em;
-}
-.connectedBx {
-  cursor: pointer;
-  background: #eef6ff;
+.cardBorder {
+  margin: 2em 0;
   border-radius: 12px;
-  // padding: 0.5em 1.5em;
-  @include flexRegular(row, center);
-  width: 151px;
-  height: 40px;
-  p {
-    font-size: 0.9em;
-    margin-left: 0.6em;
-    color: #1671d9;
-  }
+  background: //linear-gradient(0deg, #ffffff, #ffffff),
+    linear-gradient(
+    275.64deg,
+    #e6d476 38.18%,
+    rgba(225, 51, 166, 0.72) 105.86%
+  );
+  padding: 0.5px;
+  margin-bottom: 1em;
+  width: 45%;
 }
-.modalTrade {
-  width: 90%;
-  margin: 1em auto;
-  h3 {
-    font-size: 1em;
-  }
-}
-.tradeOptions {
-  margin: 1em 0;
-  // border: 1px solid #d0d5dda3;
-  @include gridRegular(3%);
-  grid-template-columns: repeat(2, 47%);
+
+//
+.tradeBox {
+  background: #fff;
+  //width: 50%;
+  border-radius: 12px;
+  padding: 1.5em 1em 3em 1em;
 }
 
 .tradeDesc {
@@ -155,6 +104,9 @@
 .shareBtns {
   margin-top: 1em;
   padding: 0 2em;
+  button {
+    @include btnRegular(100%);
+  }
 }
 .createBtn,
 .shareBtn {
@@ -173,3 +125,5 @@
   margin-top: 1em;
   @include btnOutline(100%);
 }
+
+//
