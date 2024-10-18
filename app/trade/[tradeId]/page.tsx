@@ -17,7 +17,7 @@ const SingleTrade = () => {
   const docRef = doc(db, `trades/${tradeId}`);
   const docsQuery = useDocQuery(["trades", tradeId], docRef);
   const tradeInfo = docsQuery?.data?.data();
-  console.log(tradeInfo, "trade>>>");
+  //console.log(tradeInfo, "trade>>>");
   return (
     <>
       <Header />
