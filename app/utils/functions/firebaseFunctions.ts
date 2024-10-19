@@ -6,6 +6,7 @@ import {
   where,
   addDoc,
   getDoc,
+  updateDoc,
 } from "firebase/firestore";
 import toast from "react-hot-toast";
 import upload from "../upload";
@@ -39,7 +40,7 @@ export const fetchDocsQuery = (queryKey: any, docsCollectionRef: any) => {
 // fetch single doc
 export const useDocQuery = (queryKey: any, docsCollectionRef: any) => {
   return useQuery({
-    queryKey: [queryKey],
+    queryKey: queryKey,
     queryFn: () =>
       getDoc(docsCollectionRef).then((res: any) => {
         return res;
@@ -47,13 +48,35 @@ export const useDocQuery = (queryKey: any, docsCollectionRef: any) => {
   });
 };
 
-//mutate docs
+//add doc mutation
 export const useSetDoc = (
   docsCollectionRef: any,
   successFunction: any | null
 ) => {
   return useMutation({
     mutationFn: async (info: any) => addDoc(docsCollectionRef, info),
+    onError: (err) => {
+      console.log("err", err);
+      toast.error("Sorry, an error occured.", {
+        duration: 6500,
+      });
+    },
+
+    onSuccess: (res) => {
+      console.log("app res", res);
+
+      successFunction();
+    },
+  });
+};
+
+//update doc mutation
+export const useUpdateDoc = (
+  docsCollectionRef: any,
+  successFunction: any | null
+) => {
+  return useMutation({
+    mutationFn: async (info: any) => updateDoc(docsCollectionRef, info),
     onError: (err) => {
       console.log("err", err);
       toast.error("Sorry, an error occured.", {

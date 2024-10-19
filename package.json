@@ -24,6 +24,7 @@
     "react-dom": "^18",
     "react-dropzone": "^14.2.9",
     "react-hot-toast": "^2.4.1",
+    "react-howler": "^5.2.0",
     "react-select": "^5.8.1",
     "sass": "^1.79.4",
     "viem": "^2.21.18",

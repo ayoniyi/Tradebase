@@ -133,8 +133,6 @@ const TradeModal = (props: any) => {
     }
   };
 
-  //console.log("ABI", ABI);
-
   return (
     //This is what the buyer sees
     <>
