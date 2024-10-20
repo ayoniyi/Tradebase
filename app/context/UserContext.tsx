@@ -1,5 +1,7 @@
 "use client";
 import React, { createContext, useEffect, useState, ReactNode } from "react";
+import useNotifications from "../utils/functions/useNotifications";
+import { db } from "../utils/firebase";
 
 interface UserState {
   user: any;

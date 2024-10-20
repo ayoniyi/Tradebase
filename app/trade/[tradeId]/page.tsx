@@ -1,5 +1,5 @@
 "use client";
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { use, useContext, useEffect, useRef, useState } from "react";
 import style from "./TradePage.module.scss";
 import Image from "next/image";
 
@@ -8,6 +8,7 @@ import Send from "../send.svg";
 import Header from "@/app/components/header/Header";
 import { useParams } from "next/navigation";
 import {
+  addNotification,
   useDocQuery,
   useUpdateDoc,
 } from "@/app/utils/functions/firebaseFunctions";
@@ -26,25 +27,36 @@ import { CircularProgress } from "@mui/material";
 import toast from "react-hot-toast";
 import { shortenHex } from "@/app/utils/formatting";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useConnect } from "wagmi";
+import { baseSepolia } from "viem/chains";
+import { injected } from "wagmi/connectors";
+import { BigNumber, ethers } from "ethers";
+import { Web3Provider } from "@ethersproject/providers";
+import ABI from "../../utils/abi/escrow.json";
+import CardSkeleton from "@/app/components/Skeleton/CardSkeleton";
+import { useAccount } from "wagmi";
 
 const SingleTrade = () => {
-  const [status, setStatus] = useState("available");
+  const [contract, setContract] = useState<any>();
+  const [balance, setBalance] = useState<any>(0);
+  const { address } = useAccount();
+
+  const { connectAsync } = useConnect();
 
   const [messageTxt, setMessageTxt] = useState<any>("");
   const [messages, setMessages] = useState<any>();
   const [isLoading, setIsLoading] = useState(false);
   const [transactionId, setTransactionId] = useState<any>();
   const tradeId = useParams()?.tradeId;
+  const [escrowId, setEscrowId] = useState<any>();
   const [userState] = useContext<any>(UserContext);
+
   const queryClient = useQueryClient();
   const ref = useRef<null | HTMLDivElement>(null);
 
   const docRef = doc(db, `trades/${tradeId}`);
-  const docsQuery = useDocQuery(["singleTrade", tradeId], docRef);
+  const docsQuery = useDocQuery(["singleTrade", tradeId], docRef, 10000);
   const tradeInfo = docsQuery?.data?.data();
-  //console.log(tradeInfo, "trade>>>");
-
-  const { userId, address, email } = userState?.user;
 
   //update trade
   const tradeMutation = useUpdateDoc(docRef, () => {
@@ -53,11 +65,14 @@ const SingleTrade = () => {
       duration: 6500,
     });
   });
-  //const transactionSucess = () => {};
 
-  //create transaction
-  const newTransactionRef = collection(db, "transactions");
-  //const transactionMutation = useSetDoc(newTransactionRef, transactionSucess);
+  const contractAddress = "0xd6560c88Bb3A11d8555d11510482D5A06834990d";
+  const provider = new Web3Provider(window.ethereum);
+  const signer = provider.getSigner();
+  const contractObj = new ethers.Contract(contractAddress, ABI, signer);
+
+  const currentTransactionId = transactionId || tradeInfo?.transactionId;
+
   const transactionMutation = useMutation({
     mutationFn: async (info: any) => addDoc(newTransactionRef, info),
     onError: (err: any) => {
@@ -68,22 +83,24 @@ const SingleTrade = () => {
     },
 
     onSuccess: (res: any) => {
-      console.log("app res", res?.id);
+      //  console.log("app res", res?.id);
       const updateFields = {
-        status: "transacting",
-        pBuyer: address,
+        status: "awaiting payment",
+        pBuyer: userState?.user?.address,
         transactionId: res?.id,
+        escrowId: escrowId,
       };
       setTransactionId(res?.id);
       tradeMutation.mutate(updateFields);
       //console.log("tr", tradeMutation?.data();
     },
   });
-
-  const createTransaction = () => {
+  const createTransaction = (escId: any) => {
+    const { userId, myAddress, email } = userState?.user;
     const transactionObj = {
       tradeId: tradeId,
-      buyerAddress: address,
+      escrowId: escId,
+      buyerAddress: myAddress || address,
       buyerEmail: email,
       buyerId: userId,
       messages: [],
@@ -93,12 +110,171 @@ const SingleTrade = () => {
       status: "transacting",
     };
     transactionMutation.mutate(transactionObj);
-    console.log("transaction mutation", transactionMutation);
+  };
+  useEffect(() => {
+    const onCreateEscrow = async () => {
+      contract?.on(
+        "EscrowCreated",
+        (id: any, sender: any, seller: any, arbiter: any, amount: any) => {
+          console.log("emitting create escrow!");
+          console.log("values", id, sender, seller, arbiter, amount);
+          //console.log("id", id?._hex.slice(-1));
+          const hexConvert = BigNumber.from(id?._hex);
+          console.log("hex", hexConvert.toString());
+
+          setEscrowId(hexConvert.toString());
+          const eId = hexConvert.toString();
+          createTransaction(eId);
+        }
+      );
+    };
+    onCreateEscrow();
+
+    const onDeposit = async () => {
+      contract?.on("FundsDeposited", (id: any, sender: any, amount: any) => {
+        console.log("emitting deposit!");
+        console.log("values", id, sender, amount);
+        const hexConvert = BigNumber.from(amount?._hex);
+        const formatAmt = hexConvert.toString();
+        console.log("amount", ethers.utils.formatEther(formatAmt));
+        setBalance(ethers.utils.formatEther(formatAmt));
+      });
+    };
+    onDeposit();
+
+    const onTransactionComplete = async () => {
+      contract?.on("TransactionCompleted", (id: any, seller: any) => {
+        console.log("emitting transaction completed!");
+        console.log("values", id, seller);
+
+        setBalance(0);
+      });
+    };
+    onTransactionComplete();
+  }, [contract]);
+
+  const currentEscrowId = escrowId || tradeInfo?.escrowId;
+  useEffect(() => {
+    const getBalance = async () => {
+      // Call the Solidity function
+      const amount = await contractObj.getEscrowAmount(currentEscrowId);
+      const formatAmt = amount.toString();
+      console.log("amount", ethers.utils.formatEther(formatAmt));
+    };
+    if (currentEscrowId) {
+      getBalance();
+    }
+  }, [currentEscrowId]);
+
+  //create transaction
+  const newTransactionRef = collection(db, "transactions");
+
+  const createEscrow = async () => {
+    if (address && tradeInfo) {
+      setIsLoading(true);
+      // seller address //arbiter address //amount
+      try {
+        const itemAmount = ethers.utils.parseEther(tradeInfo?.price.toString());
+        //const provider = new providers.Web3Provider(window.ethereum);
+        setContract(contractObj);
+        const call = await contractObj.createEscrow(
+          tradeInfo?.sellerAddress.toString(), // seller
+          process.env.NEXT_PUBLIC_ARBITER, // arbiter
+          itemAmount,
+          {
+            gasLimit: 5000000,
+          }
+        );
+        await call.wait();
+        //console.log("create ecr>>", call);
+        setIsLoading(false);
+      } catch (err: any) {
+        console.log("err", err);
+        setIsLoading(false);
+      }
+    } else {
+      //connect wallet
+      await connectAsync({ chainId: baseSepolia.id, connector: injected() });
+    }
   };
 
-  //make payment
+  //console.log("transaction mutation", transactionMutation);
 
-  const currentTransactionId = transactionId || tradeInfo?.transactionId;
+  //make payment
+  const payMutation = useUpdateDoc(docRef, () => {
+    queryClient.invalidateQueries({ queryKey: ["singleTrade"] });
+    toast.success("Payment successful", {
+      duration: 5500,
+    });
+  });
+  const makePayment = async () => {
+    if (address && tradeInfo) {
+      setIsLoading(true);
+
+      try {
+        const itemAmount = ethers.utils.parseEther(tradeInfo?.price.toString());
+
+        setContract(contractObj);
+        const call = await contractObj.depositFunds(currentEscrowId, {
+          value: itemAmount,
+          gasLimit: 5000000,
+        });
+        await call.wait();
+        payMutation.mutate({ status: "awaiting item" });
+
+        setIsLoading(false);
+      } catch (err: any) {
+        console.log("err", err);
+        setIsLoading(false);
+      }
+    } else {
+      //connect wallet
+      await connectAsync({ chainId: baseSepolia.id, connector: injected() });
+    }
+  };
+
+  // tokens sent
+  const sentMutation = useUpdateDoc(docRef, () => {
+    queryClient.invalidateQueries({ queryKey: ["singleTrade"] });
+    toast.success("Status updated", {
+      duration: 5500,
+    });
+  });
+  const tokensSent = () => {
+    sentMutation.mutate({ status: "awaiting release" });
+  };
+
+  // release funds
+  const releaseMutation = useUpdateDoc(docRef, () => {
+    queryClient.invalidateQueries({ queryKey: ["singleTrade"] });
+    toast.success("Funds released", {
+      duration: 5500,
+    });
+  });
+  const releaseFunds = async () => {
+    if (address && tradeInfo) {
+      setIsLoading(true);
+
+      try {
+        setContract(contractObj);
+
+        const call = await contractObj.completeTransaction(currentEscrowId, {
+          gasLimit: 5000000,
+        });
+        await call.wait();
+        setBalance(0);
+        releaseMutation.mutate({ status: "complete" });
+        //console.log("create ecr>>", call);
+        setIsLoading(false);
+      } catch (err: any) {
+        console.log("err", err);
+        setIsLoading(false);
+      }
+    } else {
+      //connect wallet
+      await connectAsync({ chainId: baseSepolia.id, connector: injected() });
+    }
+  };
 
   // useEffect(() => {
   //   if (currentTransactionId) {
@@ -131,10 +307,20 @@ const SingleTrade = () => {
               const lastMessage = newMessages[newMessages.length - 1];
               if (lastMessage.senderId !== userState?.user?.userId) {
                 //console.log("new message!");
+
                 soundBite.play();
-                toast.success("New message from ongoing transaction", {
-                  duration: 2500,
-                });
+                // Add a new notification
+                addNotification(
+                  userState?.user?.userId,
+                  {
+                    title: "New message",
+                    message:
+                      "You have a new message from " + lastMessage.senderEmail,
+                    timestamp: new Date(),
+                    read: false,
+                  },
+                  db
+                );
               }
             }
 
@@ -156,6 +342,7 @@ const SingleTrade = () => {
 
   //send message
   const handleSend = async (e: any) => {
+    const { userId, address, email } = userState?.user;
     setIsLoading(true);
     e.preventDefault();
     try {
@@ -180,92 +367,34 @@ const SingleTrade = () => {
   return (
     <>
       <Header />
-      <div className={style.container}>
-        <h2>Trade #{tradeId.slice(-4)}</h2>
-        {tradeInfo?.status !== "available" && (
-          <h3>
-            Transaction between {shortenHex(tradeInfo?.sellerAddress)} and{" "}
-            {shortenHex(tradeInfo?.pBuyer)}
-            Add
-          </h3>
-        )}
+      {docsQuery.isPending ? (
+        <div className={style.container}>
+          <CardSkeleton />
+        </div>
+      ) : (
+        <div className={style.container}>
+          <h2>Trade #{tradeId.slice(-4)}</h2>
+          {tradeInfo?.status !== "available" && (
+            <h3>
+              Transaction between {shortenHex(tradeInfo?.sellerAddress)} and{" "}
+              {shortenHex(tradeInfo?.pBuyer)}
+              Add
+            </h3>
+          )}
 
-        {tradeInfo?.status === "available" ? (
-          <div className={style.cardBorder}>
-            <div className={style.tradeBox}>
-              <div className={style.tradeCreated}>
-                <div className={style.tradeDesc}>
-                  <div className={style.tradeStatus}>
-                    <Image src={Escrow} alt="trade created" />
-                    <p>Buy Token</p>
-                  </div>
-                  <p className={style.tradeTitle}>
-                    <span>
-                      {tradeInfo?.amountOfToken +
-                        " " +
-                        tradeInfo?.tokenToBeSold}
-                    </span>{" "}
-                    for sale @ <span>{tradeInfo?.price} ETH</span>{" "}
-                  </p>
-                  <div className={style.tradeTxt}>
-                    <p>
-                      Funds will be held in a latent wallet until you confirm
-                      receipt of tokens, the funds would be realeased to the
-                      seller thereafter.
-                    </p>
-                  </div>
-                </div>
-                <div className={style.tradeBreakdown}>
-                  <div className={style.breakRow}>
-                    <p>Token for sale</p>
-                    <p>{tradeInfo?.tokenToBeSold}</p>
-                  </div>
-                  <div className={style.breakRow}>
-                    <p>Token quantity for sale</p>
-                    <p>{parseFloat(tradeInfo?.amountOfToken).toFixed(2)}</p>
-                  </div>
-                  <div className={style.breakRow}>
-                    <p>Price</p>
-                    <p>{parseFloat(tradeInfo?.price).toFixed(2)} ETH</p>
-                  </div>
-                </div>
-                <div className={style.shareBtns}>
-                  <button
-                    //onClick={createEscrow}
-                    onClick={createTransaction}
-                    className={style.shareBtn}
-                    disabled={
-                      tradeMutation.isPending || transactionMutation.isPending
-                    }
-                  >
-                    {tradeMutation.isPending ||
-                    transactionMutation.isPending ? (
-                      <CircularProgress color="inherit" size={20} />
-                    ) : (
-                      "Create transaction"
-                    )}
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        ) : (
-          <div className={style.tradeBoxes}>
-            <div className={style.tradeCol}>
-              <div className={style.balanceBox}>
-                <h3>0.5 ETH</h3>
-                <h4>Transaction Balance</h4>
-                <p>
-                  This is the amount currently being held in escrow until buyer
-                  decides to release to the seller.
-                </p>
-              </div>
-              <div className={style.tradeBoxActive}>
+          {tradeInfo?.status === "available" ? (
+            <div className={style.cardBorder}>
+              <div className={style.tradeBox}>
                 <div className={style.tradeCreated}>
                   <div className={style.tradeDesc}>
                     <div className={style.tradeStatus}>
                       <Image src={Escrow} alt="trade created" />
-                      <p>Make Payment</p>
+                      <p>
+                        {" "}
+                        {tradeInfo?.sellerAddress !== userState?.user?.address
+                          ? "Buy Token"
+                          : "Token sale"}
+                      </p>
                     </div>
                     <p className={style.tradeTitle}>
                       <span>
@@ -276,11 +405,19 @@ const SingleTrade = () => {
                       for sale @ <span>{tradeInfo?.price} ETH</span>{" "}
                     </p>
                     <div className={style.tradeTxt}>
-                      <p>
-                        Funds will be held in a latent wallet until you confirm
-                        receipt of tokens, the funds would be realeased to the
-                        seller thereafter.
-                      </p>
+                      {tradeInfo?.sellerAddress !== userState?.user?.address ? (
+                        <p>
+                          Funds will be held in a latent wallet until you
+                          confirm receipt of tokens, the funds would be
+                          realeased to the seller thereafter.
+                        </p>
+                      ) : (
+                        <p>
+                          Funds will be held in a latent wallet until buyer
+                          confirms receipt of tokens, the funds would be
+                          realeased to you thereafter.
+                        </p>
+                      )}
                     </div>
                   </div>
                   <div className={style.tradeBreakdown}>
@@ -298,74 +435,280 @@ const SingleTrade = () => {
                     </div>
                   </div>
                   <div className={style.shareBtns}>
-                    <button
-                      //onClick={createEscrow}
-                      className={style.shareBtn}
-                    >
-                      Make payment
-                    </button>
-                    <button
-                      //onClick={createEscrow}
-                      className={style.backBtn}
-                    >
-                      Close transaction
-                    </button>
+                    {tradeInfo?.sellerAddress !== userState?.user?.address ? (
+                      <button
+                        onClick={createEscrow}
+                        className={style.shareBtn}
+                        disabled={
+                          tradeMutation.isPending ||
+                          transactionMutation.isPending ||
+                          isLoading
+                        }
+                      >
+                        {tradeMutation.isPending ||
+                        transactionMutation.isPending ||
+                        isLoading ? (
+                          <CircularProgress color="inherit" size={20} />
+                        ) : (
+                          "Create transaction"
+                        )}
+                      </button>
+                    ) : (
+                      ""
+                    )}
                   </div>
                 </div>
               </div>
             </div>
-            <div className={style.tradeCol}>
-              <div className={style.chatBox}>
-                {/* <div className={style.dotBx}>
-                  <Image src={Dots} alt="options" />
-                </div> */}
+          ) : (
+            <div className={style.tradeBoxes}>
+              <div className={style.tradeCol}>
+                <div className={style.balanceBox}>
+                  <h3>{balance} ETH</h3>
+                  <h4>Transaction Balance</h4>
+                  <p>
+                    This is the amount currently being held in escrow until
+                    buyer decides to release to the seller.
+                  </p>
+                </div>
+                <div className={style.tradeBoxActive}>
+                  {tradeInfo?.sellerAddress === userState?.user?.address ? (
+                    <div className={style.tradeCreated}>
+                      <div className={style.tradeCreated}>
+                        <div className={style.tradeDesc}>
+                          <div className={style.tradeStatus}>
+                            <Image src={Escrow} alt="trade created" />
+                            <p>Token Sale</p>
+                          </div>
+                          <p className={style.tradeTitle}>
+                            <span>
+                              {tradeInfo?.amountOfToken +
+                                " " +
+                                tradeInfo?.tokenToBeSold}
+                            </span>{" "}
+                            for sale @ <span>{tradeInfo?.price} ETH</span>{" "}
+                          </p>
+                          <div className={style.tradeTxt}>
+                            <p>
+                              Funds will be held in a latent wallet until buyer
+                              confirms receipt of tokens, the funds would be
+                              realeased to the you thereafter.
+                            </p>
+                          </div>
+                        </div>
+                        <div className={style.tradeBreakdown}>
+                          <div className={style.breakRow}>
+                            <p>Token for sale</p>
+                            <p>{tradeInfo?.tokenToBeSold}</p>
+                          </div>
+                          <div className={style.breakRow}>
+                            <p>Token quantity for sale</p>
+                            <p>
+                              {parseFloat(tradeInfo?.amountOfToken).toFixed(2)}
+                            </p>
+                          </div>
+                          <div className={style.breakRow}>
+                            <p>Price</p>
+                            <p>{parseFloat(tradeInfo?.price).toFixed(2)} ETH</p>
+                          </div>
+                        </div>
+                        <div className={style.shareBtns}>
+                          {tradeInfo?.status === "awaiting item" ? (
+                            <>
+                              <p
+                                style={{
+                                  fontSize: "13px",
+                                  color: "gray",
+                                }}
+                              >
+                                Click here when you send the tokens
+                              </p>
+                              <button
+                                onClick={tokensSent}
+                                className={style.shareBtn}
+                                disabled={
+                                  tradeInfo?.status !== "awaiting item" ||
+                                  sentMutation.isPending
+                                }
+                              >
+                                Tokens sent
+                              </button>
+                            </>
+                          ) : tradeInfo?.status === "awaiting release" ? (
+                            <p
+                              style={{ fontSize: "14px", fontStyle: "italic" }}
+                            >
+                              Awaiting release of funds...
+                            </p>
+                          ) : (
+                            ""
+                          )}
+                          {tradeInfo?.status !== "complete" ? (
+                            <button
+                              //onClick={createEscrow}
+                              className={style.backBtn}
+                            >
+                              Open dispute
+                            </button>
+                          ) : (
+                            <button disabled className={style.shareBtn}>
+                              Transaction complete
+                            </button>
+                          )}
 
-                <div className={style.chatMessages}>
-                  {messages?.map((m: any) => (
-                    <div
-                      ref={ref}
-                      className={
-                        m.senderId === userState?.user?.userId
-                          ? style.messageBoxOwner
-                          : style.messageBoxOther
-                      }
-                      key={m.mId}
-                    >
-                      <div
-                        className={
-                          m.senderId === userState?.user?.userId
-                            ? style.messageOwner
-                            : style.messageOther
-                        }
-                      >
-                        <p>{m.text}</p>
+                          {/* <button
+                    
+                    className={style.backBtn}
+                  >
+                    Close transaction
+                  </button> */}
+                        </div>
                       </div>
                     </div>
-                  ))}
+                  ) : (
+                    <div className={style.tradeCreated}>
+                      <div className={style.tradeDesc}>
+                        <div className={style.tradeStatus}>
+                          <Image src={Escrow} alt="trade created" />
+                          <p>Buy Token</p>
+                        </div>
+                        <p className={style.tradeTitle}>
+                          <span>
+                            {tradeInfo?.amountOfToken +
+                              " " +
+                              tradeInfo?.tokenToBeSold}
+                          </span>{" "}
+                          for sale @ <span>{tradeInfo?.price} ETH</span>{" "}
+                        </p>
+                        <div className={style.tradeTxt}>
+                          <p>
+                            Funds will be held in a latent wallet until you
+                            confirm receipt of tokens, the funds would be
+                            realeased to the seller thereafter.
+                          </p>
+                        </div>
+                      </div>
+                      <div className={style.tradeBreakdown}>
+                        <div className={style.breakRow}>
+                          <p>Token for sale</p>
+                          <p>{tradeInfo?.tokenToBeSold}</p>
+                        </div>
+                        <div className={style.breakRow}>
+                          <p>Token quantity for sale</p>
+                          <p>
+                            {parseFloat(tradeInfo?.amountOfToken).toFixed(2)}
+                          </p>
+                        </div>
+                        <div className={style.breakRow}>
+                          <p>Price</p>
+                          <p>{parseFloat(tradeInfo?.price).toFixed(2)} ETH</p>
+                        </div>
+                      </div>
+                      <div className={style.shareBtns}>
+                        {tradeInfo?.status === "awaiting payment" ? (
+                          <button
+                            onClick={makePayment}
+                            disabled={payMutation.isPending || isLoading}
+                            className={style.shareBtn}
+                          >
+                            Make payment
+                          </button>
+                        ) : tradeInfo?.status === "awaiting item" ? (
+                          <p style={{ fontSize: "14px", fontStyle: "italic" }}>
+                            Awaiting receipt of items...
+                          </p>
+                        ) : tradeInfo?.status === "awaiting release" ? (
+                          <>
+                            <p
+                              style={{
+                                fontSize: "13px",
+                                color: "gray",
+                              }}
+                            >
+                              Click this only when you receive what you paid for
+                            </p>
+                            <button
+                              onClick={releaseFunds}
+                              className={style.shareBtn}
+                              disabled={releaseMutation.isPending || isLoading}
+                            >
+                              Release funds
+                            </button>
+                          </>
+                        ) : (
+                          ""
+                        )}
+
+                        {tradeInfo?.status !== "complete" ? (
+                          <button
+                            //onClick={createEscrow}
+                            className={style.backBtn}
+                          >
+                            Open dispute
+                          </button>
+                        ) : (
+                          <button disabled className={style.shareBtn}>
+                            Transaction complete
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </div>
+              </div>
+              <div className={style.tradeCol}>
+                <div className={style.chatBox}>
+                  {/* <div className={style.dotBx}>
+            <Image src={Dots} alt="options" />
+          </div> */}
 
-                <form className={style.chatInput} onSubmit={handleSend}>
-                  <input
-                    type="text"
-                    placeholder="Type a message"
-                    onChange={(e: any) => setMessageTxt(e.target.value)}
-                    value={messageTxt}
-                    required
-                  />
+                  <div className={style.chatMessages}>
+                    {messages?.map((m: any) => (
+                      <div
+                        ref={ref}
+                        className={
+                          m.senderId === userState?.user?.userId
+                            ? style.messageBoxOwner
+                            : style.messageBoxOther
+                        }
+                        key={m.mId}
+                      >
+                        <div
+                          className={
+                            m.senderId === userState?.user?.userId
+                              ? style.messageOwner
+                              : style.messageOther
+                          }
+                        >
+                          <p>{m.text}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
 
-                  <button type="submit" disabled={isLoading}>
-                    {isLoading ? (
-                      <CircularProgress color="inherit" size={20} />
-                    ) : (
-                      <Image src={Send} alt="send" />
-                    )}
-                  </button>
-                </form>
+                  <form className={style.chatInput} onSubmit={handleSend}>
+                    <input
+                      type="text"
+                      placeholder="Type a message"
+                      onChange={(e: any) => setMessageTxt(e.target.value)}
+                      value={messageTxt}
+                      required
+                    />
+
+                    <button type="submit" disabled={isLoading}>
+                      {isLoading ? (
+                        <CircularProgress color="inherit" size={20} />
+                      ) : (
+                        <Image src={Send} alt="send" />
+                      )}
+                    </button>
+                  </form>
+                </div>
               </div>
             </div>
-          </div>
-        )}
-      </div>
+          )}
+        </div>
+      )}
     </>
   );
 };

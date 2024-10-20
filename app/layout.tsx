@@ -25,6 +25,7 @@ export default function RootLayout({
   //   rainbowConfig(),
   //   headers().get("cookie")
   // );
+
   return (
     <html lang="en">
       <Toasts />

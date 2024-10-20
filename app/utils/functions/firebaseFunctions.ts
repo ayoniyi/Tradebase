@@ -38,13 +38,18 @@ export const fetchDocsQuery = (queryKey: any, docsCollectionRef: any) => {
 };
 
 // fetch single doc
-export const useDocQuery = (queryKey: any, docsCollectionRef: any) => {
+export const useDocQuery = (
+  queryKey: any,
+  docsCollectionRef: any,
+  interval: any
+) => {
   return useQuery({
     queryKey: queryKey,
     queryFn: () =>
       getDoc(docsCollectionRef).then((res: any) => {
         return res;
       }),
+    refetchInterval: interval, // 10 seconds
   });
 };
 
@@ -68,6 +73,16 @@ export const useSetDoc = (
       successFunction();
     },
   });
+};
+
+// add notification
+export const addNotification = async (
+  receiverId: any,
+  notification: any,
+  db: any
+) => {
+  const notificationsRef = collection(db, "users", receiverId, "notifications");
+  await addDoc(notificationsRef, notification);
 };
 
 //update doc mutation

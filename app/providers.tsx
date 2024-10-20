@@ -4,6 +4,10 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { type ReactNode, useState } from "react";
 import { WagmiProvider } from "wagmi";
 
+import useNotifications from "./utils/functions/useNotifications";
+import { useContext } from "react";
+import { UserContext } from "./context/UserContext";
+
 //import { rainbowConfig } from "@/app/utils/wagmi";
 import { base, baseSepolia } from "wagmi/chains";
 import { getDefaultConfig, RainbowKitProvider } from "@rainbow-me/rainbowkit";
@@ -20,6 +24,9 @@ export function Providers(props: { children: ReactNode; initialState?: any }) {
     chains: [base, baseSepolia],
     ssr: true,
   });
+
+  // const [userState] = useContext<any>(UserContext);
+  // useNotifications(userState?.user?.userId);
 
   return (
     <WagmiProvider config={config} initialState={props.initialState}>

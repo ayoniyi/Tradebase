@@ -1,0 +1,18 @@
+@import "../../styles/mixins";
+@import "../../styles/variables";
+@keyframes skeleton {
+  to {
+    opacity: 0.2;
+  }
+}
+
+.cardSk {
+  margin-top: 6em !important;
+  background: #313131a4;
+  //background: #b4b4b4;
+  width: 65%;
+  height: 60vh;
+  margin: auto;
+  border-radius: 8px;
+  animation: skeleton 1.5s ease infinite alternate;
+}
