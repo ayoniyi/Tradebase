@@ -19,7 +19,7 @@
   border-radius: 12px;
   //border: 1px solid rgba(225, 51, 166, 0.72);
   padding: 1.3em 1em;
-  //border: 1px solid $blueMain;
+  border: 1px solid $blueMain;
   //   width: 24%;
 }
 .cardTop {
@@ -80,8 +80,8 @@
 .cardBtn {
   @include flexRegular(row, flex-end);
   button {
-    @include btnRegular(35%);
-    height: 35px;
+    @include btnRegular(30%);
+    height: 30px;
     font-size: 0.9em;
   }
 }

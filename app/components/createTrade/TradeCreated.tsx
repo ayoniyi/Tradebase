@@ -3,6 +3,8 @@ import style from "./Create.module.scss";
 
 import Escrow from "./escrow.svg";
 import Share from "./share.svg";
+import { copyToClipboard } from "@/app/utils/copyToClipboard";
+import Link from "next/link";
 
 const TradeCreated = (props: any) => {
   const receivingAmount: any = props.userInput.tokenSalePrice * 0.99;
@@ -40,11 +42,11 @@ const TradeCreated = (props: any) => {
             </div>
             <div className={style.breakRow}>
               <p>Token quantity for sale</p>
-              <p>{parseFloat(props.userInput.tokenSaleAmount).toFixed(2)}</p>
+              <p>{props.userInput.tokenSaleAmount.toString()}</p>
             </div>
             <div className={style.breakRow}>
               <p>Price</p>
-              <p>{parseFloat(props.userInput.tokenSalePrice).toFixed(2)} ETH</p>
+              <p>{props.userInput.tokenSalePrice.toString()} ETH</p>
             </div>
             <div className={style.breakRow}>
               <p>Fees</p>
@@ -52,25 +54,30 @@ const TradeCreated = (props: any) => {
             </div>
             <div className={style.breakRow}>
               <p>Seller receives</p>
-              <p>{parseFloat(receivingAmount).toFixed(2)} ETH</p>
+              <p>{receivingAmount.toString()} ETH</p>
             </div>
           </div>
           <div className={style.shareBtns}>
+            <button
+              onClick={() =>
+                copyToClipboard(
+                  process.env.NEXT_PUBLIC_APP_URL + "/trade/" + props?.tradeId
+                )
+              }
+              className={style.shareBtn}
+            >
+              <Image src={Share} alt="share" />
+              Copy trade link
+            </button>
+
             {props.userInput.tradeType === "Private sale" ? (
-              <button className={style.shareBtn}>
-                <Image src={Share} alt="share" />
-                Share link to buyer
-              </button>
+              <Link href={`/trade/${props?.tradeId}`}>
+                <button className={style.viewBtn}>View on dashboard</button>
+              </Link>
             ) : (
-              <button className={style.shareBtn}>
-                <Image src={Share} alt="share" />
-                Share link
-              </button>
-            )}
-            {props.userInput.tradeType === "Private sale" ? (
-              <button className={style.viewBtn}>View on dashboard</button>
-            ) : (
-              <button className={style.viewBtn}>View in marketplace</button>
+              <Link href={`/marketplace`}>
+                <button className={style.viewBtn}>View in marketplace</button>
+              </Link>
             )}
           </div>
         </div>
@@ -89,7 +96,7 @@ const TradeCreated = (props: any) => {
           <div className={style.tradeDesc}>
             <div className={style.tradeStatus}>
               <Image src={Escrow} alt="trade created" />
-              <p>Trade created : Awaiting buyer's payment</p>
+              <p>Trade created </p>
             </div>
             <p className={style.tradeTitle}>
               You have put up <span>{props.userInput.productName}</span> for
@@ -111,7 +118,7 @@ const TradeCreated = (props: any) => {
 
             <div className={style.breakRow}>
               <p>Price</p>
-              <p>{parseFloat(props.userInput.productPrice).toFixed(2)} ETH</p>
+              <p>{props.userInput.productPrice.toString()} ETH</p>
             </div>
             <div className={style.breakRow}>
               <p>Fees</p>
@@ -119,25 +126,29 @@ const TradeCreated = (props: any) => {
             </div>
             <div className={style.breakRow}>
               <p>Seller receives</p>
-              <p>{parseFloat(receivingAmountProd).toFixed(2)} ETH</p>
+              <p>{receivingAmountProd.toString()} ETH</p>
             </div>
           </div>
           <div className={style.shareBtns}>
+            <button
+              onClick={() =>
+                copyToClipboard(
+                  process.env.NEXT_PUBLIC_APP_URL + "/trade/" + props?.tradeId
+                )
+              }
+              className={style.shareBtn}
+            >
+              <Image src={Share} alt="share" />
+              Copy trade link
+            </button>
             {props.userInput.tradeType === "Private sale" ? (
-              <button className={style.shareBtn}>
-                <Image src={Share} alt="share" />
-                Share link to buyer
-              </button>
+              <Link href={`/trade/${props?.tradeId}`}>
+                <button className={style.viewBtn}>View on dashboard</button>
+              </Link>
             ) : (
-              <button className={style.shareBtn}>
-                <Image src={Share} alt="share" />
-                Share link
-              </button>
-            )}
-            {props.userInput.tradeType === "Private sale" ? (
-              <button className={style.viewBtn}>View on dashboard</button>
-            ) : (
-              <button className={style.viewBtn}>View in marketplace</button>
+              <Link href={`/trade/${props?.tradeId}`}>
+                <button className={style.viewBtn}>View on dashboard</button>
+              </Link>
             )}
           </div>
         </div>

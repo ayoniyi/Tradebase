@@ -1,5 +1,6 @@
 import React from "react";
 import style from "./Card.module.scss";
+import Link from "next/link";
 
 const TokenCard = (props: any) => {
   return (
@@ -23,11 +24,16 @@ const TokenCard = (props: any) => {
                 <p>{props?.trade?.price} ETH</p>
               </p>
             </div>
-            <div className={style.tkBtn}>
-              <button onClick={() => props?.handleTrade(props?.trade)}>
+
+            <Link
+              className={style.tkBtn}
+              href={`/trade/${props?.trade?.userId}`}
+            >
+              <button>Buy</button>
+            </Link>
+            {/* <button onClick={() => props?.handleTrade(props?.trade)}>
                 Buy
-              </button>
-            </div>
+              </button> */}
           </div>
         </div>
       </div>

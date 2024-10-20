@@ -68,9 +68,10 @@ export const useSetDoc = (
     },
 
     onSuccess: (res) => {
-      console.log("app res", res);
+      console.log("app res", res?.id);
 
       successFunction();
+      return res;
     },
   });
 };

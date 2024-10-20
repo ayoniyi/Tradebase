@@ -3,42 +3,71 @@ import React, { useState } from "react";
 import style from "./Marketplace.module.scss";
 import Header from "../components/header/Header";
 import TradeCard from "../components/TradeCard/TokenCard";
-import { fetchDocsQuery } from "../utils/functions/firebaseFunctions";
-import { collection } from "firebase/firestore";
+import { collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "../utils/firebase";
-import TradeModal from "./TradeModal";
-import { AnimatePresence } from "framer-motion";
+
 import ProductCard from "../components/TradeCard/ProductCard";
+import { useQuery } from "@tanstack/react-query";
+import { useAccount } from "wagmi";
 import TradeCardSkeleton from "../components/Skeleton/TradeCardSkeleton";
 
 const Marketplace = () => {
-  const [showModal, setShowModal] = useState(false);
   const [currentTrade, setCurrentTrade] = useState<any>();
   const [tradeType, setTradeType] = useState("Tokens");
+
+  const { address } = useAccount();
   //fetch trades
-  const tradesCollectionRef = collection(db, "trades");
-  const tradesQuery = fetchDocsQuery(["tradesQuery"], tradesCollectionRef);
-  //console.log(tradesQuery?.data, "trades>>");
+  //const tradesCollectionRef = collection(db, "trades");
+
+  const fetchTrades = async () => {
+    const sellerQuery = query(
+      collection(db, "trades"),
+      where("sellerAddress", "==", address)
+    );
+    const buyerQuery = query(
+      collection(db, "trades"),
+      where("buyerAddress", "==", address)
+    );
+
+    const [sellerSnapshot, buyerSnapshot] = await Promise.all([
+      getDocs(sellerQuery),
+      getDocs(buyerQuery),
+    ]);
+
+    const sellerTrades = sellerSnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+
+    const buyerTrades = buyerSnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+
+    return [...sellerTrades, ...buyerTrades];
+  };
+
+  const {
+    data: trades,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ["trades", address],
+    queryFn: () => fetchTrades(),
+    staleTime: 60000, // Cache for 60 seconds
+  });
+
   const handleTrade = (trade: any) => {
     setCurrentTrade(trade);
-    setShowModal(true);
-  };
-  const handleClose = () => {
-    setShowModal(false);
   };
 
   return (
     <>
-      <AnimatePresence mode="wait">
-        {showModal && (
-          <TradeModal currentTrade={currentTrade} handleClose={handleClose} />
-        )}
-      </AnimatePresence>
       <Header />
       <div className={style.container}>
         <div className={style.content}>
           <div className={style.top}>
-            <h2>Marketplace</h2>
+            <h2>My Trades</h2>
             <div className={style.tabsContainer}>
               <div
                 className={
@@ -74,15 +103,14 @@ const Marketplace = () => {
           </div>
           {tradeType === "Tokens" ? (
             <>
-              {!tradesQuery?.data?.isLoading ? (
+              {!isLoading ? (
                 <div className={style.tradeGrid}>
-                  {tradesQuery?.data?.map((trade: any) =>
-                    trade?.tradeOption === "Token swap" &&
-                    trade?.status === "available" &&
-                    trade?.tradeType === "Public sale" ? (
+                  {trades?.map((tr: any) =>
+                    tr?.tradeOption === "Token swap" &&
+                    tr?.status !== "complete" ? (
                       <TradeCard
-                        key={trade?.userId}
-                        trade={trade}
+                        key={tr?.id}
+                        trade={tr}
                         handleTrade={handleTrade}
                       />
                     ) : (
@@ -98,15 +126,14 @@ const Marketplace = () => {
             </>
           ) : tradeType === "Digital products" ? (
             <>
-              {!tradesQuery?.data?.isLoading ? (
+              {!isLoading ? (
                 <div className={style.tradeGrid}>
-                  {tradesQuery?.data?.map((trade: any) =>
-                    trade?.tradeOption === "Digital product" &&
-                    trade?.status === "available" &&
-                    trade?.tradeType === "Public sale" ? (
+                  {trades?.map((tr: any) =>
+                    tr?.tradeOption === "Digital product" &&
+                    tr?.status !== "complete" ? (
                       <ProductCard
-                        key={trade?.userId}
-                        trade={trade}
+                        key={tr?.id}
+                        trade={tr}
                         handleTrade={handleTrade}
                       />
                     ) : (
@@ -122,15 +149,14 @@ const Marketplace = () => {
             </>
           ) : tradeType === "Physical item" ? (
             <>
-              {!tradesQuery?.data?.isLoading ? (
+              {!isLoading ? (
                 <div className={style.tradeGrid}>
-                  {tradesQuery?.data?.map((trade: any) =>
-                    trade?.tradeOption === "Physical item" &&
-                    trade?.status === "available" &&
-                    trade?.tradeType === "Public sale" ? (
+                  {trades?.map((tr: any) =>
+                    tr?.tradeOption === "Physical item" &&
+                    tr?.status !== "complete" ? (
                       <ProductCard
-                        key={trade?.userId}
-                        trade={trade}
+                        key={tr?.id}
+                        trade={tr}
                         handleTrade={handleTrade}
                       />
                     ) : (

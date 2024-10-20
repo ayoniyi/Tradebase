@@ -11,127 +11,15 @@ import { shortenHex } from "../utils/formatting";
 import { useDisconnect } from "wagmi";
 import { useAccount } from "wagmi";
 import Image from "next/image";
-import { ethers, providers } from "ethers";
-import { Web3Provider } from "@ethersproject/providers";
-
-import { useWriteContract } from "wagmi";
-import ABI from "../utils/abi/escrow.json";
 
 import Escrow from "./escrow.svg";
-import { useConnect } from "wagmi";
-import { baseSepolia } from "viem/chains";
-import { injected } from "wagmi/connectors";
+
 import Link from "next/link";
 
 const TradeModal = (props: any) => {
   const { address } = useAccount();
   const [showDisconnect, setShowDisconnect] = useState(false);
   const { disconnect } = useDisconnect();
-  const [contract, setContract] = useState<any>();
-  const { connectAsync } = useConnect();
-
-  useEffect(() => {
-    const onCreateEscrow = async () => {
-      contract?.on(
-        "EscrowCreated",
-        (id: any, sender: any, seller: any, arbiter: any, amount: any) => {
-          console.log("emitting create escrow!");
-          console.log("values", id, sender, seller, arbiter, amount);
-        }
-      );
-    };
-    onCreateEscrow();
-
-    const onDeposit = async () => {
-      contract?.on("FundsDeposited", (id: any, sender: any, amount: any) => {
-        console.log("emitting deposit!");
-        console.log("values", id, sender, amount);
-      });
-    };
-    onDeposit();
-
-    const onTransactionComplete = async () => {
-      contract?.on("TransactionCompleted", (id: any, seller: any) => {
-        console.log("emitting transaction completed!");
-        console.log("values", id, seller);
-      });
-    };
-    onTransactionComplete();
-  }, [contract]);
-
-  const contractAddress = "0xd6560c88Bb3A11d8555d11510482D5A06834990d";
-
-  const provider = new Web3Provider(window.ethereum);
-  const signer = provider.getSigner();
-  const contractObj = new ethers.Contract(contractAddress, ABI, signer);
-
-  const depAmount = ethers.utils.parseEther("0.02");
-
-  const createEscrow = async () => {
-    if (address) {
-      // seller address //arbiter address //amount
-      try {
-        //const provider = new providers.Web3Provider(window.ethereum);
-
-        setContract(contractObj);
-        const call = await contractObj.createEscrow(
-          "0x20810f449A750F36345DE17d4a35EAdAD503Da90", // seller
-          "0xA45eF0134e9f2F1f639A0d48C550deBc215CB760", // arbiter
-          depAmount,
-
-          {
-            gasLimit: 5000000,
-          }
-        );
-        await call.wait();
-        console.log("create ecr>>", call);
-      } catch (err: any) {
-        console.log("err", err);
-      }
-    } else {
-      //connect wallet
-      await connectAsync({ chainId: baseSepolia.id, connector: injected() });
-    }
-  };
-
-  const depositAmount = async () => {
-    try {
-      setContract(contractObj);
-
-      const call = await contractObj.depositFunds("1", {
-        value: depAmount,
-        gasLimit: 5000000,
-      });
-      await call.wait();
-      console.log("deposit amount>>", call);
-    } catch (err: any) {
-      console.log("err", err);
-      if (err.code === "CALL_EXCEPTION") {
-        console.error(
-          "Transaction reverted, likely due to contract logic failure or a failed require statement."
-        );
-      }
-    }
-  };
-
-  const releaseFunds = async () => {
-    try {
-      setContract(contractObj);
-
-      const call = await contractObj.completeTransaction("1", {
-        gasLimit: 5000000,
-      });
-      await call.wait();
-      console.log("release funds>>", call);
-    } catch (err: any) {
-      console.log("err", err);
-      if (err.code === "CALL_EXCEPTION") {
-        console.error(
-          "Transaction reverted, likely due to contract logic failure or a failed require statement."
-        );
-      }
-    }
-  };
 
   return (
     //This is what the buyer sees
@@ -244,21 +132,19 @@ const TradeModal = (props: any) => {
                 <div className={style.breakRow}>
                   <p>Token quantity for sale</p>
                   <p>
-                    {parseFloat(props?.currentTrade?.amountOfToken).toFixed(2)}
+                    {parseFloat(props?.currentTrade?.amountOfToken).toFixed(4)}
                   </p>
                 </div>
                 <div className={style.breakRow}>
                   <p>Price</p>
-                  <p>{parseFloat(props?.currentTrade?.price).toFixed(2)} ETH</p>
+                  <p>{parseFloat(props?.currentTrade?.price).toFixed(4)} ETH</p>
                 </div>
               </div>
               <div className={style.shareBtns}>
-                <button onClick={createEscrow} className={style.shareBtn}>
-                  Create escrow
-                </button>
                 <Link href={`/trade/${props?.currentTrade?.userId}`}>
-                  Trade
+                  <button className={style.shareBtn}>Open trade</button>
                 </Link>
+
                 {/* <button onClick={depositAmount} className={style.shareBtn}>
                   Deposit amount
                 </button>
@@ -305,7 +191,7 @@ const TradeModal = (props: any) => {
 
                 <div className={style.breakRow}>
                   <p>Price</p>
-                  <p>{parseFloat(props?.currentTrade?.price).toFixed(2)} ETH</p>
+                  <p>{parseFloat(props?.currentTrade?.price).toFixed(4)} ETH</p>
                 </div>
               </div>
               <div className={style.shareBtns}>

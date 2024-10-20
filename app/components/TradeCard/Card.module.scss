@@ -45,7 +45,7 @@
   @include flexRegular(row, center);
   margin-top: 10px;
   button {
-    @include btnRegular(45%);
+    @include btnRegular(35%);
     height: 35px;
     font-size: 0.9em;
   }

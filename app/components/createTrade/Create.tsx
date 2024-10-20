@@ -15,14 +15,14 @@ import Token from "./token.svg";
 import Digital from "./digital.svg";
 import Physical from "./physical.svg";
 import TradeCreated from "./TradeCreated";
-import { collection } from "firebase/firestore";
+import { addDoc, collection } from "firebase/firestore";
 import { db } from "@/app/utils/firebase";
 import {
   useFileUpload,
   useSetDoc,
 } from "@/app/utils/functions/firebaseFunctions";
 import toast from "react-hot-toast";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import upload from "@/app/utils/upload";
 
 const Create = (props: any) => {
@@ -34,6 +34,7 @@ const Create = (props: any) => {
   const [tradeCreated, setTradeCreated] = useState(false);
   const [isValidated, setIsValidated] = useState(false);
   const [progress, setProgress] = useState();
+  const [tradeId, setTradeId] = useState("");
   const [fileUrl, setFileUrl] = useState("");
 
   //console.log("user>>", userState);
@@ -159,15 +160,35 @@ const Create = (props: any) => {
     });
   };
 
+  const queryClient = useQueryClient();
+
   const tradeSucess = () => {
-    toast.success("Trade created successfully!", {
+    toast.success("Trade created successfully", {
       duration: 4500,
     });
+    queryClient.invalidateQueries({ queryKey: ["tradesQuery"] });
     setTradeCreated(true);
   };
 
   const newTradeRef = collection(db, "trades");
-  const tradeMutation = useSetDoc(newTradeRef, tradeSucess);
+  //const tradeMutation = useSetDoc(newTradeRef, tradeSucess);
+  const tradeMutation = useMutation({
+    mutationFn: async (info: any) => addDoc(newTradeRef, info),
+    onError: (err) => {
+      console.log("err", err);
+      toast.error("Sorry, an error occured.", {
+        duration: 6500,
+      });
+    },
+
+    onSuccess: (res) => {
+      console.log("app res", res?.id);
+      setTradeId(res?.id);
+      tradeSucess();
+      //return res;
+    },
+  });
+
   const fileMutation = useMutation({
     mutationFn: async () => upload(file.item, setProgress),
     onError: (err) => {
@@ -177,7 +198,7 @@ const Create = (props: any) => {
       });
     },
     onSuccess: (res: any) => {
-      console.log("url res", res);
+      console.log("url res", res?.id);
       console.log("progress", progress);
       setFileUrl(res);
       const { productName, tradeType, description, productPrice } = userInput;
@@ -196,6 +217,7 @@ const Create = (props: any) => {
         status: "available",
       };
       tradeMutation.mutate(tradeInfo);
+      //console.log("tm", tradeMutation, "tm data", tradeMutation?.data);
     },
   });
 
@@ -225,6 +247,7 @@ const Create = (props: any) => {
           status: "available",
         };
         tradeMutation.mutate(tradeInfo);
+        // console.log("tm", tradeMutation, "tm data", tradeMutation?.data);
       }
     } else if (
       tradeOption === "Physical item" ||
@@ -381,6 +404,7 @@ const Create = (props: any) => {
               tradeOption={tradeOption}
               userInput={userInput}
               file={file}
+              tradeId={tradeId}
             />
           )}
         </div>

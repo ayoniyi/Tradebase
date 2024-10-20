@@ -124,6 +124,7 @@ const SingleTrade = () => {
 
           setEscrowId(hexConvert.toString());
           const eId = hexConvert.toString();
+          // start the countdown
           createTransaction(eId);
         }
       );
@@ -167,6 +168,8 @@ const SingleTrade = () => {
   }, [currentEscrowId]);
 
   //create transaction
+
+  // create countdown of 10 minutes, on countdown completion update trade status back to available
   const newTransactionRef = collection(db, "transactions");
 
   const createEscrow = async () => {
@@ -220,6 +223,7 @@ const SingleTrade = () => {
           gasLimit: 5000000,
         });
         await call.wait();
+        // stop the countdown
         payMutation.mutate({ status: "awaiting item" });
 
         setIsLoading(false);
@@ -427,11 +431,11 @@ const SingleTrade = () => {
                     </div>
                     <div className={style.breakRow}>
                       <p>Token quantity for sale</p>
-                      <p>{parseFloat(tradeInfo?.amountOfToken).toFixed(2)}</p>
+                      <p>{tradeInfo?.amountOfToken.toString()}</p>
                     </div>
                     <div className={style.breakRow}>
                       <p>Price</p>
-                      <p>{parseFloat(tradeInfo?.price).toFixed(2)} ETH</p>
+                      <p>{tradeInfo?.price.toString()} ETH</p>
                     </div>
                   </div>
                   <div className={style.shareBtns}>
@@ -503,13 +507,11 @@ const SingleTrade = () => {
                           </div>
                           <div className={style.breakRow}>
                             <p>Token quantity for sale</p>
-                            <p>
-                              {parseFloat(tradeInfo?.amountOfToken).toFixed(2)}
-                            </p>
+                            <p>{tradeInfo?.amountOfToken.toString()}</p>
                           </div>
                           <div className={style.breakRow}>
                             <p>Price</p>
-                            <p>{parseFloat(tradeInfo?.price).toFixed(2)} ETH</p>
+                            <p>{tradeInfo?.price.toString()} ETH</p>
                           </div>
                         </div>
                         <div className={style.shareBtns}>
@@ -595,13 +597,11 @@ const SingleTrade = () => {
                         </div>
                         <div className={style.breakRow}>
                           <p>Token quantity for sale</p>
-                          <p>
-                            {parseFloat(tradeInfo?.amountOfToken).toFixed(2)}
-                          </p>
+                          <p>{tradeInfo?.amountOfToken.toString()}</p>
                         </div>
                         <div className={style.breakRow}>
                           <p>Price</p>
-                          <p>{parseFloat(tradeInfo?.price).toFixed(2)} ETH</p>
+                          <p>{tradeInfo?.price.toString()} ETH</p>
                         </div>
                       </div>
                       <div className={style.shareBtns}>

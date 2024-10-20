@@ -113,23 +113,28 @@ const Connect = (props: any) => {
     ["users", isConnected, address],
     docCollectionRef
   );
+  useEffect(() => {
+    if (docsQuery.data?.docs && docsQuery?.data?.docs?.length >= 1) {
+      //
+      const docList = docsQuery?.data?.docs.map((doc: any) => ({
+        ...doc.data(),
+        userId: doc.id,
+      }));
+      console.log("docsQuery", docList[0]);
+      setUserState({
+        ...userState,
+        user: docList[0],
+      });
+      //props.handleCreate();
 
-  if (docsQuery.data?.docs && docsQuery?.data?.docs?.length >= 1) {
-    //
-    const docList = docsQuery?.data?.docs.map((doc: any) => ({
-      ...doc.data(),
-      userId: doc.id,
-    }));
-    //console.log("docsQuery", docList[0]);
-    setUserState({
-      ...userState,
-      user: docList[0],
-    });
-    //props.handleCreate();
-    if (props.action === "createTrade") {
-      props.handleCreate();
+      if (props.action === "createTrade") {
+        props.handleCreate();
+      } else {
+        props.handleClose();
+      }
     }
-  }
+  }, [docsQuery.data?.docs]);
+
   const createFn = () => {
     if (props.action === "createTrade") {
       props.handleCreate();
@@ -141,7 +146,7 @@ const Connect = (props: any) => {
     if (isConnected) {
       // Handle connected state
       console.log("Wallet connected");
-      toast.success(`Wallet connected successfully. `, { duration: 5000 });
+      toast.success(`Wallet connected`, { duration: 5000 });
       // console.log(docsQuery.data?.docs, "qu");
     } else {
       // Handle disconnected state
