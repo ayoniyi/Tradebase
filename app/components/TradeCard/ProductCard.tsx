@@ -24,11 +24,13 @@ const ProductCard = (props: any) => {
               <div className={style.productPrice}>
                 <p>Price : {props?.trade?.price} ETH</p>
               </div>
-              <div className={style.productBtn}>
-                <button onClick={() => props?.handleTrade(props?.trade)}>
-                  Buy
-                </button>
-              </div>
+
+              <Link
+                className={style.productBtn}
+                href={`/trade/${props?.trade?.userId || props?.trade?.id}`}
+              >
+                <button>{props?.cardAction}</button>
+              </Link>
             </div>
           </div>
         </div>

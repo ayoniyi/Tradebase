@@ -52,3 +52,43 @@ input[type="radio"] {
   -webkit-appearance: radio;
   appearance: radio;
 }
+/* small */
+.smallContainer {
+  width: 100vw;
+  height: 100vh;
+  display: none;
+  position: relative;
+  margin: 0;
+  padding: 0;
+}
+.smallLog {
+  position: absolute;
+  width: 100%;
+  left: 0;
+  top: 2em;
+  margin: auto;
+}
+.smallContainer img {
+  width: 200px;
+}
+.smallContent {
+  text-align: center;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.smallContent h1 {
+  /* color: #1354dc; */
+  letter-spacing: -1px;
+}
+@media (max-width: 1030px) {
+  .app {
+    display: none;
+  }
+  .smallContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+}

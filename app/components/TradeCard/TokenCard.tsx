@@ -27,9 +27,9 @@ const TokenCard = (props: any) => {
 
             <Link
               className={style.tkBtn}
-              href={`/trade/${props?.trade?.userId}`}
+              href={`/trade/${props?.trade?.userId || props?.trade?.id}`}
             >
-              <button>Buy</button>
+              <button>{props?.cardAction}</button>
             </Link>
             {/* <button onClick={() => props?.handleTrade(props?.trade)}>
                 Buy

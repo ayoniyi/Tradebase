@@ -58,9 +58,12 @@ const Landing = () => {
           <div className={style.heroDesc}>
             <div className={style.heroTxt}>
               <h1>
-                The base network's <span> P2P marketplace</span>
+                Secure your <span> trades</span> with <span> confidence </span>
               </h1>
-              <p>Secure trades with built-in escrow on the base network</p>
+              <p>
+                Simple and efficient trades with built-in escrow on the base
+                network
+              </p>
 
               <button onClick={handleModals}>Create trade</button>
             </div>

@@ -57,6 +57,8 @@ const Marketplace = () => {
     staleTime: 60000, // Cache for 60 seconds
   });
 
+  console.log("trades us", trades);
+
   const handleTrade = (trade: any) => {
     setCurrentTrade(trade);
   };
@@ -112,6 +114,7 @@ const Marketplace = () => {
                         key={tr?.id}
                         trade={tr}
                         handleTrade={handleTrade}
+                        cardAction="View"
                       />
                     ) : (
                       ""
@@ -135,6 +138,7 @@ const Marketplace = () => {
                         key={tr?.id}
                         trade={tr}
                         handleTrade={handleTrade}
+                        cardAction="View"
                       />
                     ) : (
                       ""
@@ -158,6 +162,7 @@ const Marketplace = () => {
                         key={tr?.id}
                         trade={tr}
                         handleTrade={handleTrade}
+                        cardAction="View"
                       />
                     ) : (
                       ""

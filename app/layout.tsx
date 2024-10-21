@@ -9,6 +9,7 @@ import Favicon from "@/app/favicon.svg";
 // import { headers } from "next/headers";
 import { Providers } from "./providers";
 import Toasts from "./components/Toasts";
+import SmallScreen from "./components/SmallScreen/Small";
 
 export const metadata: Metadata = {
   title: "Tradebase",
@@ -29,7 +30,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <Toasts />
-      <body>
+      <SmallScreen />
+      <body className="app">
         <Providers>{children}</Providers>
       </body>
     </html>

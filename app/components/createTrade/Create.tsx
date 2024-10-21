@@ -215,6 +215,7 @@ const Create = (props: any) => {
         sellerAddress: userState?.user?.address,
         sellerEmail: email,
         status: "available",
+        tradeBalance: 0,
       };
       tradeMutation.mutate(tradeInfo);
       //console.log("tm", tradeMutation, "tm data", tradeMutation?.data);
@@ -245,6 +246,7 @@ const Create = (props: any) => {
           sellerAddress: address,
           sellerEmail: email,
           status: "available",
+          tradeBalance: 0,
         };
         tradeMutation.mutate(tradeInfo);
         // console.log("tm", tradeMutation, "tm data", tradeMutation?.data);

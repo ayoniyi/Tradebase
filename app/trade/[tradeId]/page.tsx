@@ -35,6 +35,7 @@ import { Web3Provider } from "@ethersproject/providers";
 import ABI from "../../utils/abi/escrow.json";
 import CardSkeleton from "@/app/components/Skeleton/CardSkeleton";
 import { useAccount } from "wagmi";
+import ItemBox from "./ItemBox";
 
 const SingleTrade = () => {
   const [contract, setContract] = useState<any>();
@@ -61,8 +62,8 @@ const SingleTrade = () => {
   //update trade
   const tradeMutation = useUpdateDoc(docRef, () => {
     queryClient.invalidateQueries({ queryKey: ["singleTrade"] });
-    toast.success("Transaction created!", {
-      duration: 6500,
+    toast.success("Trade updated", {
+      duration: 3500,
     });
   });
 
@@ -139,6 +140,12 @@ const SingleTrade = () => {
         const formatAmt = hexConvert.toString();
         console.log("amount", ethers.utils.formatEther(formatAmt));
         setBalance(ethers.utils.formatEther(formatAmt));
+
+        //update trade balance
+        const updateFields = {
+          tradeBalance: ethers.utils.formatEther(formatAmt),
+        };
+        tradeMutation.mutate(updateFields);
       });
     };
     onDeposit();
@@ -149,6 +156,11 @@ const SingleTrade = () => {
         console.log("values", id, seller);
 
         setBalance(0);
+        //update trade balance
+        const updateFields = {
+          tradeBalance: 0,
+        };
+        tradeMutation.mutate(updateFields);
       });
     };
     onTransactionComplete();
@@ -385,194 +397,22 @@ const SingleTrade = () => {
               Add
             </h3>
           )}
-
-          {tradeInfo?.status === "available" ? (
-            <div className={style.cardBorder}>
-              <div className={style.tradeBox}>
-                <div className={style.tradeCreated}>
-                  <div className={style.tradeDesc}>
-                    <div className={style.tradeStatus}>
-                      <Image src={Escrow} alt="trade created" />
-                      <p>
-                        {" "}
-                        {tradeInfo?.sellerAddress !== userState?.user?.address
-                          ? "Buy Token"
-                          : "Token sale"}
-                      </p>
-                    </div>
-                    <p className={style.tradeTitle}>
-                      <span>
-                        {tradeInfo?.amountOfToken +
-                          " " +
-                          tradeInfo?.tokenToBeSold}
-                      </span>{" "}
-                      for sale @ <span>{tradeInfo?.price} ETH</span>{" "}
-                    </p>
-                    <div className={style.tradeTxt}>
-                      {tradeInfo?.sellerAddress !== userState?.user?.address ? (
-                        <p>
-                          Funds will be held in a latent wallet until you
-                          confirm receipt of tokens, the funds would be
-                          realeased to the seller thereafter.
-                        </p>
-                      ) : (
-                        <p>
-                          Funds will be held in a latent wallet until buyer
-                          confirms receipt of tokens, the funds would be
-                          realeased to you thereafter.
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                  <div className={style.tradeBreakdown}>
-                    <div className={style.breakRow}>
-                      <p>Token for sale</p>
-                      <p>{tradeInfo?.tokenToBeSold}</p>
-                    </div>
-                    <div className={style.breakRow}>
-                      <p>Token quantity for sale</p>
-                      <p>{tradeInfo?.amountOfToken.toString()}</p>
-                    </div>
-                    <div className={style.breakRow}>
-                      <p>Price</p>
-                      <p>{tradeInfo?.price.toString()} ETH</p>
-                    </div>
-                  </div>
-                  <div className={style.shareBtns}>
-                    {tradeInfo?.sellerAddress !== userState?.user?.address ? (
-                      <button
-                        onClick={createEscrow}
-                        className={style.shareBtn}
-                        disabled={
-                          tradeMutation.isPending ||
-                          transactionMutation.isPending ||
-                          isLoading
-                        }
-                      >
-                        {tradeMutation.isPending ||
-                        transactionMutation.isPending ||
-                        isLoading ? (
-                          <CircularProgress color="inherit" size={20} />
-                        ) : (
-                          "Create transaction"
-                        )}
-                      </button>
-                    ) : (
-                      ""
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
-          ) : (
-            <div className={style.tradeBoxes}>
-              <div className={style.tradeCol}>
-                <div className={style.balanceBox}>
-                  <h3>{balance} ETH</h3>
-                  <h4>Transaction Balance</h4>
-                  <p>
-                    This is the amount currently being held in escrow until
-                    buyer decides to release to the seller.
-                  </p>
-                </div>
-                <div className={style.tradeBoxActive}>
-                  {tradeInfo?.sellerAddress === userState?.user?.address ? (
-                    <div className={style.tradeCreated}>
-                      <div className={style.tradeCreated}>
-                        <div className={style.tradeDesc}>
-                          <div className={style.tradeStatus}>
-                            <Image src={Escrow} alt="trade created" />
-                            <p>Token Sale</p>
-                          </div>
-                          <p className={style.tradeTitle}>
-                            <span>
-                              {tradeInfo?.amountOfToken +
-                                " " +
-                                tradeInfo?.tokenToBeSold}
-                            </span>{" "}
-                            for sale @ <span>{tradeInfo?.price} ETH</span>{" "}
-                          </p>
-                          <div className={style.tradeTxt}>
-                            <p>
-                              Funds will be held in a latent wallet until buyer
-                              confirms receipt of tokens, the funds would be
-                              realeased to the you thereafter.
-                            </p>
-                          </div>
-                        </div>
-                        <div className={style.tradeBreakdown}>
-                          <div className={style.breakRow}>
-                            <p>Token for sale</p>
-                            <p>{tradeInfo?.tokenToBeSold}</p>
-                          </div>
-                          <div className={style.breakRow}>
-                            <p>Token quantity for sale</p>
-                            <p>{tradeInfo?.amountOfToken.toString()}</p>
-                          </div>
-                          <div className={style.breakRow}>
-                            <p>Price</p>
-                            <p>{tradeInfo?.price.toString()} ETH</p>
-                          </div>
-                        </div>
-                        <div className={style.shareBtns}>
-                          {tradeInfo?.status === "awaiting item" ? (
-                            <>
-                              <p
-                                style={{
-                                  fontSize: "13px",
-                                  color: "gray",
-                                }}
-                              >
-                                Click here when you send the tokens
-                              </p>
-                              <button
-                                onClick={tokensSent}
-                                className={style.shareBtn}
-                                disabled={
-                                  tradeInfo?.status !== "awaiting item" ||
-                                  sentMutation.isPending
-                                }
-                              >
-                                Tokens sent
-                              </button>
-                            </>
-                          ) : tradeInfo?.status === "awaiting release" ? (
-                            <p
-                              style={{ fontSize: "14px", fontStyle: "italic" }}
-                            >
-                              Awaiting release of funds...
-                            </p>
-                          ) : (
-                            ""
-                          )}
-                          {tradeInfo?.status !== "complete" ? (
-                            <button
-                              //onClick={createEscrow}
-                              className={style.backBtn}
-                            >
-                              Open dispute
-                            </button>
-                          ) : (
-                            <button disabled className={style.shareBtn}>
-                              Transaction complete
-                            </button>
-                          )}
-
-                          {/* <button
-                    
-                    className={style.backBtn}
-                  >
-                    Close transaction
-                  </button> */}
-                        </div>
-                      </div>
-                    </div>
-                  ) : (
+          {tradeInfo?.tradeOption === "Token swap" ? (
+            <>
+              {tradeInfo?.status === "available" ? (
+                <div className={style.cardBorder}>
+                  <div className={style.tradeBox}>
                     <div className={style.tradeCreated}>
                       <div className={style.tradeDesc}>
                         <div className={style.tradeStatus}>
                           <Image src={Escrow} alt="trade created" />
-                          <p>Buy Token</p>
+                          <p>
+                            {" "}
+                            {tradeInfo?.sellerAddress !==
+                            userState?.user?.address
+                              ? "Buy Token"
+                              : "Token sale"}
+                          </p>
                         </div>
                         <p className={style.tradeTitle}>
                           <span>
@@ -583,11 +423,20 @@ const SingleTrade = () => {
                           for sale @ <span>{tradeInfo?.price} ETH</span>{" "}
                         </p>
                         <div className={style.tradeTxt}>
-                          <p>
-                            Funds will be held in a latent wallet until you
-                            confirm receipt of tokens, the funds would be
-                            realeased to the seller thereafter.
-                          </p>
+                          {tradeInfo?.sellerAddress !==
+                          userState?.user?.address ? (
+                            <p>
+                              Funds will be held in a latent wallet until you
+                              confirm receipt of tokens, the funds would be
+                              realeased to the seller thereafter.
+                            </p>
+                          ) : (
+                            <p>
+                              Funds will be held in a latent wallet until buyer
+                              confirms receipt of tokens, the funds would be
+                              realeased to you thereafter.
+                            </p>
+                          )}
                         </div>
                       </div>
                       <div className={style.tradeBreakdown}>
@@ -605,107 +454,594 @@ const SingleTrade = () => {
                         </div>
                       </div>
                       <div className={style.shareBtns}>
-                        {tradeInfo?.status === "awaiting payment" ? (
+                        {tradeInfo?.sellerAddress !==
+                        userState?.user?.address ? (
                           <button
-                            onClick={makePayment}
-                            disabled={payMutation.isPending || isLoading}
+                            onClick={createEscrow}
                             className={style.shareBtn}
+                            disabled={
+                              tradeMutation.isPending ||
+                              transactionMutation.isPending ||
+                              isLoading
+                            }
                           >
-                            Make payment
+                            {tradeMutation.isPending ||
+                            transactionMutation.isPending ||
+                            isLoading ? (
+                              <CircularProgress color="inherit" size={20} />
+                            ) : (
+                              "Create transaction"
+                            )}
                           </button>
-                        ) : tradeInfo?.status === "awaiting item" ? (
-                          <p style={{ fontSize: "14px", fontStyle: "italic" }}>
-                            Awaiting receipt of items...
-                          </p>
-                        ) : tradeInfo?.status === "awaiting release" ? (
-                          <>
-                            <p
-                              style={{
-                                fontSize: "13px",
-                                color: "gray",
-                              }}
-                            >
-                              Click this only when you receive what you paid for
-                            </p>
-                            <button
-                              onClick={releaseFunds}
-                              className={style.shareBtn}
-                              disabled={releaseMutation.isPending || isLoading}
-                            >
-                              Release funds
-                            </button>
-                          </>
                         ) : (
                           ""
                         )}
-
-                        {tradeInfo?.status !== "complete" ? (
-                          <button
-                            //onClick={createEscrow}
-                            className={style.backBtn}
-                          >
-                            Open dispute
-                          </button>
-                        ) : (
-                          <button disabled className={style.shareBtn}>
-                            Transaction complete
-                          </button>
-                        )}
                       </div>
                     </div>
-                  )}
+                  </div>
                 </div>
-              </div>
-              <div className={style.tradeCol}>
-                <div className={style.chatBox}>
-                  {/* <div className={style.dotBx}>
-            <Image src={Dots} alt="options" />
-          </div> */}
+              ) : (
+                <div className={style.tradeBoxes}>
+                  <div className={style.tradeCol}>
+                    <div className={style.balanceBox}>
+                      <h3>
+                        {tradeInfo?.tradeBalance !== 0
+                          ? tradeInfo?.tradeBalance
+                          : balance}{" "}
+                        ETH
+                      </h3>
+                      <h4>Transaction Balance</h4>
+                      <p>
+                        This is the amount currently being held in escrow until
+                        buyer decides to release to the seller.
+                      </p>
+                    </div>
+                    <div className={style.tradeBoxActive}>
+                      {tradeInfo?.sellerAddress === userState?.user?.address ? (
+                        <div className={style.tradeCreated}>
+                          <div className={style.tradeCreated}>
+                            <div className={style.tradeDesc}>
+                              <div className={style.tradeStatus}>
+                                <Image src={Escrow} alt="trade created" />
+                                <p>Token Sale</p>
+                              </div>
+                              <p className={style.tradeTitle}>
+                                <span>
+                                  {tradeInfo?.amountOfToken +
+                                    " " +
+                                    tradeInfo?.tokenToBeSold}
+                                </span>{" "}
+                                for sale @ <span>{tradeInfo?.price} ETH</span>{" "}
+                              </p>
+                              <div className={style.tradeTxt}>
+                                <p>
+                                  Funds will be held in a latent wallet until
+                                  buyer confirms receipt of tokens, the funds
+                                  would be realeased to the you thereafter.
+                                </p>
+                              </div>
+                            </div>
+                            <div className={style.tradeBreakdown}>
+                              <div className={style.breakRow}>
+                                <p>Token for sale</p>
+                                <p>{tradeInfo?.tokenToBeSold}</p>
+                              </div>
+                              <div className={style.breakRow}>
+                                <p>Token quantity for sale</p>
+                                <p>{tradeInfo?.amountOfToken.toString()}</p>
+                              </div>
+                              <div className={style.breakRow}>
+                                <p>Price</p>
+                                <p>{tradeInfo?.price.toString()} ETH</p>
+                              </div>
+                            </div>
+                            <div className={style.shareBtns}>
+                              {tradeInfo?.status === "awaiting item" ? (
+                                <>
+                                  <p
+                                    style={{
+                                      fontSize: "13px",
+                                      color: "gray",
+                                    }}
+                                  >
+                                    Click here when you send the tokens
+                                  </p>
+                                  <button
+                                    onClick={tokensSent}
+                                    className={style.shareBtn}
+                                    disabled={
+                                      tradeInfo?.status !== "awaiting item" ||
+                                      sentMutation.isPending
+                                    }
+                                  >
+                                    Tokens sent
+                                  </button>
+                                </>
+                              ) : tradeInfo?.status === "awaiting release" ? (
+                                <p
+                                  style={{
+                                    fontSize: "14px",
+                                    fontStyle: "italic",
+                                  }}
+                                >
+                                  Awaiting release of funds...
+                                </p>
+                              ) : (
+                                ""
+                              )}
+                              {tradeInfo?.status !== "complete" ? (
+                                <button
+                                  //onClick={createEscrow}
+                                  className={style.backBtn}
+                                >
+                                  Open dispute
+                                </button>
+                              ) : (
+                                <button disabled className={style.shareBtn}>
+                                  Transaction complete
+                                </button>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className={style.tradeCreated}>
+                          <div className={style.tradeDesc}>
+                            <div className={style.tradeStatus}>
+                              <Image src={Escrow} alt="trade created" />
+                              <p>Buy Token</p>
+                            </div>
+                            <p className={style.tradeTitle}>
+                              <span>
+                                {tradeInfo?.amountOfToken +
+                                  " " +
+                                  tradeInfo?.tokenToBeSold}
+                              </span>{" "}
+                              for sale @ <span>{tradeInfo?.price} ETH</span>{" "}
+                            </p>
+                            <div className={style.tradeTxt}>
+                              <p>
+                                Funds will be held in a latent wallet until you
+                                confirm receipt of tokens, the funds would be
+                                realeased to the seller thereafter.
+                              </p>
+                            </div>
+                          </div>
+                          <div className={style.tradeBreakdown}>
+                            <div className={style.breakRow}>
+                              <p>Token for sale</p>
+                              <p>{tradeInfo?.tokenToBeSold}</p>
+                            </div>
+                            <div className={style.breakRow}>
+                              <p>Token quantity for sale</p>
+                              <p>{tradeInfo?.amountOfToken.toString()}</p>
+                            </div>
+                            <div className={style.breakRow}>
+                              <p>Price</p>
+                              <p>{tradeInfo?.price.toString()} ETH</p>
+                            </div>
+                          </div>
+                          <div className={style.shareBtns}>
+                            {tradeInfo?.status === "awaiting payment" ? (
+                              <button
+                                onClick={makePayment}
+                                disabled={payMutation.isPending || isLoading}
+                                className={style.shareBtn}
+                              >
+                                Make payment
+                              </button>
+                            ) : tradeInfo?.status === "awaiting item" ? (
+                              <p
+                                style={{
+                                  fontSize: "14px",
+                                  fontStyle: "italic",
+                                }}
+                              >
+                                Awaiting receipt of items...
+                              </p>
+                            ) : tradeInfo?.status === "awaiting release" ? (
+                              <>
+                                <p
+                                  style={{
+                                    fontSize: "13px",
+                                    color: "gray",
+                                  }}
+                                >
+                                  Click this only when you receive what you paid
+                                  for
+                                </p>
+                                <button
+                                  onClick={releaseFunds}
+                                  className={style.shareBtn}
+                                  disabled={
+                                    releaseMutation.isPending || isLoading
+                                  }
+                                >
+                                  Release funds
+                                </button>
+                              </>
+                            ) : (
+                              ""
+                            )}
 
-                  <div className={style.chatMessages}>
-                    {messages?.map((m: any) => (
-                      <div
-                        ref={ref}
-                        className={
-                          m.senderId === userState?.user?.userId
-                            ? style.messageBoxOwner
-                            : style.messageBoxOther
-                        }
-                        key={m.mId}
-                      >
-                        <div
-                          className={
-                            m.senderId === userState?.user?.userId
-                              ? style.messageOwner
-                              : style.messageOther
-                          }
-                        >
-                          <p>{m.text}</p>
+                            {tradeInfo?.status !== "complete" ? (
+                              <button
+                                //onClick={createEscrow}
+                                className={style.backBtn}
+                              >
+                                Open dispute
+                              </button>
+                            ) : (
+                              <button disabled className={style.shareBtn}>
+                                Transaction complete
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <div className={style.tradeCol}>
+                    <div className={style.chatBox}>
+                      <div className={style.chatMessages}>
+                        {messages?.map((m: any) => (
+                          <div
+                            ref={ref}
+                            className={
+                              m.senderId === userState?.user?.userId
+                                ? style.messageBoxOwner
+                                : style.messageBoxOther
+                            }
+                            key={m.mId}
+                          >
+                            <div
+                              className={
+                                m.senderId === userState?.user?.userId
+                                  ? style.messageOwner
+                                  : style.messageOther
+                              }
+                            >
+                              <p>{m.text}</p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+
+                      <form className={style.chatInput} onSubmit={handleSend}>
+                        <input
+                          type="text"
+                          placeholder="Type a message"
+                          onChange={(e: any) => setMessageTxt(e.target.value)}
+                          value={messageTxt}
+                          required
+                        />
+
+                        <button type="submit" disabled={isLoading}>
+                          {isLoading ? (
+                            <CircularProgress color="inherit" size={20} />
+                          ) : (
+                            <Image src={Send} alt="send" />
+                          )}
+                        </button>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </>
+          ) : (
+            <>
+              {tradeInfo?.status === "available" ? (
+                <div className={style.cardBorder}>
+                  <div className={style.tradeBox}>
+                    <div className={style.tradeCreated}>
+                      <div className={style.trImg}>
+                        <Image
+                          src={tradeInfo?.productImage}
+                          width={130}
+                          height={130}
+                          alt={tradeInfo?.productImage}
+                        />
+                        <p>{tradeInfo?.productName}</p>
+                      </div>
+                      <div className={style.tradeDesc}>
+                        <div className={style.tradeStatus}>
+                          <Image src={Escrow} alt="trade created" />
+                          <p>
+                            {" "}
+                            {tradeInfo?.sellerAddress !==
+                            userState?.user?.address
+                              ? "Buy Product"
+                              : "Product sale"}
+                          </p>
+                        </div>
+                        <p className={style.tradeTitle}>
+                          <span>{tradeInfo?.productName}</span> for sale @{" "}
+                          <span>{tradeInfo?.price} ETH</span>{" "}
+                        </p>
+                        <div className={style.tradeTxt}>
+                          <p>
+                            Funds will be held in a latent wallet until buyer
+                            confirms receipt of product(s), the funds would be
+                            realeased to the seller thereafter.
+                          </p>
                         </div>
                       </div>
-                    ))}
+                      <div className={style.tradeBreakdown}>
+                        <div className={style.breakRow}>
+                          <p>Product for sale</p>
+                          <p>{tradeInfo?.productName}</p>
+                        </div>
+
+                        <div className={style.breakRow}>
+                          <p>Price</p>
+                          <p>{tradeInfo?.price.toString()} ETH</p>
+                        </div>
+                      </div>
+                      <div className={style.shareBtns}>
+                        {tradeInfo?.sellerAddress !==
+                        userState?.user?.address ? (
+                          <button
+                            onClick={createEscrow}
+                            className={style.shareBtn}
+                            disabled={
+                              tradeMutation.isPending ||
+                              transactionMutation.isPending ||
+                              isLoading
+                            }
+                          >
+                            {tradeMutation.isPending ||
+                            transactionMutation.isPending ||
+                            isLoading ? (
+                              <CircularProgress color="inherit" size={20} />
+                            ) : (
+                              "Create transaction"
+                            )}
+                          </button>
+                        ) : (
+                          ""
+                        )}
+                        {/* <button className={style.viewBtn}>Cancel</button> */}
+                      </div>
+                    </div>
                   </div>
-
-                  <form className={style.chatInput} onSubmit={handleSend}>
-                    <input
-                      type="text"
-                      placeholder="Type a message"
-                      onChange={(e: any) => setMessageTxt(e.target.value)}
-                      value={messageTxt}
-                      required
-                    />
-
-                    <button type="submit" disabled={isLoading}>
-                      {isLoading ? (
-                        <CircularProgress color="inherit" size={20} />
-                      ) : (
-                        <Image src={Send} alt="send" />
-                      )}
-                    </button>
-                  </form>
                 </div>
-              </div>
-            </div>
+              ) : (
+                <div className={style.tradeBoxes}>
+                  <div className={style.tradeCol}>
+                    <div className={style.balanceBox}>
+                      <h3>
+                        {tradeInfo?.tradeBalance !== 0
+                          ? tradeInfo?.tradeBalance
+                          : balance}{" "}
+                        ETH
+                      </h3>
+                      <h4>Transaction Balance</h4>
+                      <p>
+                        This is the amount currently being held in escrow until
+                        buyer decides to release to the seller.
+                      </p>
+                    </div>
+                    <div className={style.tradeBoxActive}>
+                      {tradeInfo?.sellerAddress === userState?.user?.address ? (
+                        <div className={style.tradeCreated}>
+                          <div className={style.tradeCreated}>
+                            <div className={style.tradeDesc}>
+                              <div className={style.tradeStatus}>
+                                <Image src={Escrow} alt="trade created" />
+                                <p>Item Sale</p>
+                              </div>
+                              <p className={style.tradeTitle}>
+                                <span>{tradeInfo?.productName}</span> for sale @{" "}
+                                <span>{tradeInfo?.price} ETH</span>{" "}
+                              </p>
+                              <div className={style.tradeTxt}>
+                                <p>
+                                  Funds will be held in a latent wallet until
+                                  buyer confirms receipt of product(s), the
+                                  funds would be realeased to the seller
+                                  thereafter.
+                                </p>
+                              </div>
+                            </div>
+                            <div className={style.tradeBreakdown}>
+                              <div className={style.breakRow}>
+                                <p>Product for sale</p>
+                                <p>{tradeInfo?.productName}</p>
+                              </div>
+
+                              <div className={style.breakRow}>
+                                <p>Price</p>
+                                <p>{tradeInfo?.price.toString()} ETH</p>
+                              </div>
+                            </div>
+                            <div className={style.shareBtns}>
+                              {tradeInfo?.status === "awaiting item" ? (
+                                <>
+                                  <p
+                                    style={{
+                                      fontSize: "13px",
+                                      color: "gray",
+                                    }}
+                                  >
+                                    Click here when you send the tokens
+                                  </p>
+                                  <button
+                                    onClick={tokensSent}
+                                    className={style.shareBtn}
+                                    disabled={
+                                      tradeInfo?.status !== "awaiting item" ||
+                                      sentMutation.isPending
+                                    }
+                                  >
+                                    Items sent
+                                  </button>
+                                </>
+                              ) : tradeInfo?.status === "awaiting release" ? (
+                                <p
+                                  style={{
+                                    fontSize: "14px",
+                                    fontStyle: "italic",
+                                  }}
+                                >
+                                  Awaiting release of funds...
+                                </p>
+                              ) : (
+                                ""
+                              )}
+                              {tradeInfo?.status !== "complete" ? (
+                                <button
+                                  //onClick={createEscrow}
+                                  className={style.backBtn}
+                                >
+                                  Open dispute
+                                </button>
+                              ) : (
+                                <button disabled className={style.shareBtn}>
+                                  Transaction complete
+                                </button>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className={style.tradeCreated}>
+                          <div className={style.tradeDesc}>
+                            <div className={style.tradeStatus}>
+                              <Image src={Escrow} alt="trade created" />
+                              <p>Buy Token</p>
+                            </div>
+                            <p className={style.tradeTitle}>
+                              <span>{tradeInfo?.productName}</span> for sale @{" "}
+                              <span>{tradeInfo?.price} ETH</span>{" "}
+                            </p>
+                            <div className={style.tradeTxt}>
+                              <p>
+                                Funds will be held in a latent wallet until
+                                buyer confirms receipt of product(s), the funds
+                                would be realeased to the seller thereafter.
+                              </p>
+                            </div>
+                          </div>
+                          <div className={style.tradeBreakdown}>
+                            <div className={style.breakRow}>
+                              <p>Product for sale</p>
+                              <p>{tradeInfo?.productName}</p>
+                            </div>
+
+                            <div className={style.breakRow}>
+                              <p>Price</p>
+                              <p>{tradeInfo?.price.toString()} ETH</p>
+                            </div>
+                          </div>
+                          <div className={style.shareBtns}>
+                            {tradeInfo?.status === "awaiting payment" ? (
+                              <button
+                                onClick={makePayment}
+                                disabled={payMutation.isPending || isLoading}
+                                className={style.shareBtn}
+                              >
+                                Make payment
+                              </button>
+                            ) : tradeInfo?.status === "awaiting item" ? (
+                              <p
+                                style={{
+                                  fontSize: "14px",
+                                  fontStyle: "italic",
+                                }}
+                              >
+                                Awaiting receipt of items...
+                              </p>
+                            ) : tradeInfo?.status === "awaiting release" ? (
+                              <>
+                                <p
+                                  style={{
+                                    fontSize: "13px",
+                                    color: "gray",
+                                  }}
+                                >
+                                  Click this only when you receive what you paid
+                                  for
+                                </p>
+                                <button
+                                  onClick={releaseFunds}
+                                  className={style.shareBtn}
+                                  disabled={
+                                    releaseMutation.isPending || isLoading
+                                  }
+                                >
+                                  Release funds
+                                </button>
+                              </>
+                            ) : (
+                              ""
+                            )}
+
+                            {tradeInfo?.status !== "complete" ? (
+                              <button
+                                //onClick={createEscrow}
+                                className={style.backBtn}
+                              >
+                                Open dispute
+                              </button>
+                            ) : (
+                              <button disabled className={style.shareBtn}>
+                                Transaction complete
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <div className={style.tradeCol}>
+                    <div className={style.chatBox}>
+                      <div className={style.chatMessages}>
+                        {messages?.map((m: any) => (
+                          <div
+                            ref={ref}
+                            className={
+                              m.senderId === userState?.user?.userId
+                                ? style.messageBoxOwner
+                                : style.messageBoxOther
+                            }
+                            key={m.mId}
+                          >
+                            <div
+                              className={
+                                m.senderId === userState?.user?.userId
+                                  ? style.messageOwner
+                                  : style.messageOther
+                              }
+                            >
+                              <p>{m.text}</p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+
+                      <form className={style.chatInput} onSubmit={handleSend}>
+                        <input
+                          type="text"
+                          placeholder="Type a message"
+                          onChange={(e: any) => setMessageTxt(e.target.value)}
+                          value={messageTxt}
+                          required
+                        />
+
+                        <button type="submit" disabled={isLoading}>
+                          {isLoading ? (
+                            <CircularProgress color="inherit" size={20} />
+                          ) : (
+                            <Image src={Send} alt="send" />
+                          )}
+                        </button>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </>
           )}
         </div>
       )}

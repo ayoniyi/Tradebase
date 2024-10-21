@@ -22,17 +22,18 @@
   //border: 1px solid red;
   h1 {
     font-size: 4em;
+    font-family: "Helvetica Neue", "Inter", sans-serif;
     letter-spacing: -4px;
     //font-family: $thin;
     //font-family: "Helvetica Neue 700", sans-serif;
-    font-weight: 400;
+    font-weight: 800;
     span {
       color: $blueMain;
     }
   }
   p {
     margin: 0.5em 0 1em 0;
-    font-size: 1.6em;
+    font-size: 1.25em;
     color: #667185;
     width: 90%;
     font-weight: 400;

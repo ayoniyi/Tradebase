@@ -84,6 +84,7 @@ const Marketplace = () => {
                         key={trade?.userId}
                         trade={trade}
                         handleTrade={handleTrade}
+                        cardAction="Buy"
                       />
                     ) : (
                       ""
@@ -108,6 +109,7 @@ const Marketplace = () => {
                         key={trade?.userId}
                         trade={trade}
                         handleTrade={handleTrade}
+                        cardAction="Buy"
                       />
                     ) : (
                       ""
@@ -132,6 +134,7 @@ const Marketplace = () => {
                         key={trade?.userId}
                         trade={trade}
                         handleTrade={handleTrade}
+                        cardAction="Buy"
                       />
                     ) : (
                       ""
