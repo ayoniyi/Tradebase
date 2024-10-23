@@ -22,11 +22,16 @@ const Header = () => {
   const { disconnect } = useDisconnect();
   const [showConnect, setShowConnect] = useState(false);
   const [showCreate, setShowCreate] = useState(false);
-  const [userState] = useContext<any>(UserContext);
+  const [userState, setUserState] = useContext<any>(UserContext);
   const handleConnect = () => {
     if (address) {
       disconnect();
       toast.success("Wallet disconnected");
+      setUserState({
+        ...userState,
+        user: null,
+        address: null,
+      });
     } else {
       //connect wallet
       setShowConnect(true);
@@ -40,8 +45,7 @@ const Header = () => {
     setShowCreate(false);
   };
 
-  console.log("address from wagmi", address);
-  console.log("address from context", userState?.address);
+  const addressContext = address || userState?.address;
 
   return (
     <>
@@ -58,7 +62,7 @@ const Header = () => {
             <Image src={Logo} alt="tradebase" />
           </Link>
           <nav className={style.nav}>
-            {address && (
+            {addressContext && (
               <div className={style.navLinks}>
                 <Link href="/marketplace">
                   {" "}
