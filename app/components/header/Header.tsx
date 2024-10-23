@@ -102,9 +102,9 @@ const Header = () => {
                   />
                 </svg>
                 <p>
-                  {address && !showDisconnect
-                    ? shortenHex(address)
-                    : address && showDisconnect
+                  {addressContext && !showDisconnect
+                    ? shortenHex(addressContext)
+                    : addressContext && showDisconnect
                       ? "Disconnect"
                       : "Connect"}
                 </p>

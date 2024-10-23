@@ -184,9 +184,15 @@ const SingleTrade = () => {
   // create countdown of 10 minutes, on countdown completion update trade status back to available
   const newTransactionRef = collection(db, "transactions");
 
+  const addressContext = address || userState?.address;
+
   const createEscrow = async () => {
-    if (address && tradeInfo) {
+    if (addressContext && tradeInfo) {
       setIsLoading(true);
+      // show info
+      console.log("seller>", tradeInfo?.sellerAddress.toString());
+      console.log("arbiter>", process.env.NEXT_PUBLIC_ARBITER);
+
       // seller address //arbiter address //amount
       try {
         const itemAmount = ethers.utils.parseEther(tradeInfo?.price.toString());
@@ -223,7 +229,7 @@ const SingleTrade = () => {
     });
   });
   const makePayment = async () => {
-    if (address && tradeInfo) {
+    if (addressContext && tradeInfo) {
       setIsLoading(true);
 
       try {
@@ -268,7 +274,7 @@ const SingleTrade = () => {
     });
   });
   const releaseFunds = async () => {
-    if (address && tradeInfo) {
+    if (addressContext && tradeInfo) {
       setIsLoading(true);
 
       try {
