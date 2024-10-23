@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import style from "./Header.module.scss";
 import Image from "next/image";
 import Logo from "@/app/logo.svg";
@@ -12,14 +12,17 @@ import { AnimatePresence } from "framer-motion";
 import Connect from "../connectWallet/Connect";
 import toast from "react-hot-toast";
 import Create from "../createTrade/Create";
+import { UserContext } from "@/app/context/UserContext";
 //import { ConnectButton } from "@rainbow-me/rainbowkit";
 
 const Header = () => {
   const { address } = useAccount();
+
   const [showDisconnect, setShowDisconnect] = useState(false);
   const { disconnect } = useDisconnect();
   const [showConnect, setShowConnect] = useState(false);
   const [showCreate, setShowCreate] = useState(false);
+  const [userState] = useContext<any>(UserContext);
   const handleConnect = () => {
     if (address) {
       disconnect();
@@ -36,6 +39,9 @@ const Header = () => {
     setShowConnect(false);
     setShowCreate(false);
   };
+
+  console.log("address from wagmi", address);
+  console.log("address from context", userState?.address);
 
   return (
     <>

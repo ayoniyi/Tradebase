@@ -120,10 +120,11 @@ const Connect = (props: any) => {
         ...doc.data(),
         userId: doc.id,
       }));
-      console.log("docsQuery", docList[0]);
+      // console.log("docsQuery", docList[0]);
       setUserState({
         ...userState,
         user: docList[0],
+        address: address,
       });
       //props.handleCreate();
 

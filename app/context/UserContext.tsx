@@ -5,18 +5,19 @@ import { db } from "../utils/firebase";
 
 interface UserState {
   user: any;
-  isFetching: boolean;
-  error: boolean;
+  address: any;
 }
 
 const userString =
   typeof window !== "undefined" ? localStorage.getItem("userContext") : null;
 const user = userString ? JSON.parse(userString) : null;
+const addString =
+  typeof window !== "undefined" ? localStorage.getItem("addContext") : null;
+//const add = addString ? JSON.parse(addString) : null;
 
 const INITIAL_STATE: UserState = {
   user: user,
-  isFetching: false,
-  error: false,
+  address: addString ? addString : null,
 };
 
 export const UserContext = createContext<
@@ -33,8 +34,9 @@ export const UserContextProvider: React.FC<UserContextProviderProps> = ({
   const [userState, setUserState] = useState<UserState>(INITIAL_STATE);
 
   useEffect(() => {
-    localStorage.setItem("userContext", JSON.stringify(userState.user));
-  }, [userState.user]);
+    localStorage.setItem("userContext", JSON.stringify(userState?.user));
+    localStorage.setItem("addContext", userState?.address);
+  }, [userState]);
 
   return (
     <UserContext.Provider value={[userState, setUserState]}>

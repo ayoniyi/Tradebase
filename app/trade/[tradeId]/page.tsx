@@ -209,7 +209,7 @@ const SingleTrade = () => {
       }
     } else {
       //connect wallet
-      await connectAsync({ chainId: baseSepolia.id, connector: injected() });
+      //await connectAsync({ chainId: baseSepolia.id, connector: injected() });
     }
   };
 
