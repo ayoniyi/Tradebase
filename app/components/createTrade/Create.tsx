@@ -298,8 +298,8 @@ const Create = (props: any) => {
             <div
               onClick={disconnect}
               className={style.connectedBx}
-              onMouseEnter={(e) => setShowDisconnect(true)}
-              onMouseLeave={(e) => setShowDisconnect(false)}
+              // onMouseEnter={(e) => setShowDisconnect(true)}
+              // onMouseLeave={(e) => setShowDisconnect(false)}
             >
               {!showDisconnect ? (
                 <>

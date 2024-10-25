@@ -16,7 +16,7 @@ import { UserContext } from "@/app/context/UserContext";
 //import { ConnectButton } from "@rainbow-me/rainbowkit";
 
 const Header = () => {
-  const { address } = useAccount();
+  const { address, isConnected } = useAccount();
 
   const [showDisconnect, setShowDisconnect] = useState(false);
   const { disconnect } = useDisconnect();
@@ -42,8 +42,18 @@ const Header = () => {
   // console.log("state, address", userState?.address);
   // console.log("address hook", address);
 
-  const handleCreate = () => {
-    setShowCreate(true);
+  // const handleCreate = () => {
+  //   setShowCreate(true);
+  // };
+  const handleModals = () => {
+    if (isConnected) {
+      setShowConnect(false);
+      setShowCreate(true);
+    } else {
+      setShowCreate(false);
+      setShowConnect(true);
+    }
+    //setShowConnect(true);
   };
   const handleClose = () => {
     setShowConnect(false);
@@ -79,7 +89,7 @@ const Header = () => {
             )}
           </nav>
           <div className={style.navBtn}>
-            <button onClick={handleCreate}>Create trade</button>
+            <button onClick={handleModals}>Create trade</button>
 
             <button
               onClick={handleConnect}
