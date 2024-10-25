@@ -4,7 +4,7 @@ export const shortenAddress = (address: any) =>
 export const shortenAddressSmall = (address: any) =>
   `${address?.slice(0, 7)}...`;
 
-export const shortenHex = (hex: string): string => {
+export const shortenHex = (hex: any): any => {
   if (hex?.length < 7) {
     throw new Error("Hex string must be at least 7 characters long.");
   }

@@ -26,17 +26,22 @@ const Header = () => {
   const handleConnect = () => {
     if (address) {
       disconnect();
-      toast.success("Wallet disconnected");
       setUserState({
         ...userState,
         user: null,
         address: null,
       });
+      toast.success("Wallet disconnected");
     } else {
       //connect wallet
       setShowConnect(true);
     }
   };
+
+  const addressContext = address || userState?.address;
+  // console.log("state, address", userState?.address);
+  // console.log("address hook", address);
+
   const handleCreate = () => {
     setShowCreate(true);
   };
@@ -44,8 +49,6 @@ const Header = () => {
     setShowConnect(false);
     setShowCreate(false);
   };
-
-  const addressContext = address || userState?.address;
 
   return (
     <>
@@ -102,12 +105,14 @@ const Header = () => {
                   />
                 </svg>
                 <p>
-                  {addressContext && !showDisconnect
-                    ? shortenHex(addressContext)
-                    : addressContext && showDisconnect
+                  {address && !showDisconnect
+                    ? shortenHex(address)
+                    : //addressContext
+                      address && showDisconnect
                       ? "Disconnect"
                       : "Connect"}
                 </p>
+                {/* <p></p> */}
               </>
             </button>
 

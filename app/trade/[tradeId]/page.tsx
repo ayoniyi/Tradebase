@@ -1,5 +1,5 @@
 "use client";
-import React, { use, useContext, useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import style from "./TradePage.module.scss";
 import Image from "next/image";
 
@@ -36,6 +36,7 @@ import ABI from "../../utils/abi/escrow.json";
 import CardSkeleton from "@/app/components/Skeleton/CardSkeleton";
 import { useAccount } from "wagmi";
 import ItemBox from "./ItemBox";
+import { useWaitForTransactionReceipt, useWriteContract } from "wagmi";
 
 const SingleTrade = () => {
   const [contract, setContract] = useState<any>();
@@ -47,10 +48,13 @@ const SingleTrade = () => {
   const [messageTxt, setMessageTxt] = useState<any>("");
   const [messages, setMessages] = useState<any>();
   const [isLoading, setIsLoading] = useState(false);
+  const [triggering, setTriggering] = useState(false);
   const [transactionId, setTransactionId] = useState<any>();
   const tradeId = useParams()?.tradeId;
   const [escrowId, setEscrowId] = useState<any>();
   const [userState] = useContext<any>(UserContext);
+
+  //
 
   const queryClient = useQueryClient();
   const ref = useRef<null | HTMLDivElement>(null);
@@ -66,9 +70,17 @@ const SingleTrade = () => {
       duration: 3500,
     });
   });
-
+  //let window: any;
+  const emitMutation = useUpdateDoc(docRef, () => {
+    queryClient.invalidateQueries({ queryKey: ["singleTrade"] });
+    // toast.success("Trade updated", {
+    //   duration: 3500,
+    // });
+  });
+  //let window: any;
   const contractAddress = "0xd6560c88Bb3A11d8555d11510482D5A06834990d";
-  const provider = new Web3Provider(window.ethereum);
+  const provider = new ethers.providers.Web3Provider(window.ethereum);
+  //const provider = new Web3Provider(window.ethereum);
   const signer = provider.getSigner();
   const contractObj = new ethers.Contract(contractAddress, ABI, signer);
 
@@ -145,7 +157,7 @@ const SingleTrade = () => {
         const updateFields = {
           tradeBalance: ethers.utils.formatEther(formatAmt),
         };
-        tradeMutation.mutate(updateFields);
+        emitMutation.mutate(updateFields);
       });
     };
     onDeposit();
@@ -160,7 +172,7 @@ const SingleTrade = () => {
         const updateFields = {
           tradeBalance: 0,
         };
-        tradeMutation.mutate(updateFields);
+        emitMutation.mutate(updateFields);
       });
     };
     onTransactionComplete();
@@ -218,8 +230,43 @@ const SingleTrade = () => {
       //await connectAsync({ chainId: baseSepolia.id, connector: injected() });
     }
   };
+  //
+  const { data: hash, error, writeContract } = useWriteContract();
+  const { isSuccess: isConfirmed } = useWaitForTransactionReceipt({
+    hash,
+  });
+  const createEscrowWagmi = async () => {
+    const itemAmount = ethers.utils.parseEther(tradeInfo?.price.toString());
+    //setIsLoading(true);
+    try {
+      //setIsLoading(true);
+      await writeContract({
+        address: contractAddress,
+        functionName: "createEscrow",
+        abi: ABI,
+        args: [
+          tradeInfo?.sellerAddress, // seller
+          process.env.NEXT_PUBLIC_ARBITER, // arbiter
+          itemAmount,
+        ],
+      });
+      if (!isConfirmed && !error) setTriggering(false);
+      // if (isConfirmed || error) setIsLoading(false);
+      //!isPending && setIsLoading(false);
+      console.log("waagmi, data", hash);
+    } catch (error) {
+      console.log("error", error);
+      //setIsLoading(false);
+    }
+  };
 
-  //console.log("transaction mutation", transactionMutation);
+  useEffect(() => {
+    if (!isConfirmed && !error) {
+      setTriggering(false);
+    } else {
+      setTriggering(true);
+    }
+  }, [isConfirmed, error]);
 
   //make payment
   const payMutation = useUpdateDoc(docRef, () => {
@@ -243,12 +290,11 @@ const SingleTrade = () => {
         await call.wait();
         // stop the countdown
         payMutation.mutate({ status: "awaiting item" });
-
-        setIsLoading(false);
       } catch (err: any) {
         console.log("err", err);
-        setIsLoading(false);
+        //setIsLoading(false);
       }
+      // setIsLoading(false);
     } else {
       //connect wallet
       await connectAsync({ chainId: baseSepolia.id, connector: injected() });
@@ -275,7 +321,7 @@ const SingleTrade = () => {
   });
   const releaseFunds = async () => {
     if (addressContext && tradeInfo) {
-      setIsLoading(true);
+      //setIsLoading(true);
 
       try {
         setContract(contractObj);
@@ -287,10 +333,10 @@ const SingleTrade = () => {
         setBalance(0);
         releaseMutation.mutate({ status: "complete" });
         //console.log("create ecr>>", call);
-        setIsLoading(false);
+        //setIsLoading(false);
       } catch (err: any) {
         console.log("err", err);
-        setIsLoading(false);
+        //setIsLoading(false);
       }
     } else {
       //connect wallet
@@ -298,20 +344,6 @@ const SingleTrade = () => {
     }
   };
 
-  // useEffect(() => {
-  //   if (currentTransactionId) {
-  //     const unSub = onSnapshot(
-  //       doc(db, "transactions", currentTransactionId),
-  //       (doc) => {
-  //         doc.exists() && setMessages(doc.data().messages);
-  //       }
-  //     );
-
-  //     return () => {
-  //       unSub();
-  //     };
-  //   }
-  // }, [currentTransactionId]);
   const previousMessagesRef = useRef([]);
 
   useEffect(() => {
@@ -365,7 +397,7 @@ const SingleTrade = () => {
   //send message
   const handleSend = async (e: any) => {
     const { userId, address, email } = userState?.user;
-    setIsLoading(true);
+    //setIsLoading(true);
     e.preventDefault();
     try {
       await updateDoc(doc(db, "transactions", currentTransactionId), {
@@ -379,10 +411,10 @@ const SingleTrade = () => {
       });
 
       setMessageTxt("");
-      setIsLoading(false);
+      //setIsLoading(false);
     } catch (err) {
       console.log(err);
-      setIsLoading(false);
+      //setIsLoading(false);
     }
   };
 
@@ -491,7 +523,8 @@ const SingleTrade = () => {
                   <div className={style.tradeCol}>
                     <div className={style.balanceBox}>
                       <h3>
-                        {tradeInfo?.tradeBalance !== 0
+                        {tradeInfo?.tradeBalance &&
+                        tradeInfo?.tradeBalance !== 0
                           ? tradeInfo?.tradeBalance
                           : balance}{" "}
                         ETH
