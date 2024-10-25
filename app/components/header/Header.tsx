@@ -31,6 +31,8 @@ const Header = () => {
         user: null,
         address: null,
       });
+      window.localStorage.removeItem("userContext");
+      window.localStorage.removeItem("addContext");
       toast.success("Wallet disconnected");
     } else {
       //connect wallet
@@ -39,8 +41,9 @@ const Header = () => {
   };
 
   const addressContext = address || userState?.address;
-  // console.log("state, address", userState?.address);
-  // console.log("address hook", address);
+  console.log("state, address", userState?.address);
+  console.log("address hook", address);
+  console.log("addContext", addressContext);
 
   // const handleCreate = () => {
   //   setShowCreate(true);
@@ -75,7 +78,7 @@ const Header = () => {
             <Image src={Logo} alt="tradebase" />
           </Link>
           <nav className={style.nav}>
-            {addressContext && (
+            {addressContext && addressContext !== "null" && (
               <div className={style.navLinks}>
                 <Link href="/marketplace">
                   {" "}
