@@ -287,9 +287,7 @@ const SingleTrade = () => {
   const releaseFunds = async () => {
     if (addressContext && tradeInfo) {
       //setIsLoading(true);
-      toast.loading("Releasing funds...", {
-        duration: 5500,
-      });
+      const releaseToast = toast.loading("Releasing funds...");
       try {
         setContract(contractObj);
         const call = await contractObj.completeTransaction(currentEscrowId, {
@@ -300,9 +298,12 @@ const SingleTrade = () => {
         releaseMutation.mutate({ status: "complete" });
         //console.log("create ecr>>", call);
         //setIsLoading(false);
+
+        toast.dismiss(releaseToast);
       } catch (err: any) {
         console.log("err", err);
         //setIsLoading(false);
+        toast.dismiss(releaseToast);
       }
     } else {
       //connect wallet

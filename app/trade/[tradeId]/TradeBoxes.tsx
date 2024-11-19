@@ -99,7 +99,7 @@ const TradeBoxes = ({
                     <button
                       onClick={releaseFunds}
                       className={style.shareBtn}
-                      disabled={releaseMutation.isPending || isLoading}
+                      disabled={releaseMutation.isPending}
                     >
                       Release funds
                     </button>
