@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import style from "./Trade.module.scss";
 import Link from "next/link";
 import { shortenHex } from "@/app/utils/formatting";
@@ -16,12 +16,25 @@ const TradeBoxes = ({
   userState,
   balance,
   messages,
-  ref,
   handleSend,
   messageTxt,
   handleMsgTxt,
   isLoading,
+  makePayment,
+  payMutation,
+  releaseFunds,
+  releaseMutation,
+  tokensSent,
+  sentMutation,
 }: any) => {
+  const ref = useRef<null | HTMLDivElement>(null);
+  useEffect(() => {
+    ref.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+  const isSeller = tradeInfo?.sellerAddress === userState?.user?.address;
+
+  console.log(tradeInfo?.status, "trade info");
+
   return (
     <div className={style.boxesContent}>
       <div className={style.tradeBoxes}>
@@ -53,20 +66,127 @@ const TradeBoxes = ({
                 <span>ETH</span>
               </h3>
             </div>
-            <div className={style.escBtn}>
-              <button>Make payment</button>
+            {!isSeller ? (
+              <div className={style.escBtn}>
+                {tradeInfo?.status === "awaiting payment" ? (
+                  <button
+                    onClick={makePayment}
+                    disabled={payMutation.isPending || isLoading}
+                    //className={style.escBtn}
+                  >
+                    Make payment
+                  </button>
+                ) : tradeInfo?.status === "awaiting item" ? (
+                  <p
+                    style={{
+                      fontSize: "14px",
+                      fontStyle: "italic",
+                      color: "#fff",
+                    }}
+                  >
+                    Awaiting receipt of items...
+                  </p>
+                ) : tradeInfo?.status === "awaiting release" ? (
+                  <>
+                    {/* <p
+                      style={{
+                        fontSize: "13px",
+                        color: "gray",
+                      }}
+                    >
+                      Click this only when you receive what you paid for
+                    </p> */}
+                    <button
+                      onClick={releaseFunds}
+                      className={style.shareBtn}
+                      disabled={releaseMutation.isPending || isLoading}
+                    >
+                      Release funds
+                    </button>
+                  </>
+                ) : (
+                  ""
+                )}
+              </div>
+            ) : (
+              <div className={style.escBtn}>
+                {tradeInfo?.status === "awaiting item" ? (
+                  <button
+                    onClick={tokensSent}
+                    disabled={
+                      tradeInfo?.status !== "awaiting item" ||
+                      sentMutation.isPending
+                    }
+                    //className={style.escBtn}
+                  >
+                    Tokens sent
+                  </button>
+                ) : tradeInfo?.status === "awaiting release" ? (
+                  <p
+                    style={{
+                      fontSize: "14px",
+                      fontStyle: "italic",
+                      color: "#fff",
+                    }}
+                  >
+                    Awaiting release of funds...
+                  </p>
+                ) : (
+                  ""
+                )}
+                {/* {tradeInfo?.status !== "complete" ? (
+                  <button
+                    //onClick={createEscrow}
+                    className={style.backBtn}
+                  >
+                    Open dispute
+                  </button>
+                ) : (
+                  <button disabled className={style.shareBtn}>
+                    Transaction complete
+                  </button>
+                )} */}
+              </div>
+            )}
+          </div>
+          {!isSeller && (
+            <div className={style.sellerBox}>
+              <Image src={Seller} alt="seller" />
+              <p>Seller {shortenHex(tradeInfo?.sellerAddress) + " "}&nbsp; </p>
+              <span> +&nbsp; </span>
+              <Image className={style.ml4} src={You} alt="you" />
+              <span>You</span>
             </div>
-          </div>
-          <div className={style.sellerBox}>
-            <Image src={Seller} alt="seller" />
-            <p>Seller {shortenHex(tradeInfo?.sellerAddress) + " "}&nbsp; </p>
-            <span> +&nbsp; </span>
-            <Image className={style.ml4} src={You} alt="you" />
-            <span>You</span>
-          </div>
+          )}
+
           <div className={style.statusTxt}>
-            <Image src={clock} alt="clock" />
-            <p>Escrow created : seller waiting for your payment</p>
+            {tradeInfo?.status !== "complete" && (
+              <Image src={clock} alt="clock" />
+            )}
+            {tradeInfo?.status === "awaiting payment" ? (
+              <p>
+                Payment made :{" "}
+                {!isSeller
+                  ? "seller waiting for your payment"
+                  : "waiting for buyer's payment"}
+              </p>
+            ) : tradeInfo?.status === "awaiting item" ? (
+              <p>
+                Payment made :{" "}
+                {!isSeller
+                  ? "awaiting items from seller"
+                  : "please send items to buyer"}
+              </p>
+            ) : tradeInfo?.status === "awaiting release" ? (
+              <p>
+                Tokens sent :{" "}
+                {!isSeller
+                  ? "awaiting release of funds"
+                  : "awaiting release of funds"}
+              </p>
+            ) : (
+              <p>Transaction complete</p>
+            )}
           </div>
           <div className={style.tradeTxt}>
             <p className={style.introTxt}>
@@ -102,7 +222,7 @@ const TradeBoxes = ({
         </div>
         <div className={style.chatBx}>
           <div className={style.chatTop}>
-            <h3>Chat with seller</h3>
+            <h3>Chat with {!isSeller ? "seller" : "buyer"} </h3>
             <div className={style.addressBox}>
               <>
                 <svg
@@ -125,8 +245,9 @@ const TradeBoxes = ({
               </>
             </div>
           </div>
-          <Image src={warn} alt="warning" className={style.warning} />
+
           <div className={style.chatMessages}>
+            <Image src={warn} alt="warning" className={style.warning} />
             {messages?.map((m: any) => (
               <div
                 ref={ref}

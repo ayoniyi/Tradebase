@@ -60,9 +60,9 @@ const SingleTrade = () => {
 
   const docRef = doc(db, `trades/${tradeId}`);
   const docsQuery = useDocQuery(["singleTrade", tradeId], docRef, 10000);
-  const tradeInfo = docsQuery?.data?.data();
+  const tradeInfo: any = docsQuery?.data?.data();
 
-  console.log("tradeInfo", tradeInfo);
+  //console.log("tradeInfo", tradeInfo);
 
   //update trade
   const tradeMutation = useUpdateDoc(docRef, () => {
@@ -287,10 +287,11 @@ const SingleTrade = () => {
   const releaseFunds = async () => {
     if (addressContext && tradeInfo) {
       //setIsLoading(true);
-
+      toast.loading("Releasing funds...", {
+        duration: 5500,
+      });
       try {
         setContract(contractObj);
-
         const call = await contractObj.completeTransaction(currentEscrowId, {
           gasLimit: 5000000,
         });
@@ -397,105 +398,116 @@ const SingleTrade = () => {
         ) : (
           <>
             {tradeInfo?.tradeOption === "Token swap" ? (
-              // <div className={style.content}>
-              //   <div className={style.top}>
-              //     <Link href="/marketplace">
-              //       <svg
-              //         width="24"
-              //         height="24"
-              //         viewBox="0 0 24 24"
-              //         fill="none"
-              //         xmlns="http://www.w3.org/2000/svg"
-              //       >
-              //         <path
-              //           d="M2.29289 12.7071C1.90237 12.3166 1.90237 11.6834 2.29289 11.2929L6.29289 7.29289C6.68342 6.90237 7.31658 6.90237 7.70711 7.29289C8.09763 7.68342 8.09763 8.31658 7.70711 8.70711L5.41421 11L21 11C21.5523 11 22 11.4477 22 12C22 12.5523 21.5523 13 21 13L5.41421 13L7.70711 15.2929C8.09763 15.6834 8.09763 16.3166 7.70711 16.7071C7.31658 17.0976 6.68342 17.0976 6.29289 16.7071L2.29289 12.7071Z"
-              //           fill="black"
-              //         />
-              //       </svg>
-              //     </Link>
+              <>
+                {tradeInfo?.status === "available" ? (
+                  <div className={style.content}>
+                    <div className={style.top}>
+                      <Link href="/marketplace">
+                        <svg
+                          width="24"
+                          height="24"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M2.29289 12.7071C1.90237 12.3166 1.90237 11.6834 2.29289 11.2929L6.29289 7.29289C6.68342 6.90237 7.31658 6.90237 7.70711 7.29289C8.09763 7.68342 8.09763 8.31658 7.70711 8.70711L5.41421 11L21 11C21.5523 11 22 11.4477 22 12C22 12.5523 21.5523 13 21 13L5.41421 13L7.70711 15.2929C8.09763 15.6834 8.09763 16.3166 7.70711 16.7071C7.31658 17.0976 6.68342 17.0976 6.29289 16.7071L2.29289 12.7071Z"
+                            fill="black"
+                          />
+                        </svg>
+                      </Link>
 
-              //     <h2>{tradeInfo?.tradeOption}</h2>
-              //   </div>
-              //   <div className={style.sellerBox}>
-              //     <Image src={Seller} alt="seller" />
-              //     <p>Seller {shortenHex(tradeInfo?.sellerAddress)}</p>
-              //   </div>
+                      <h2>{tradeInfo?.tradeOption}</h2>
+                    </div>
+                    <div className={style.sellerBox}>
+                      <Image src={Seller} alt="seller" />
+                      <p>Seller {shortenHex(tradeInfo?.sellerAddress)}</p>
+                    </div>
 
-              //   <div className={style.tradeTxt}>
-              //     <p className={style.introTxt}>
-              //       <span>
-              //         {tradeInfo?.amountOfToken +
-              //           " " +
-              //           tradeInfo?.tokenToBeSold}
-              //       </span>{" "}
-              //       for sale @ <span>{tradeInfo?.price} ETH</span>{" "}
-              //     </p>
-              //     <p className={style.tradeDesc}>
-              //       Funds will be held in a latent wallet until you confirm
-              //       receipt of tokens, the funds would be realeased to the
-              //       seller thereafter.
-              //     </p>
-              //   </div>
-              //   <div className={style.tradeBreakdown}>
-              //     <div className={style.breakRow}>
-              //       <p>Token for sale</p>
-              //       <p>{tradeInfo?.tokenToBeSold}</p>
-              //     </div>
-              //     <div className={style.breakRow}>
-              //       <p>Token quantity for sale</p>
-              //       <p>{tradeInfo?.amountOfToken.toString()}</p>
-              //     </div>
-              //     <div className={style.breakRow}>
-              //       <p>Price</p>
-              //       <p>{tradeInfo?.price.toString()} ETH</p>
-              //     </div>
-              //     <div className={style.breakRow}>
-              //       <p>Fees</p>
-              //       <p>1 %</p>
-              //     </div>
-              //   </div>
-              //   {tradeInfo?.sellerAddress !== userState?.user?.address ? (
-              //     <div className={style.trBtns}>
-              //       <button
-              //         className={style.cancelBtn}
-              //         onClick={() => router.back()}
-              //       >
-              //         Cancel
-              //       </button>
+                    <div className={style.tradeTxt}>
+                      <p className={style.introTxt}>
+                        <span>
+                          {tradeInfo?.amountOfToken +
+                            " " +
+                            tradeInfo?.tokenToBeSold}
+                        </span>{" "}
+                        for sale @ <span>{tradeInfo?.price} ETH</span>{" "}
+                      </p>
+                      <p className={style.tradeDesc}>
+                        Funds will be held in a latent wallet until you confirm
+                        receipt of tokens, the funds would be realeased to the
+                        seller thereafter.
+                      </p>
+                    </div>
+                    <div className={style.tradeBreakdown}>
+                      <div className={style.breakRow}>
+                        <p>Token for sale</p>
+                        <p>{tradeInfo?.tokenToBeSold}</p>
+                      </div>
+                      <div className={style.breakRow}>
+                        <p>Token quantity for sale</p>
+                        <p>{tradeInfo?.amountOfToken.toString()}</p>
+                      </div>
+                      <div className={style.breakRow}>
+                        <p>Price</p>
+                        <p>{tradeInfo?.price.toString()} ETH</p>
+                      </div>
+                      <div className={style.breakRow}>
+                        <p>Fees</p>
+                        <p>1 %</p>
+                      </div>
+                    </div>
+                    {tradeInfo?.sellerAddress !== userState?.user?.address ? (
+                      <div className={style.trBtns}>
+                        <button
+                          className={style.cancelBtn}
+                          onClick={() => router.back()}
+                        >
+                          Cancel
+                        </button>
 
-              //       <button
-              //         onClick={createEscrow}
-              //         className={style.enterBtn}
-              //         disabled={
-              //           tradeMutation.isPending ||
-              //           transactionMutation.isPending ||
-              //           isLoading
-              //         }
-              //       >
-              //         {tradeMutation.isPending ||
-              //         transactionMutation.isPending ||
-              //         isLoading ? (
-              //           <CircularProgress color="inherit" size={20} />
-              //         ) : (
-              //           "Confirm and enter trade"
-              //         )}
-              //       </button>
-              //     </div>
-              //   ) : (
-              //     ""
-              //   )}
-              // </div>
-              <TradeBoxes
-                tradeInfo={tradeInfo}
-                userState={userState}
-                balance={balance}
-                messages={messages}
-                messageTxt={messageTxt}
-                handleMsgTxt={handleMsgTxt}
-                ref={ref}
-                isLoading={isLoading}
-                handleSend={handleSend}
-              />
+                        <button
+                          onClick={createEscrow}
+                          className={style.enterBtn}
+                          disabled={
+                            tradeMutation.isPending ||
+                            transactionMutation.isPending ||
+                            isLoading
+                          }
+                        >
+                          {tradeMutation.isPending ||
+                          transactionMutation.isPending ||
+                          isLoading ? (
+                            <CircularProgress color="inherit" size={20} />
+                          ) : (
+                            "Confirm and enter trade"
+                          )}
+                        </button>
+                      </div>
+                    ) : (
+                      ""
+                    )}
+                  </div>
+                ) : (
+                  <TradeBoxes
+                    tradeInfo={tradeInfo}
+                    userState={userState}
+                    balance={balance}
+                    messages={messages}
+                    messageTxt={messageTxt}
+                    handleMsgTxt={handleMsgTxt}
+                    ref={ref}
+                    isLoading={isLoading}
+                    handleSend={handleSend}
+                    makePayment={makePayment}
+                    payMutation={payMutation}
+                    releaseFunds={releaseFunds}
+                    releaseMutation={releaseMutation}
+                    tokensSent={tokensSent}
+                    sentMutation={sentMutation}
+                  />
+                )}
+              </>
             ) : (
               <div className={style.content}>
                 <div className={style.top}>
