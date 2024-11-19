@@ -120,8 +120,8 @@ contract EscrowV2 {
     // Ensure the contract's balance is sufficient
     require(address(this).balance >= transactions[transactionId].amount, "Insufficient contract balance");
 
-    // Calculate the payment to the seller (95% of the escrow amount)
-    uint256 payment = (transactions[transactionId].amount * 95) / 100;
+    // Calculate the payment to the seller (99% of the escrow amount)
+    uint256 payment = (transactions[transactionId].amount * 99) / 100;
     //uint256 payment = (transactions[transactionId].amount);
 
     // Calculate the payment to the arbiter (5% of the escrow amount)
@@ -139,10 +139,10 @@ contract EscrowV2 {
 
 
     function arbiterCompleteTransaction(uint256 transactionId) external onlyArbiter(transactionId) inState(transactionId, EscrowState.Funded) {
-        // Calculate the payment to the seller (95% of the escrow amount)
-        uint256 payment = (transactions[transactionId].amount * 95) / 100;
+        // Calculate the payment to the seller (99% of the escrow amount)
+        uint256 payment = (transactions[transactionId].amount * 99) / 100;
 
-        // Calculate the payment to the arbiter (5% of the escrow amount)
+        // Calculate the payment to the arbiter (1% of the escrow amount)
         uint256 fee = transactions[transactionId].amount - payment;
 
         // Transfer funds to the seller and arbiter

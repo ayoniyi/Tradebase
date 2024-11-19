@@ -19,9 +19,11 @@
 .cardSk {
   background: #313131a4;
   //background: #b4b4b4;
-  width: 65%;
+  width: 55%;
   height: 60vh;
-  margin: 6em auto;
+  //margin: 6em auto;
+  margin: 0 auto;
   border-radius: 8px;
+  border-radius: 28px;
   animation: skeleton 1.5s ease infinite alternate;
 }

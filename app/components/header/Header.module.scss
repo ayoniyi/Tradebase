@@ -5,7 +5,7 @@
   position: fixed;
   top: 0;
   width: 100%;
-  //z-index: 1;
+  z-index: 2;
   padding: 1em 0;
   background: #fff;
 }
@@ -20,37 +20,72 @@
 .logo {
   width: 20%;
 }
+// .nav {
+//   //width: 28%;
+//   width: 20%;
+//   //border: 1px solid rgb(187, 126, 126);
+//   font-family: $thin;
+// }
+
 .nav {
-  //width: 28%;
-  width: 20%;
-  //border: 1px solid rgb(187, 126, 126);
-  font-family: $thin;
+  width: 28%;
+  width: 34%;
+  background: #101928;
+  border-radius: 16px;
+  padding: 0.5em;
+  height: 49px;
+  color: #fff;
+  @include flexRegular(row, flex-start);
 }
 .navLinks {
   @include flexRegular(row, space-between);
+  //border: 1px solid #fff;
+  width: 100%;
+  height: 100%;
+}
+.navLink,
+.navLinkActive {
+  @include flexRegular(row, center);
+  //border: 1px solid #fff;
+  // width: 24%;
+  height: 100%;
+
+  padding: 0.5em 1em;
   p {
-    font-size: 1.2em;
+    font-size: 0.9em;
+  }
+}
+.navLinkActive {
+  background: $blueMain;
+  border-radius: 10px;
+  img {
+    margin-right: 8px;
   }
 }
 
 .navBtn {
   width: 25%;
-  display: flex;
-  justify-content: space-between;
-  button {
-    &:nth-child(1) {
-      @include btnRegular(47%);
-      min-width: 135px;
-      font-size: 1em;
-    }
-    &:nth-child(2) {
-      @include btnOutline(47%);
-      @include flexRegular(row, center);
-      min-width: 135px;
-      font-size: 1em;
-      border: 1px solid $btnColor;
-      color: $btnColor;
-    }
+  @include flexRegular(row, flex-end);
+  //justify-content: space-between;
+  //border: 1px solid #000;
+
+  .mainBtn {
+    @include btnRegular(47%);
+    min-width: 135px;
+    font-size: 1em;
+    align-self: flex-end;
+    //margin-left: 43%;
+  }
+  .walletBtn {
+    @include btnOutline(47%);
+    @include flexRegular(row, center);
+    background: #eef6ff;
+
+    min-width: 135px;
+    font-size: 0.95em;
+    border: none;
+    color: $btnColor;
+    margin-right: 1.1em;
   }
 }
 

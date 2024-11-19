@@ -2,23 +2,22 @@
 import React, { useState } from "react";
 import style from "./Marketplace.module.scss";
 import Header from "../components/header/Header";
-import TradeCard from "../components/TradeCard/TokenCard";
 import { fetchDocsQuery } from "../utils/functions/firebaseFunctions";
 import { collection } from "firebase/firestore";
 import { db } from "../utils/firebase";
 import TradeModal from "./TradeModal";
 import { AnimatePresence } from "framer-motion";
-import ProductCard from "../components/TradeCard/ProductCard";
 import TradeCardSkeleton from "../components/Skeleton/TradeCardSkeleton";
+import Card from "../components/TradeCard/Card";
 
 const Marketplace = () => {
   const [showModal, setShowModal] = useState(false);
   const [currentTrade, setCurrentTrade] = useState<any>();
-  const [tradeType, setTradeType] = useState("Tokens");
+  const [tradeType, setTradeType] = useState("All");
   //fetch trades
   const tradesCollectionRef = collection(db, "trades");
   const tradesQuery = fetchDocsQuery(["tradesQuery"], tradesCollectionRef);
-  //console.log(tradesQuery?.data, "trades>>");
+  console.log(tradesQuery?.data, "trades>>");
   const handleTrade = (trade: any) => {
     setCurrentTrade(trade);
     setShowModal(true);
@@ -34,12 +33,22 @@ const Marketplace = () => {
           <TradeModal currentTrade={currentTrade} handleClose={handleClose} />
         )}
       </AnimatePresence>
-      <Header />
+      <Header currentPage="Marketplace" />
       <div className={style.container}>
         <div className={style.content}>
           <div className={style.top}>
             <h2>Marketplace</h2>
             <div className={style.tabsContainer}>
+              <div
+                className={
+                  tradeType === "All"
+                    ? style.tab + " " + style.activeTab
+                    : style.tab
+                }
+                onClick={() => setTradeType("All")}
+              >
+                <p>All Ads</p>
+              </div>
               <div
                 className={
                   tradeType === "Tokens"
@@ -48,17 +57,7 @@ const Marketplace = () => {
                 }
                 onClick={() => setTradeType("Tokens")}
               >
-                <p>Tokens</p>
-              </div>
-              <div
-                className={
-                  tradeType === "Digital products"
-                    ? style.tab + " " + style.activeTab
-                    : style.tab
-                }
-                onClick={() => setTradeType("Digital products")}
-              >
-                <p>Digital products</p>
+                <p>Token swap</p>
               </div>
               <div
                 className={
@@ -68,11 +67,50 @@ const Marketplace = () => {
                 }
                 onClick={() => setTradeType("Physical item")}
               >
-                <p>Physical products</p>
+                <p>Physical item</p>
+              </div>
+              <div
+                className={
+                  tradeType === "Digital products"
+                    ? style.tab + " " + style.activeTab
+                    : style.tab
+                }
+                onClick={() => setTradeType("Digital products")}
+              >
+                <p>Digital product</p>
               </div>
             </div>
           </div>
-          {tradeType === "Tokens" ? (
+          {/* <div className={style.tradeGrid}>
+            <div className={style.singleTrade}>
+              <TradeCard />
+            </div>
+          </div> */}
+          {tradeType === "All" ? (
+            <>
+              {!tradesQuery?.data?.isLoading ? (
+                <div className={style.tradeGrid}>
+                  {tradesQuery?.data?.map((trade: any) =>
+                    trade?.status === "available" &&
+                    trade?.tradeType === "Public sale" ? (
+                      <Card
+                        key={trade?.userId}
+                        trade={trade}
+                        handleTrade={handleTrade}
+                        cardAction="Buy"
+                      />
+                    ) : (
+                      ""
+                    )
+                  )}
+                </div>
+              ) : (
+                <div className={style.tradeGrid}>
+                  <TradeCardSkeleton />
+                </div>
+              )}
+            </>
+          ) : tradeType === "Tokens" ? (
             <>
               {!tradesQuery?.data?.isLoading ? (
                 <div className={style.tradeGrid}>
@@ -80,7 +118,7 @@ const Marketplace = () => {
                     trade?.tradeOption === "Token swap" &&
                     trade?.status === "available" &&
                     trade?.tradeType === "Public sale" ? (
-                      <TradeCard
+                      <Card
                         key={trade?.userId}
                         trade={trade}
                         handleTrade={handleTrade}
@@ -105,7 +143,7 @@ const Marketplace = () => {
                     trade?.tradeOption === "Digital product" &&
                     trade?.status === "available" &&
                     trade?.tradeType === "Public sale" ? (
-                      <ProductCard
+                      <Card
                         key={trade?.userId}
                         trade={trade}
                         handleTrade={handleTrade}
@@ -130,7 +168,7 @@ const Marketplace = () => {
                     trade?.tradeOption === "Physical item" &&
                     trade?.status === "available" &&
                     trade?.tradeType === "Public sale" ? (
-                      <ProductCard
+                      <Card
                         key={trade?.userId}
                         trade={trade}
                         handleTrade={handleTrade}

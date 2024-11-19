@@ -1,84 +1,49 @@
 @import "../../styles/mixins";
 @import "../../styles/variables";
 
-.cardBorder {
-  //background: linear-gradient(rgba(230, 212, 118, 1) rgba(225, 51, 166, 0.72));
-  //width: 24%;
+.card {
+  border: 1px solid #e4e7ec;
+  width: 100%;
   border-radius: 12px;
-  background: //linear-gradient(0deg, #ffffff, #ffffff),
-    linear-gradient(
-    275.64deg,
-    #e6d476 38.18%,
-    rgba(225, 51, 166, 0.72) 105.86%
-  );
-  padding: 0.5px;
   margin-bottom: 1em;
 }
-.tokenCard {
-  background: #ffffff;
-  border-radius: 12px;
-
-  padding: 1.3em 1em;
-  //border: 1px solid $blueMain;
-}
-
-.tkTop {
-  width: 100%;
-  @include flexRegular(row, flex-end);
-}
-
-.topRight {
-  background: #c1deff;
-  //border-radius: 36px;
-  padding: 7px 10px;
-  width: 35%;
-  @include flexRegular(row, center);
-  font-size: 0.94em;
-  font-size: 0.8em;
-}
-
-.tkTxt {
-  margin-top: 10px;
-  text-align: center;
-}
-.tkBtn {
-  @include flexRegular(row, center);
-  margin-top: 10px;
-  button {
-    @include btnRegular(35%);
-    height: 35px;
-    font-size: 0.9em;
-  }
-}
-.productCard {
-  //   background: #fff;
-  background: #ffffff;
-  border-radius: 12px;
-
-  padding: 1.3em 0;
-  //border: 1px solid $blueMain;
-}
-.productImg {
-  img {
-    width: 100%;
-    object-fit: contain;
-  }
-}
-.productTxt {
-  padding: 0.2em 1em;
-}
-.productTitle {
-  margin: 1em 0;
-}
-.productBtm {
-  //border: 1px solid #000;
+.content {
+  padding: 1.5em 1em;
   @include flexRegular(row, space-between);
 }
-.productBtn {
-  width: 50%;
-  @include flexRegular(row, flex-end);
-  button {
-    @include btnRegular(90%);
-    height: 41px;
+.cardLeft {
+  @include flexRegular(row, flex-start);
+  svg {
+    margin-right: 1em;
+  }
+}
+.tokenInfo {
+  p {
+    font-size: 0.9em;
+    color: #98a2b3;
+    font-family: "Helvetica Neue";
+  }
+  h3 {
+    margin-top: 0.85em;
+    // font-size: 0.9em;
+    color: #475367;
+  }
+}
+.cardRight {
+  text-align: right;
+  p {
+    margin-top: 0.85em;
+    font-size: 0.9em;
+    color: #98a2b3;
+    font-family: "Helvetica Neue";
+  }
+  h3 {
+    // margin-top: 0.85em;
+    // font-size: 0.9em;
+    color: #475367;
+    span {
+      color: #98a2b3;
+      font-size: 0.7em;
+    }
   }
 }

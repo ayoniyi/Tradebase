@@ -52,7 +52,7 @@ const Landing = () => {
         {showCreate && <Create handleClose={handleClose} />}
       </AnimatePresence>
 
-      <Header />
+      <Header currentPage="Home" />
       <div className={style.hero}>
         <div className={style.heroContent}>
           <div className={style.heroDesc}>
@@ -62,10 +62,10 @@ const Landing = () => {
               </h1>
               <p>
                 Simple and efficient trades with built-in escrow on the base
-                network
+                network.
               </p>
 
-              <button onClick={handleModals}>Create trade</button>
+              <button onClick={handleModals}>Create Ad</button>
             </div>
           </div>
           <div className={style.heroImg}>

@@ -14,7 +14,7 @@ import Success from "./success.svg";
 import { shortenHex } from "@/app/utils/formatting";
 
 import TextInput from "../TextInput/TextInput";
-import { use, useCallback, useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "@/app/utils/firebase";
 import {
@@ -34,45 +34,8 @@ const Connect = (props: any) => {
 
   const { disconnect } = useDisconnect();
 
-  const { connectors, connect, status, error, isLoading, pendingConnector } =
-    useConnect();
-  //{
-  // onSuccess: (data: any) => {
-  //   alert("connect");
-  //   console.log("data", data);
-  //   // if (data.chain.unsupported) {
-  //   //   disconnect();
-  //   //   toast.error(`Chain not supported, please switch to supported chain`, {
-  //   //     duration: 3000,
-  //   //   });
-  //   // } else {
-  //   //   toast.success(`Wallet connected successfully. `, { duration: 5000 });
-  //   //   //setIsChainSupported(true);
-  //   // }
-  //   console.log("Connect", data);
-  // },
-  // onError: (error: any) => {
-  //   alert("connect???");
-  //   console.log("Error", error);
-  // },
-  // onSettled: (data: any, error: any) => {
-  //   alert("connect!!");
-  //   console.log("Connection attempt settled. Data:", data, "Error:", error);
-  // },
-  // onSuccess: (data: any) => {
-  //   console.log("Connection Successful:", data);
-  // },
+  const { connectors, connect, isLoading, pendingConnector } = useConnect();
 
-  // onError: (error: any) => {
-  //   console.log("Connection Failed:", error);
-  // },
-  // onSettled: (data: any, error: any) => {
-  //   console.log("Connection attempt settled. Data:", data, "Error:", error);
-  // },
-  // onMutate: (data: any) => {
-  //   console.log("Connection attempt settled.  Error:", data);
-  // },
-  //}
   const handleConnect = useCallback(
     async (connector: any) => {
       try {
@@ -128,10 +91,10 @@ const Connect = (props: any) => {
       });
       //props.handleCreate();
 
-      if (props.action === "createTrade") {
-        props.handleCreate();
+      if (props?.action === "createTrade") {
+        props?.handleCreate();
       } else {
-        props.handleClose();
+        props?.handleClose();
       }
     }
   }, [docsQuery.data?.docs]);
