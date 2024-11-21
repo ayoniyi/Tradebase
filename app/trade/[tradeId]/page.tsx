@@ -9,7 +9,7 @@ import Send from "../send.svg";
 import Header from "@/app/components/header/Header";
 import { useParams, useRouter } from "next/navigation";
 import {
-  addNotification,
+  //addNotification,
   useDocQuery,
   useUpdateDoc,
 } from "@/app/utils/functions/firebaseFunctions";
@@ -328,20 +328,19 @@ const SingleTrade = () => {
               const lastMessage = newMessages[newMessages.length - 1];
               if (lastMessage.senderId !== userState?.user?.userId) {
                 //console.log("new message!");
-
-                soundBite.play();
+                //soundBite.play();
                 // Add a new notification
-                addNotification(
-                  userState?.user?.userId,
-                  {
-                    title: "New message",
-                    message:
-                      "You have a new message from " + lastMessage.senderEmail,
-                    timestamp: new Date(),
-                    read: false,
-                  },
-                  db
-                );
+                // addNotification(
+                //   userState?.user?.userId,
+                //   {
+                //     title: "New message",
+                //     message:
+                //       "You have a new message from " + lastMessage.senderEmail,
+                //     timestamp: new Date(),
+                //     read: false,
+                //   },
+                //   db
+                // );
               }
             }
 

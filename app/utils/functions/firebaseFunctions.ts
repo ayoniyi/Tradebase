@@ -77,14 +77,14 @@ export const useSetDoc = (
 };
 
 // add notification
-export const addNotification = async (
-  receiverId: any,
-  notification: any,
-  db: any
-) => {
-  const notificationsRef = collection(db, "users", receiverId, "notifications");
-  await addDoc(notificationsRef, notification);
-};
+// export const addNotification = async (
+//   receiverId: any,
+//   notification: any,
+//   db: any
+// ) => {
+//   const notificationsRef = collection(db, "users", receiverId, "notifications");
+//   await addDoc(notificationsRef, notification);
+// };
 
 //update doc mutation
 export const useUpdateDoc = (
