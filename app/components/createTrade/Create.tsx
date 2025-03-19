@@ -55,7 +55,7 @@ const Create = (props: any) => {
     tokenSelling: "", // token user is selling
     tokenSaleAmount: 0.0, // amount of token user is selling
     tokenSalePrice: 0.0, // price seller receives for token,
-    tradeType: "Private sale", // public or private
+    tradeType: "Public sale", // public or private
 
     // for physical or digital products
     productName: "",

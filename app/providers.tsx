@@ -9,7 +9,7 @@ import { useContext } from "react";
 import { UserContext } from "./context/UserContext";
 
 //import { rainbowConfig } from "@/app/utils/wagmi";
-import { base, baseSepolia } from "wagmi/chains";
+import { base, baseSepolia, sepolia } from "wagmi/chains";
 import { getDefaultConfig, RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import { UserContextProvider } from "./context/UserContext";
 
@@ -21,7 +21,7 @@ export function Providers(props: { children: ReactNode; initialState?: any }) {
   const config = getDefaultConfig({
     appName: "Tradebase",
     projectId: wcprojectId || "",
-    chains: [base, baseSepolia],
+    chains: [base, baseSepolia, sepolia],
     ssr: true,
   });
 

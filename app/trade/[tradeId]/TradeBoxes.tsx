@@ -165,7 +165,7 @@ const TradeBoxes = ({
             )}
             {tradeInfo?.status === "awaiting payment" ? (
               <p>
-                Payment made :{" "}
+                Awaiting payment :{" "}
                 {!isSeller
                   ? "seller waiting for your payment"
                   : "waiting for buyer's payment"}
@@ -196,10 +196,9 @@ const TradeBoxes = ({
                 {tradeInfo?.amountOfToken + " " + tradeInfo?.tokenToBeSold}
               </span>{" "}
             </p>
-            <p className={style.tradeDesc} style={{ width: "100%" }}>
-              This order will be canceled if you don't make payment to your
-              wallet within 10mins
-            </p>
+            {/* <p className={style.tradeDesc} style={{ width: "100%" }}>
+              This order will be canceled if you don't make payment  within 10mins
+            </p> */}
           </div>
           <div className={style.tradeBreakdown}>
             <div className={style.breakRow}>
@@ -241,7 +240,11 @@ const TradeBoxes = ({
                     fill="#1671D9"
                   />
                 </svg>
-                <p>{shortenHex(tradeInfo?.sellerAddress)}</p>
+                <p>
+                  {shortenHex(
+                    !isSeller ? tradeInfo?.sellerAddress : tradeInfo?.pBuyer
+                  )}
+                </p>
               </>
             </div>
           </div>
