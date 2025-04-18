@@ -10,7 +10,7 @@ import { UserContext } from "@/app/context/UserContext";
 import Metamask from "./metamask.svg";
 import Wc from "./wc.svg";
 import Coinbase from "./coinbase.svg";
-import Success from "./success.svg";
+//import Success from "./success.svg";
 import { shortenHex } from "@/app/utils/formatting";
 
 import TextInput from "../TextInput/TextInput";
@@ -83,7 +83,7 @@ const Connect = (props: any) => {
         ...doc.data(),
         userId: doc.id,
       }));
-      // console.log("docsQuery", docList[0]);
+      console.log("docsQuery", docList[0]);
       setUserState({
         ...userState,
         user: docList[0],
@@ -114,7 +114,7 @@ const Connect = (props: any) => {
       // console.log(docsQuery.data?.docs, "qu");
     } else {
       // Handle disconnected state
-      console.log("Wallet disconnected");
+      //console.log("Wallet disconnected");
     }
   }, [isConnected]);
 

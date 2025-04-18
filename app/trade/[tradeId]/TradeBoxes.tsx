@@ -33,7 +33,7 @@ const TradeBoxes = ({
   }, [messages]);
   const isSeller = tradeInfo?.sellerAddress === userState?.user?.address;
 
-  console.log(tradeInfo?.status, "trade info");
+  //console.log(tradeInfo?.status, "trade info");
 
   return (
     <div className={style.boxesContent}>

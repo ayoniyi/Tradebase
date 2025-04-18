@@ -26,43 +26,44 @@ import { db } from "@/app/utils/firebase";
 import { UserContext } from "@/app/context/UserContext";
 import { CircularProgress } from "@mui/material";
 import toast from "react-hot-toast";
-import { shortenAddress, shortenHex } from "@/app/utils/formatting";
+import { shortenHex } from "@/app/utils/formatting";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useConnect } from "wagmi";
-import { baseSepolia } from "viem/chains";
-import { injected } from "wagmi/connectors";
+import { useConnect, useAccount, useSwitchChain, useChainId } from "wagmi";
 import { BigNumber, ethers } from "ethers";
-import { Web3Provider } from "@ethersproject/providers";
 import ABI from "../../utils/abi/escrow.json";
 import CardSkeleton from "@/app/components/Skeleton/CardSkeleton";
-import { useAccount } from "wagmi";
+
 import Link from "next/link";
 import TradeBoxes from "./TradeBoxes";
+import { useWalletChecks } from "@/app/utils/useWalletChecks";
+import { AnimatePresence } from "framer-motion";
+import Connect from "@/app/components/connectWallet/Connect";
+
 const SingleTrade = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [contract, setContract] = useState<any>();
   const [balance, setBalance] = useState<any>(0);
   const { address } = useAccount();
-
-  const { connectAsync } = useConnect();
-
   const [messageTxt, setMessageTxt] = useState<any>("");
   const [messages, setMessages] = useState<any>();
-  const [triggering, setTriggering] = useState(false);
   const [transactionId, setTransactionId] = useState<any>();
   const tradeId = useParams()?.tradeId;
   const [escrowId, setEscrowId] = useState<any>();
   const [userState] = useContext<any>(UserContext);
-
   const router = useRouter();
   const queryClient = useQueryClient();
   const ref = useRef<null | HTMLDivElement>(null);
-
+  const [showConnect, setShowConnect] = useState(false);
+  const { connectAsync } = useConnect();
+  const { switchChain } = useSwitchChain();
   const docRef = doc(db, `trades/${tradeId}`);
   const docsQuery = useDocQuery(["singleTrade", tradeId], docRef, 10000);
   const tradeInfo: any = docsQuery?.data?.data();
 
-  //console.log("tradeInfo", tradeInfo);
+  const [isSupported, setIsSupported] = useState(false);
+
+  const acceptedChains = ["84532"];
+  const chainId = useChainId();
 
   //update trade
   const tradeMutation = useUpdateDoc(docRef, () => {
@@ -80,8 +81,7 @@ const SingleTrade = () => {
   });
   //let window: any;
   const contractAddress = "0xd6560c88Bb3A11d8555d11510482D5A06834990d";
-  const provider = new ethers.providers.Web3Provider(window.ethereum);
-  //const provider = new Web3Provider(window.ethereum);
+  const provider = new ethers.providers.Web3Provider(window?.ethereum);
   const signer = provider.getSigner();
   const contractObj = new ethers.Contract(contractAddress, ABI, signer);
 
@@ -97,7 +97,6 @@ const SingleTrade = () => {
     },
 
     onSuccess: (res: any) => {
-      //  console.log("app res", res?.id);
       const updateFields = {
         status: "awaiting payment",
         pBuyer: userState?.user?.address,
@@ -106,7 +105,6 @@ const SingleTrade = () => {
       };
       setTransactionId(res?.id);
       tradeMutation.mutate(updateFields);
-      //console.log("tr", tradeMutation?.data();
     },
   });
   const createTransaction = (escId: any) => {
@@ -130,12 +128,11 @@ const SingleTrade = () => {
       contract?.on(
         "EscrowCreated",
         (id: any, sender: any, seller: any, arbiter: any, amount: any) => {
-          console.log("emitting create escrow!");
+          //console.log("emitting create escrow!");
           console.log("values", id, sender, seller, arbiter, amount);
           //console.log("id", id?._hex.slice(-1));
           const hexConvert = BigNumber.from(id?._hex);
           console.log("hex", hexConvert.toString());
-
           setEscrowId(hexConvert.toString());
           const eId = hexConvert.toString();
           // start the countdown
@@ -195,19 +192,36 @@ const SingleTrade = () => {
   //create transaction
 
   // create countdown of 10 minutes, on countdown completion update trade status back to available
-  const newTransactionRef = collection(db, "transactions");
 
+  const newTransactionRef = collection(db, "transactions");
   const addressContext = address || userState?.address;
 
-  const createEscrow = async () => {
-    if (addressContext && tradeInfo) {
-      setIsLoading(true);
-      // show info
-      console.log("seller>", tradeInfo?.sellerAddress.toString());
-      console.log("arbiter>", process.env.NEXT_PUBLIC_ARBITER);
+  //const { isSupported } = useWalletChecks();
+  useEffect(() => {
+    setIsSupported(acceptedChains.includes(chainId.toString()));
+  }, [chainId]);
 
-      // seller address //arbiter address //amount
+  //
+
+  const createEscrow = async () => {
+    if (tradeInfo) {
+      //
+
+      if (!addressContext || addressContext === "null") {
+        setShowConnect(true);
+        if (!addressContext || addressContext === "null") return; // Exit if connection failed
+      }
+      //console.log("address", addressContext);
+
+      if (isSupported === false || isSupported !== true) {
+        switchChain({ chainId: acceptedChains[0] });
+      }
+
+      // console.log("seller>", tradeInfo?.sellerAddress.toString());
+      // console.log("arbiter>", process.env.NEXT_PUBLIC_ARBITER);
+      // values required to create escrow // seller address //arbiter address //amount
       try {
+        setIsLoading(true);
         const itemAmount = ethers.utils.parseEther(tradeInfo?.price.toString());
         //const provider = new providers.Web3Provider(window.ethereum);
         setContract(contractObj);
@@ -220,15 +234,18 @@ const SingleTrade = () => {
           }
         );
         await call.wait();
-        //console.log("create ecr>>", call);
+        console.log("create ecr>>", call);
         setIsLoading(false);
       } catch (err: any) {
         console.log("err", err);
+        // toast.error(
+        //   "An error occured, please check that you're on the right network",
+        //   {
+        //     duration: 6500,
+        //   }
+        // );
         setIsLoading(false);
       }
-    } else {
-      //connect wallet
-      await connectAsync({ chainId: baseSepolia.id, connector: injected() });
     }
   };
   //
@@ -241,7 +258,12 @@ const SingleTrade = () => {
     });
   });
   const makePayment = async () => {
-    if (addressContext && tradeInfo) {
+    if (tradeInfo) {
+      if (!addressContext || addressContext === "null") {
+        setShowConnect(true);
+        if (!addressContext || addressContext === "null") return; // Exit if connection failed
+      }
+
       setIsLoading(true);
 
       try {
@@ -260,9 +282,6 @@ const SingleTrade = () => {
         //setIsLoading(false);
       }
       // setIsLoading(false);
-    } else {
-      //connect wallet
-      await connectAsync({ chainId: baseSepolia.id, connector: injected() });
     }
   };
 
@@ -285,8 +304,14 @@ const SingleTrade = () => {
     });
   });
   const releaseFunds = async () => {
-    if (addressContext && tradeInfo) {
+    if (tradeInfo) {
       //setIsLoading(true);
+
+      if (!addressContext || addressContext === "null") {
+        setShowConnect(true);
+        if (!addressContext || addressContext === "null") return; // Exit if connection failed
+      }
+
       const releaseToast = toast.loading("Releasing funds...");
       try {
         setContract(contractObj);
@@ -305,9 +330,6 @@ const SingleTrade = () => {
         //setIsLoading(false);
         toast.dismiss(releaseToast);
       }
-    } else {
-      //connect wallet
-      await connectAsync({ chainId: baseSepolia.id, connector: injected() });
     }
   };
 
@@ -388,8 +410,15 @@ const SingleTrade = () => {
     setMessageTxt(e);
   };
 
+  const handleClose = () => {
+    setShowConnect(false);
+  };
+
   return (
     <>
+      <AnimatePresence mode="wait">
+        {showConnect && <Connect handleClose={handleClose} />}
+      </AnimatePresence>
       <Header currentPage="Marketplace" />
 
       <div className={style.container}>

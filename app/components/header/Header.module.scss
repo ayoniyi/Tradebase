@@ -29,7 +29,7 @@
 
 .nav {
   width: 28%;
-  width: 34%;
+  //width: 34%;
   background: #101928;
   border-radius: 16px;
   padding: 0.5em;
@@ -75,6 +75,15 @@
     font-size: 1em;
     align-self: flex-end;
     //margin-left: 43%;
+  }
+  .wrBtn {
+    @include btnRegular(47%);
+
+    background: #fff;
+    background: rgb(201, 10, 10);
+    min-width: 135px;
+    font-size: 1em;
+    align-self: flex-end;
   }
   .walletBtn {
     @include btnOutline(47%);

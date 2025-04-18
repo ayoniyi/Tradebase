@@ -17,13 +17,13 @@ import Physical from "./physical.svg";
 import TradeCreated from "./TradeCreated";
 import { addDoc, collection } from "firebase/firestore";
 import { db } from "@/app/utils/firebase";
-import {
-  useFileUpload,
-  useSetDoc,
-} from "@/app/utils/functions/firebaseFunctions";
+import {} from // useFileUpload,
+// useSetDoc,
+"@/app/utils/functions/firebaseFunctions";
 import toast from "react-hot-toast";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import upload from "@/app/utils/upload";
+import { useWalletChecks } from "@/app/utils/useWalletChecks";
 
 const Create = (props: any) => {
   const { address } = useAccount();
@@ -36,6 +36,9 @@ const Create = (props: any) => {
   const [progress, setProgress] = useState();
   const [tradeId, setTradeId] = useState("");
   const [fileUrl, setFileUrl] = useState("");
+
+  const { isConnected, isSupported, connectWallet, switchToCorrectChain } =
+    useWalletChecks();
 
   //console.log("user>>", userState);
 

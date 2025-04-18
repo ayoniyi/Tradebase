@@ -5,19 +5,21 @@ import Logo from "@/app/logo.svg";
 import Link from "next/link";
 
 import HeaderMobile from "./HeaderMobile";
-import { useAccount } from "wagmi";
-import { useDisconnect } from "wagmi";
+import { useAccount, useDisconnect, useSwitchChain, useChainId } from "wagmi";
 import { shortenHex } from "@/app/utils/formatting";
 import { AnimatePresence } from "framer-motion";
 import Connect from "../connectWallet/Connect";
 import toast from "react-hot-toast";
 import Create from "../createTrade/Create";
 import { UserContext } from "@/app/context/UserContext";
-import { ConnectButton } from "@rainbow-me/rainbowkit";
+//import { ConnectButton } from "@rainbow-me/rainbowkit";
 
 import HomeIcon from "./home.svg";
 import MarketIcon from "./clock.svg";
 import DashboardIcon from "./dashboard.svg";
+
+// import { watchChainId } from '@wagmi/core'
+// import { getConfig} from '../../utils/wagmi'
 
 interface HeaderProps {
   currentPage: string;
@@ -25,15 +27,32 @@ interface HeaderProps {
 
 const Header = ({ currentPage }: HeaderProps) => {
   const { address, isConnected } = useAccount();
+  const { switchChain } = useSwitchChain();
 
   const [showDisconnect, setShowDisconnect] = useState(false);
   const { disconnect } = useDisconnect();
   const [showConnect, setShowConnect] = useState(false);
   const [showCreate, setShowCreate] = useState(false);
   const [userState, setUserState] = useContext<any>(UserContext);
+  const [isSupported, setIsSupported] = useState(false);
 
   const addressContext = address || userState?.address;
   //console.log("addressContext --", addressContext);
+
+  const acceptedChains = ["84532"];
+  const chainId = useChainId();
+
+  useEffect(() => {
+    if (acceptedChains.includes(chainId.toString())) {
+      setIsSupported(true);
+    } else {
+      setIsSupported(false);
+    }
+  }, [chainId]);
+
+  // console.log("isSupported", isSupported);
+  // console.log("chainId", chainId);
+  // console.log(useChainId());
 
   const handleConnect = () => {
     if (addressContext) {
@@ -51,9 +70,10 @@ const Header = ({ currentPage }: HeaderProps) => {
       setShowConnect(true);
     }
   };
-  // console.log("state, address", userState?.address);
-  // console.log("address hook", address);
-  //console.log("addContext", addressContext);
+
+  const handleSwitch = (id: any) => {
+    switchChain({ chainId: id });
+  };
 
   // const handleCreate = () => {
   //   setShowCreate(true);
@@ -69,11 +89,6 @@ const Header = ({ currentPage }: HeaderProps) => {
     //setShowConnect(true);
   };
 
-  // const handleCreate = () => {
-  //   setShowConnect(false);
-  //   setShowCreate(true);
-  // };
-
   const handleClose = () => {
     setShowConnect(false);
     setShowCreate(false);
@@ -86,25 +101,14 @@ const Header = ({ currentPage }: HeaderProps) => {
       icon: HomeIcon,
     },
     {
-      name: "Dashboard",
-      link: "/dashboard",
-      icon: DashboardIcon,
-    },
-    {
       name: "Marketplace",
       link: "/marketplace",
       icon: MarketIcon,
     },
-
     {
-      name: "About",
-      link: "/about",
-      icon: "",
-    },
-    {
-      name: "FAQ",
-      link: "/faq",
-      icon: "",
+      name: "My trades",
+      link: "/myTrades",
+      icon: DashboardIcon,
     },
   ];
 
@@ -112,7 +116,7 @@ const Header = ({ currentPage }: HeaderProps) => {
     // Only include 'Dashboard' if authenticated, otherwise include 'Home'
     if (link.name === "Home")
       return !addressContext || addressContext === "null";
-    if (link.name === "Dashboard")
+    if (link.name === "My trades")
       return addressContext && addressContext !== "null";
     return true;
   });
@@ -138,7 +142,7 @@ const Header = ({ currentPage }: HeaderProps) => {
           <nav className={style.nav}>
             {/* {addressContext && addressContext !== "null" && ( */}
             <div className={style.navLinks}>
-              {filteredLinks.map((link: any, index: any) =>
+              {links.map((link: any, index: any) =>
                 link?.name !== currentPage ? (
                   <div className={style.navLink} key={link?.link}>
                     <Link href={link?.link}>
@@ -211,13 +215,20 @@ const Header = ({ currentPage }: HeaderProps) => {
               >
                 Connect wallet
               </button>
-            ) : (
+            ) : isSupported ? (
               <button
                 // onClick={handleModals}
                 onClick={() => setShowCreate(true)}
                 className={style.mainBtn}
               >
                 Create Ad
+              </button>
+            ) : (
+              <button
+                onClick={() => handleSwitch(84532)}
+                className={style.wrBtn}
+              >
+                Switch network
               </button>
             )}
 
