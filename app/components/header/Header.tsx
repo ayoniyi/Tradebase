@@ -44,14 +44,15 @@ const Header = ({ currentPage }: HeaderProps) => {
 
   useEffect(() => {
     if (acceptedChains.includes(chainId.toString())) {
-      setIsSupported(true);
+      //setIsSupported(true);
       setUserState({
         ...userState,
         supportedChain: true,
       });
-    } else {
-      setIsSupported(false);
     }
+    // } else {
+    //   setIsSupported(false);
+    // }
   }, [chainId]);
 
   // console.log("isSupported", isSupported);
@@ -124,6 +125,8 @@ const Header = ({ currentPage }: HeaderProps) => {
       return addressContext && addressContext !== "null";
     return true;
   });
+
+  console.log("supported", userState?.supportedChain);
 
   return (
     <>
@@ -219,7 +222,7 @@ const Header = ({ currentPage }: HeaderProps) => {
               >
                 Connect wallet
               </button>
-            ) : isSupported ? (
+            ) : userState?.supportedChain ? (
               <button
                 // onClick={handleModals}
                 onClick={() => setShowCreate(true)}
