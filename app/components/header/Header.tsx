@@ -54,10 +54,10 @@ const Header = ({ currentPage }: HeaderProps) => {
       //   duration: 6500,
       // });
       // setIsSupported(false);
-      setUserState({
-        ...userState,
-        supportedChain: false,
-      });
+      // setUserState({
+      //   ...userState,
+      //   supportedChain: false,
+      // });
     }
   }, [chainId]);
 
