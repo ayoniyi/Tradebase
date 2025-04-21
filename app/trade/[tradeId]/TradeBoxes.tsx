@@ -4,6 +4,7 @@ import Link from "next/link";
 import { shortenHex } from "@/app/utils/formatting";
 import { CircularProgress } from "@mui/material";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 import warn from "./warn.svg";
 import send from "./send.svg";
@@ -33,14 +34,14 @@ const TradeBoxes = ({
   }, [messages]);
   const isSeller = tradeInfo?.sellerAddress === userState?.user?.address;
 
-  //console.log(tradeInfo?.status, "trade info");
+  const router = useRouter();
 
   return (
     <div className={style.boxesContent}>
       <div className={style.tradeBoxes}>
         <div className={style.tradeProcess}>
           <div className={style.top}>
-            <Link href="/marketplace">
+            <div onClick={() => router.back()}>
               <svg
                 width="24"
                 height="24"
@@ -53,7 +54,7 @@ const TradeBoxes = ({
                   fill="black"
                 />
               </svg>
-            </Link>
+            </div>
             <h2>{tradeInfo?.tradeOption}</h2>
           </div>
           <div className={style.escBox}>
