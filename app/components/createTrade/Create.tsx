@@ -167,7 +167,7 @@ const Create = (props: any) => {
 
   const tradeSucess = () => {
     toast.success("Trade created successfully", {
-      duration: 4500,
+      duration: 3500,
     });
     queryClient.invalidateQueries({ queryKey: ["tradesQuery"] });
     setTradeCreated(true);

@@ -44,15 +44,21 @@ const Header = ({ currentPage }: HeaderProps) => {
 
   useEffect(() => {
     if (acceptedChains.includes(chainId.toString())) {
-      //setIsSupported(true);
+      setIsSupported(true);
       setUserState({
         ...userState,
         supportedChain: true,
       });
+    } else {
+      toast.error("Please switch to BASE Sepolia chain", {
+        duration: 6500,
+      });
+      setIsSupported(false);
+      setUserState({
+        ...userState,
+        supportedChain: false,
+      });
     }
-    // } else {
-    //   setIsSupported(false);
-    // }
   }, [chainId]);
 
   // console.log("isSupported", isSupported);

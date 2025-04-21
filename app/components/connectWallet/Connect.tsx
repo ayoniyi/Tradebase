@@ -110,7 +110,7 @@ const Connect = (props: any) => {
     if (isConnected) {
       // Handle connected state
       console.log("Wallet connected");
-      toast.success(`Wallet connected`, { duration: 5000 });
+      toast.success(`Wallet connected`, { duration: 3000 });
       // console.log(docsQuery.data?.docs, "qu");
     } else {
       // Handle disconnected state
