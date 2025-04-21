@@ -23,7 +23,7 @@ const MyTrades = () => {
   const { address, isConnected, connector: activeConnector } = useAccount();
 
   const [userState] = useContext<any>(UserContext);
-  const [isSupported, setIsSupported] = useState(false);
+
   const { switchChain } = useSwitchChain();
 
   const docCollectionRef = query(
@@ -54,18 +54,8 @@ const MyTrades = () => {
   //
 
   const addressContext = address || userState?.address;
+  const isSupported = userState?.supportedChain;
   //console.log("addressContext --", addressContext);
-
-  const acceptedChains = ["84532"];
-  const chainId = useChainId();
-
-  useEffect(() => {
-    if (acceptedChains.includes(chainId.toString())) {
-      setIsSupported(true);
-    } else {
-      setIsSupported(false);
-    }
-  }, [chainId]);
 
   const handleClose = () => {
     setShowConnect(false);

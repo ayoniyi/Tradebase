@@ -45,6 +45,10 @@ const Header = ({ currentPage }: HeaderProps) => {
   useEffect(() => {
     if (acceptedChains.includes(chainId.toString())) {
       setIsSupported(true);
+      setUserState({
+        ...userState,
+        supportedChain: true,
+      });
     } else {
       setIsSupported(false);
     }

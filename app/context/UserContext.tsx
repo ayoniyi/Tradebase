@@ -6,6 +6,7 @@ import { db } from "../utils/firebase";
 interface UserState {
   user: any;
   address: any;
+  supportedChain: boolean;
 }
 
 const userString =
@@ -18,6 +19,7 @@ const addString =
 const INITIAL_STATE: UserState = {
   user: user,
   address: addString ? addString : null,
+  supportedChain: false,
 };
 
 export const UserContext = createContext<
@@ -36,6 +38,10 @@ export const UserContextProvider: React.FC<UserContextProviderProps> = ({
   useEffect(() => {
     localStorage.setItem("userContext", JSON.stringify(userState?.user));
     localStorage.setItem("addContext", userState?.address);
+    localStorage.setItem(
+      "supportedChain",
+      JSON.stringify(userState?.supportedChain)
+    );
   }, [userState]);
 
   return (
