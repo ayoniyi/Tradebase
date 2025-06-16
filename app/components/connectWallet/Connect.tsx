@@ -171,7 +171,7 @@ const Connect = (props: any) => {
             </div>
             <div className={style.modalBody}>
               <div className={style.connectors}>
-                {sw.map((connector: any) => (
+                {supportedWallets.map((connector: any) => (
                   <div
                     className={`
                     ${style.connectBtn} 
