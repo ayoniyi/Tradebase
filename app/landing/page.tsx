@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Header from "@/app/components/header/Header";
 import style from "./Landing.module.scss";
 import Image from "next/image";
@@ -11,11 +11,17 @@ import { useAccount } from "wagmi";
 import ConnectBtnK from "../components/header/KitButton";
 import { KitProvider } from "../KitProvider";
 import { ConnectKitButton } from "connectkit";
+import { UserContext } from "../context/UserContext";
 
 const Landing = () => {
   const { isConnected, isDisconnected, address } = useAccount();
   const [showConnect, setShowConnect] = useState(false);
   const [showCreate, setShowCreate] = useState(false);
+
+  const [userState] = useContext<any>(UserContext);
+  const addressContext = address || userState?.address;
+
+  console.log("addressContext --", addressContext);
 
   const handleClose = () => {
     setShowConnect(false);
@@ -67,7 +73,7 @@ const Landing = () => {
                 Simple and efficient trades with built-in escrow on the base
                 network.
               </p>
-              {isConnected ? (
+              {addressContext !== "null" && addressContext !== "" ? (
                 <button className={style.createBtn} onClick={handleModals}>
                   Create Ad
                 </button>

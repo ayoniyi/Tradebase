@@ -498,7 +498,25 @@ const SingleTrade = () => {
                           Cancel
                         </button>
 
-                        {!isConnected ? (
+                        {addressContext !== "null" && addressContext !== "" ? (
+                          <button
+                            onClick={createEscrow}
+                            className={style.enterBtn}
+                            disabled={
+                              tradeMutation.isPending ||
+                              transactionMutation.isPending ||
+                              isLoading
+                            }
+                          >
+                            {tradeMutation.isPending ||
+                            transactionMutation.isPending ||
+                            isLoading ? (
+                              <CircularProgress color="inherit" size={20} />
+                            ) : (
+                              "Confirm and enter trade"
+                            )}
+                          </button>
+                        ) : (
                           <KitProvider>
                             <ConnectKitButton.Custom>
                               {({
@@ -520,24 +538,6 @@ const SingleTrade = () => {
                               }}
                             </ConnectKitButton.Custom>
                           </KitProvider>
-                        ) : (
-                          <button
-                            onClick={createEscrow}
-                            className={style.enterBtn}
-                            disabled={
-                              tradeMutation.isPending ||
-                              transactionMutation.isPending ||
-                              isLoading
-                            }
-                          >
-                            {tradeMutation.isPending ||
-                            transactionMutation.isPending ||
-                            isLoading ? (
-                              <CircularProgress color="inherit" size={20} />
-                            ) : (
-                              "Confirm and enter trade"
-                            )}
-                          </button>
                         )}
                       </div>
                     ) : (

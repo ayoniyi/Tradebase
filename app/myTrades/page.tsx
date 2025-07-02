@@ -100,15 +100,21 @@ const MyTrades = () => {
                     Click the button below to create a new ad and initiate a
                     trade.
                   </p>
-                  {!addressContext ||
-                  addressContext === "null" ||
-                  !isConnected ? (
+                  {addressContext !== "" && addressContext !== "null" ? (
                     // <button
                     //   onClick={() => setShowConnect(true)}
                     //   className={style.mainBtn}
                     // >
                     //   Connect wallet
                     // </button>
+                    <button
+                      // onClick={handleModals}
+                      onClick={() => setShowCreate(true)}
+                      className={style.mainBtn}
+                    >
+                      Create Ad
+                    </button>
+                  ) : (
                     <KitProvider>
                       <ConnectKitButton.Custom>
                         {({ isConnected, show, truncatedAddress, ensName }) => {
@@ -122,21 +128,6 @@ const MyTrades = () => {
                         }}
                       </ConnectKitButton.Custom>
                     </KitProvider>
-                  ) : isSupported ? (
-                    <button
-                      // onClick={handleModals}
-                      onClick={() => setShowCreate(true)}
-                      className={style.mainBtn}
-                    >
-                      Create Ad
-                    </button>
-                  ) : (
-                    <button
-                      onClick={() => switchChain({ chainId: 84532 })}
-                      className={style.wrBtn}
-                    >
-                      Switch network
-                    </button>
                   )}
                 </div>
               )}

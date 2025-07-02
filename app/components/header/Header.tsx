@@ -20,6 +20,7 @@ import DashboardIcon from "./dashboard.svg";
 import ConnectBtnK from "./KitButton";
 import { ConnectKitButton } from "connectkit";
 import { KitProvider } from "@/app/KitProvider";
+import CreateAccount from "../connectWallet/createAccount";
 
 // import { watchChainId } from '@wagmi/core'
 // import { getConfig} from '../../utils/wagmi'
@@ -36,6 +37,7 @@ const Header = ({ currentPage }: HeaderProps) => {
   const { disconnect } = useDisconnect();
   const [showConnect, setShowConnect] = useState(false);
   const [showCreate, setShowCreate] = useState(false);
+
   const [userState, setUserState] = useContext<any>(UserContext);
   const [isSupported, setIsSupported] = useState(false);
 
@@ -89,9 +91,6 @@ const Header = ({ currentPage }: HeaderProps) => {
     switchChain({ chainId: id });
   };
 
-  // const handleCreate = () => {
-  //   setShowCreate(true);
-  // };
   const handleModals = () => {
     if (isConnected) {
       setShowConnect(false);
@@ -147,7 +146,8 @@ const Header = ({ currentPage }: HeaderProps) => {
             //handleCreate={handleCreate}
           />
         )}
-        {showCreate && <Create handleClose={handleClose} />}
+        <CreateAccount />
+        {/* {showCreate && <Create handleClose={handleClose} />} */}
       </AnimatePresence>
 
       <header className={style.container}>
