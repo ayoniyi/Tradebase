@@ -1,3 +1,4 @@
+"use client";
 import type { Metadata } from "next";
 import "./styles/globals.css";
 import "./styles/fonts.css";
@@ -32,11 +33,12 @@ export default function RootLayout({
     <html lang="en">
       <Toasts />
       <SmallScreen />
-      <UserContextProvider>
-        <body className="app">
+
+      <body className="app">
+        <UserContextProvider>
           <Providers>{children}</Providers>
-        </body>
-      </UserContextProvider>
+        </UserContextProvider>
+      </body>
     </html>
   );
 }
