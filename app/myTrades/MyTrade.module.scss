@@ -64,3 +64,11 @@
   font-size: 1em;
   background: rgb(201, 10, 10);
 }
+.connBtn {
+  div {
+    @include btnRegular(14vw);
+    @include flexRegular(row, center);
+    min-width: 135px;
+    font-size: 1em;
+  }
+}

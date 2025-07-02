@@ -108,6 +108,15 @@
   transition: 0.1s ease-in;
   @include btnRegular(57%);
 }
+.connBtn {
+  div {
+    @include flexRegular(row, center);
+    @include btnRegular(57%);
+  }
+  transition: 0.1s ease-in;
+  @include flexRegular(row, center);
+  @include btnRegular(57%);
+}
 
 // boxes
 .tradeBoxes {

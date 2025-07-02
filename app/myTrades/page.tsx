@@ -16,6 +16,7 @@ import { useSwitchChain } from "wagmi";
 
 import noTrades from "./noTrades.svg";
 import Image from "next/image";
+import ConnectBtnK from "../components/header/KitButton";
 
 const MyTrades = () => {
   const [showConnect, setShowConnect] = useState(false);
@@ -98,12 +99,15 @@ const MyTrades = () => {
                     trade.
                   </p>
                   {!addressContext || addressContext === "null" ? (
-                    <button
-                      onClick={() => setShowConnect(true)}
-                      className={style.mainBtn}
-                    >
-                      Connect wallet
-                    </button>
+                    // <button
+                    //   onClick={() => setShowConnect(true)}
+                    //   className={style.mainBtn}
+                    // >
+                    //   Connect wallet
+                    // </button>
+                    <div className={style.connBtn}>
+                      <ConnectBtnK />
+                    </div>
                   ) : isSupported ? (
                     <button
                       // onClick={handleModals}

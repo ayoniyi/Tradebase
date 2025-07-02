@@ -66,14 +66,43 @@
 .navBtn {
   width: 25%;
   @include flexRegular(row, flex-end);
+  height: 49px;
   //justify-content: space-between;
   //border: 1px solid #000;
 
+  // button {
+  //   div {
+  //     @include btnRegular(47%);
+  //     min-width: 135px;
+  //     font-size: 1em;
+  //     //align-self: flex-end;
+  //     height: 100%;
+  //     width: 100%;
+  //     @include flexRegular(row, center);
+  //   }
+  // }
+
+  // button {
+  //   div {
+  //     @include flexRegular(row, center);
+  //     height: 40px;
+  //   }
+  // }
+
   .mainBtn {
     @include btnRegular(47%);
+
     min-width: 135px;
     font-size: 1em;
     align-self: flex-end;
+    div {
+      @include btnRegular(47%);
+
+      min-width: 135px;
+      font-size: 1em;
+      // align-self: flex-end;
+      @include flexRegular(row, center);
+    }
     //margin-left: 43%;
   }
   .wrBtn {

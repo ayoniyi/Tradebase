@@ -38,12 +38,29 @@
     width: 90%;
     font-weight: 400;
   }
+  // button {
+  //   //@include btnRegular(25%);
+  //   min-width: 135px;
+  //   max-width: 150px;
+  //   font-size: 1em;
+  // }
+}
+.connectBtn {
   button {
-    @include btnRegular(25%);
-    min-width: 135px;
-    max-width: 150px;
-    font-size: 1em;
+    div {
+      @include flexRegular(row, center);
+      @include btnRegular(25%);
+      min-width: 135px;
+      max-width: 150px;
+      font-size: 1em;
+    }
   }
+}
+.createBtn {
+  @include btnRegular(25%);
+  min-width: 135px;
+  max-width: 150px;
+  font-size: 1em;
 }
 .heroTxt {
   width: 95%;

@@ -38,12 +38,13 @@ import TradeBoxes from "./TradeBoxes";
 import { useWalletChecks } from "@/app/utils/useWalletChecks";
 import { AnimatePresence } from "framer-motion";
 import Connect from "@/app/components/connectWallet/Connect";
+import ConnectBtnK from "@/app/components/header/KitButton";
 
 const SingleTrade = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [contract, setContract] = useState<any>();
   const [balance, setBalance] = useState<any>(0);
-  const { address } = useAccount();
+  const { isConnected, address } = useAccount();
   const [messageTxt, setMessageTxt] = useState<any>("");
   const [messages, setMessages] = useState<any>();
   const [transactionId, setTransactionId] = useState<any>();
@@ -54,7 +55,7 @@ const SingleTrade = () => {
   const queryClient = useQueryClient();
   const ref = useRef<null | HTMLDivElement>(null);
   const [showConnect, setShowConnect] = useState(false);
-  const { connectAsync } = useConnect();
+
   const { switchChain } = useSwitchChain();
   const docRef = doc(db, `trades/${tradeId}`);
   const docsQuery = useDocQuery(["singleTrade", tradeId], docRef, 10000);
@@ -495,23 +496,29 @@ const SingleTrade = () => {
                           Cancel
                         </button>
 
-                        <button
-                          onClick={createEscrow}
-                          className={style.enterBtn}
-                          disabled={
-                            tradeMutation.isPending ||
+                        {!isConnected ? (
+                          <div className={style.connBtn}>
+                            <ConnectBtnK />
+                          </div>
+                        ) : (
+                          <button
+                            onClick={createEscrow}
+                            className={style.enterBtn}
+                            disabled={
+                              tradeMutation.isPending ||
+                              transactionMutation.isPending ||
+                              isLoading
+                            }
+                          >
+                            {tradeMutation.isPending ||
                             transactionMutation.isPending ||
-                            isLoading
-                          }
-                        >
-                          {tradeMutation.isPending ||
-                          transactionMutation.isPending ||
-                          isLoading ? (
-                            <CircularProgress color="inherit" size={20} />
-                          ) : (
-                            "Confirm and enter trade"
-                          )}
-                        </button>
+                            isLoading ? (
+                              <CircularProgress color="inherit" size={20} />
+                            ) : (
+                              "Confirm and enter trade"
+                            )}
+                          </button>
+                        )}
                       </div>
                     ) : (
                       ""

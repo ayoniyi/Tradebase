@@ -32,9 +32,9 @@ export function Providers(props: { children: ReactNode; initialState?: any }) {
     <WagmiProvider config={config} initialState={props.initialState}>
       <QueryClientProvider client={queryClient}>
         <UserContextProvider>
-          <RainbowKitProvider showRecentTransactions={true}>
-            {props.children}
-          </RainbowKitProvider>
+          {/* <RainbowKitProvider showRecentTransactions={true}> */}
+          {props.children}
+          {/* </RainbowKitProvider> */}
         </UserContextProvider>
       </QueryClientProvider>
     </WagmiProvider>

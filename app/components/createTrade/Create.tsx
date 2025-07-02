@@ -299,7 +299,7 @@ const Create = (props: any) => {
         <div className={style.modalContent}>
           <div className={style.modalTop2}>
             <div
-              onClick={disconnect}
+              //onClick={disconnect}
               className={style.connectedBx}
               // onMouseEnter={(e) => setShowDisconnect(true)}
               // onMouseLeave={(e) => setShowDisconnect(false)}

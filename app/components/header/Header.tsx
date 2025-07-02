@@ -17,6 +17,7 @@ import { UserContext } from "@/app/context/UserContext";
 import HomeIcon from "./home.svg";
 import MarketIcon from "./clock.svg";
 import DashboardIcon from "./dashboard.svg";
+import ConnectBtnK from "./KitButton";
 
 // import { watchChainId } from '@wagmi/core'
 // import { getConfig} from '../../utils/wagmi'
@@ -177,7 +178,7 @@ const Header = ({ currentPage }: HeaderProps) => {
             {/* )} */}
           </nav>
           <div className={style.navBtn}>
-            {!addressContext ||
+            {/* {!addressContext ||
               (addressContext !== "null" && (
                 <button
                   onClick={handleConnect}
@@ -216,12 +217,12 @@ const Header = ({ currentPage }: HeaderProps) => {
                     </p>
                   </>
                 </button>
-              ))}
+              ))} */}
 
             {/* <button onClick={handleModals} className={style.mainBtn}>
               Create Ad
             </button> */}
-            {!addressContext || addressContext === "null" ? (
+            {/* {!addressContext || addressContext === "null" ? (
               <button
                 onClick={() => setShowConnect(true)}
                 className={style.mainBtn}
@@ -243,9 +244,16 @@ const Header = ({ currentPage }: HeaderProps) => {
               >
                 Switch network
               </button>
-            )}
+            )} */}
 
             {/* <ConnectButton /> */}
+            {!isConnected ? (
+              <div className={style.mainBtn}>
+                <ConnectBtnK />
+              </div>
+            ) : (
+              <ConnectBtnK />
+            )}
           </div>
         </div>
         <HeaderMobile />
