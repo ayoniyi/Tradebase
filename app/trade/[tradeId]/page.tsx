@@ -39,6 +39,8 @@ import { useWalletChecks } from "@/app/utils/useWalletChecks";
 import { AnimatePresence } from "framer-motion";
 import Connect from "@/app/components/connectWallet/Connect";
 import ConnectBtnK from "@/app/components/header/KitButton";
+import { KitProvider } from "@/app/KitProvider";
+import { ConnectKitButton } from "connectkit";
 
 const SingleTrade = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -497,9 +499,27 @@ const SingleTrade = () => {
                         </button>
 
                         {!isConnected ? (
-                          <div className={style.connBtn}>
-                            <ConnectBtnK />
-                          </div>
+                          <KitProvider>
+                            <ConnectKitButton.Custom>
+                              {({
+                                isConnected,
+                                show,
+                                truncatedAddress,
+                                ensName,
+                              }) => {
+                                return (
+                                  <button
+                                    onClick={show}
+                                    className={style.enterBtn}
+                                  >
+                                    {isConnected
+                                      ? (ensName ?? truncatedAddress)
+                                      : "Connect Wallet"}
+                                  </button>
+                                );
+                              }}
+                            </ConnectKitButton.Custom>
+                          </KitProvider>
                         ) : (
                           <button
                             onClick={createEscrow}

@@ -9,6 +9,8 @@ import { AnimatePresence } from "framer-motion";
 import Create from "../components/createTrade/Create";
 import { useAccount } from "wagmi";
 import ConnectBtnK from "../components/header/KitButton";
+import { KitProvider } from "../KitProvider";
+import { ConnectKitButton } from "connectkit";
 
 const Landing = () => {
   const { isConnected, isDisconnected, address } = useAccount();
@@ -65,14 +67,24 @@ const Landing = () => {
                 Simple and efficient trades with built-in escrow on the base
                 network.
               </p>
-              {!address ? (
-                // <div className={style.connectBtn}>
-                <ConnectBtnK />
-              ) : (
-                // </div>
+              {isConnected ? (
                 <button className={style.createBtn} onClick={handleModals}>
                   Create Ad
                 </button>
+              ) : (
+                <KitProvider>
+                  <ConnectKitButton.Custom>
+                    {({ isConnected, show, truncatedAddress, ensName }) => {
+                      return (
+                        <button onClick={show} className={style.createBtn}>
+                          {isConnected
+                            ? (ensName ?? truncatedAddress)
+                            : "Connect Wallet"}
+                        </button>
+                      );
+                    }}
+                  </ConnectKitButton.Custom>
+                </KitProvider>
               )}
             </div>
           </div>

@@ -17,6 +17,8 @@ import { useSwitchChain } from "wagmi";
 import noTrades from "./noTrades.svg";
 import Image from "next/image";
 import ConnectBtnK from "../components/header/KitButton";
+import { KitProvider } from "../KitProvider";
+import { ConnectKitButton } from "connectkit";
 
 const MyTrades = () => {
   const [showConnect, setShowConnect] = useState(false);
@@ -98,16 +100,28 @@ const MyTrades = () => {
                     Click the button below to create a new ad and initiate a
                     trade.
                   </p>
-                  {!addressContext || addressContext === "null" ? (
+                  {!addressContext ||
+                  addressContext === "null" ||
+                  !isConnected ? (
                     // <button
                     //   onClick={() => setShowConnect(true)}
                     //   className={style.mainBtn}
                     // >
                     //   Connect wallet
                     // </button>
-                    <div className={style.connBtn}>
-                      <ConnectBtnK />
-                    </div>
+                    <KitProvider>
+                      <ConnectKitButton.Custom>
+                        {({ isConnected, show, truncatedAddress, ensName }) => {
+                          return (
+                            <button onClick={show} className={style.mainBtn}>
+                              {isConnected
+                                ? (ensName ?? truncatedAddress)
+                                : "Connect Wallet"}
+                            </button>
+                          );
+                        }}
+                      </ConnectKitButton.Custom>
+                    </KitProvider>
                   ) : isSupported ? (
                     <button
                       // onClick={handleModals}
