@@ -1,4 +1,3 @@
-"use client";
 import type { Metadata } from "next";
 import "./styles/globals.css";
 import "./styles/fonts.css";
@@ -11,7 +10,6 @@ import Favicon from "@/app/favicon.svg";
 import { Providers } from "./providers";
 import Toasts from "./components/Toasts";
 import SmallScreen from "./components/SmallScreen/Small";
-import { UserContextProvider } from "./context/UserContext";
 
 export const metadata: Metadata = {
   title: "Tradebase",
@@ -35,9 +33,7 @@ export default function RootLayout({
       <SmallScreen />
 
       <body className="app">
-        <UserContextProvider>
-          <Providers>{children}</Providers>
-        </UserContextProvider>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

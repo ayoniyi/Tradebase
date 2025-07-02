@@ -13,6 +13,7 @@ import { base, baseSepolia } from "wagmi/chains";
 import { getDefaultConfig, RainbowKitProvider } from "@rainbow-me/rainbowkit";
 
 import { ConnectKitProvider } from "connectkit";
+import { UserContextProvider } from "./context/UserContext";
 
 export function Providers(props: { children: ReactNode; initialState?: any }) {
   const wcprojectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID;
@@ -34,7 +35,8 @@ export function Providers(props: { children: ReactNode; initialState?: any }) {
       <QueryClientProvider client={queryClient}>
         {/* <ConnectKitProvider> */}
         {/* <RainbowKitProvider showRecentTransactions={true}> */}
-        {props.children}
+        <UserContextProvider>{props.children}</UserContextProvider>
+
         {/* </ConnectKitProvider> */}
         {/* </RainbowKitProvider> */}
       </QueryClientProvider>
