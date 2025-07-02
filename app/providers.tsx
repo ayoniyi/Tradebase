@@ -11,7 +11,7 @@ import { WagmiProvider } from "wagmi";
 //import { rainbowConfig } from "@/app/utils/wagmi";
 import { base, baseSepolia } from "wagmi/chains";
 import { getDefaultConfig, RainbowKitProvider } from "@rainbow-me/rainbowkit";
-import { UserContextProvider } from "./context/UserContext";
+
 import { ConnectKitProvider } from "connectkit";
 
 export function Providers(props: { children: ReactNode; initialState?: any }) {
@@ -32,13 +32,11 @@ export function Providers(props: { children: ReactNode; initialState?: any }) {
   return (
     <WagmiProvider config={config} initialState={props.initialState}>
       <QueryClientProvider client={queryClient}>
-        <UserContextProvider>
-          {/* <ConnectKitProvider> */}
-          {/* <RainbowKitProvider showRecentTransactions={true}> */}
-          {props.children}
-          {/* </ConnectKitProvider> */}
-          {/* </RainbowKitProvider> */}
-        </UserContextProvider>
+        {/* <ConnectKitProvider> */}
+        {/* <RainbowKitProvider showRecentTransactions={true}> */}
+        {props.children}
+        {/* </ConnectKitProvider> */}
+        {/* </RainbowKitProvider> */}
       </QueryClientProvider>
     </WagmiProvider>
   );

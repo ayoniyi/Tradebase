@@ -10,6 +10,7 @@ import Favicon from "@/app/favicon.svg";
 import { Providers } from "./providers";
 import Toasts from "./components/Toasts";
 import SmallScreen from "./components/SmallScreen/Small";
+import { UserContextProvider } from "./context/UserContext";
 
 export const metadata: Metadata = {
   title: "Tradebase",
@@ -31,9 +32,11 @@ export default function RootLayout({
     <html lang="en">
       <Toasts />
       <SmallScreen />
-      <body className="app">
-        <Providers>{children}</Providers>
-      </body>
+      <UserContextProvider>
+        <body className="app">
+          <Providers>{children}</Providers>
+        </body>
+      </UserContextProvider>
     </html>
   );
 }
