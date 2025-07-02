@@ -1,24 +1,15 @@
 "use client";
 import React, { createContext, useEffect, useState, ReactNode } from "react";
-import useNotifications from "../utils/functions/useNotifications";
-import { db } from "../utils/firebase";
 
 interface UserState {
   user: any;
-  address: any;
+  address: string | null;
   supportedChain: boolean;
 }
 
-const userString =
-  typeof window !== "undefined" ? localStorage.getItem("userContext") : null;
-const user = userString ? JSON.parse(userString) : null;
-const addString =
-  typeof window !== "undefined" ? localStorage.getItem("addContext") : null;
-//const add = addString ? JSON.parse(addString) : null;
-
 const INITIAL_STATE: UserState = {
-  user: user,
-  address: addString ? addString : null,
+  user: null,
+  address: null,
   supportedChain: false,
 };
 
@@ -33,14 +24,35 @@ interface UserContextProviderProps {
 export const UserContextProvider: React.FC<UserContextProviderProps> = ({
   children,
 }) => {
-  const [userState, setUserState] = useState<UserState>(INITIAL_STATE);
+  const [userState, setUserState] = useState<UserState>(() => {
+    // this function only runs once, client‑side, after hydration
+    if (typeof window === "undefined") {
+      return INITIAL_STATE;
+    }
+
+    const rawUser = localStorage.getItem("userContext");
+    const rawAdd = localStorage.getItem("addContext");
+    const rawSupport = localStorage.getItem("supportedChain");
+
+    return {
+      user: rawUser ? JSON.parse(rawUser) : null,
+      address: rawAdd, // either string or null
+      supportedChain: rawSupport ? JSON.parse(rawSupport) : false,
+    };
+  });
 
   useEffect(() => {
-    localStorage.setItem("userContext", JSON.stringify(userState?.user));
-    localStorage.setItem("addContext", userState?.address);
+    // sync every time userState changes
+    localStorage.setItem("userContext", JSON.stringify(userState.user));
+
+    // only overwrite addContext if we actually have a value
+    if (userState.address !== null) {
+      localStorage.setItem("addContext", userState.address);
+    }
+
     localStorage.setItem(
       "supportedChain",
-      JSON.stringify(userState?.supportedChain)
+      JSON.stringify(userState.supportedChain)
     );
   }, [userState]);
 

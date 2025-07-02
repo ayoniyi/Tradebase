@@ -66,7 +66,7 @@ const CreateAccount = (props: any) => {
     if (address) {
       setUserState({
         ...userState,
-        address: address || null,
+        address: address || "",
       });
     } else if (!address) {
       setUserState({
