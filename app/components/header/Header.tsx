@@ -247,11 +247,11 @@ const Header = ({ currentPage }: HeaderProps) => {
             )} */}
 
             {/* <ConnectButton /> */}
-            {!isConnected ? (
-              <div className={style.mainBtn}>
-                <ConnectBtnK />
-              </div>
+            {!address ? (
+              // <div className={style.mainBtn}>
+              <ConnectBtnK />
             ) : (
+              // </div>
               <ConnectBtnK />
             )}
           </div>

@@ -11,7 +11,7 @@ import { useAccount } from "wagmi";
 import ConnectBtnK from "../components/header/KitButton";
 
 const Landing = () => {
-  const { isConnected, isDisconnected } = useAccount();
+  const { isConnected, isDisconnected, address } = useAccount();
   const [showConnect, setShowConnect] = useState(false);
   const [showCreate, setShowCreate] = useState(false);
 
@@ -65,11 +65,11 @@ const Landing = () => {
                 Simple and efficient trades with built-in escrow on the base
                 network.
               </p>
-              {!isConnected ? (
-                <div className={style.connectBtn}>
-                  <ConnectBtnK />
-                </div>
+              {!address ? (
+                // <div className={style.connectBtn}>
+                <ConnectBtnK />
               ) : (
+                // </div>
                 <button className={style.createBtn} onClick={handleModals}>
                   Create Ad
                 </button>
