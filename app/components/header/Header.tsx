@@ -18,6 +18,8 @@ import HomeIcon from "./home.svg";
 import MarketIcon from "./clock.svg";
 import DashboardIcon from "./dashboard.svg";
 import ConnectBtnK from "./KitButton";
+import { ConnectKitButton } from "connectkit";
+import { KitProvider } from "@/app/KitProvider";
 
 // import { watchChainId } from '@wagmi/core'
 // import { getConfig} from '../../utils/wagmi'
@@ -246,14 +248,20 @@ const Header = ({ currentPage }: HeaderProps) => {
               </button>
             )} */}
 
-            {/* <ConnectButton /> */}
-            {!address ? (
-              // <div className={style.mainBtn}>
-              <ConnectBtnK />
-            ) : (
-              // </div>
-              <ConnectBtnK />
-            )}
+            {/* <ConnectBtnK /> */}
+            <KitProvider>
+              <ConnectKitButton.Custom>
+                {({ isConnected, show, truncatedAddress, ensName }) => {
+                  return (
+                    <button onClick={show} className={style.walletBtn}>
+                      {isConnected
+                        ? (ensName ?? truncatedAddress)
+                        : "Connect Wallet"}
+                    </button>
+                  );
+                }}
+              </ConnectKitButton.Custom>
+            </KitProvider>
           </div>
         </div>
         <HeaderMobile />
