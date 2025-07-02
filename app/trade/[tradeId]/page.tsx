@@ -498,7 +498,9 @@ const SingleTrade = () => {
                           Cancel
                         </button>
 
-                        {addressContext !== "null" && addressContext !== "" ? (
+                        {addressContext !== "null" &&
+                        addressContext !== "" &&
+                        addressContext !== null ? (
                           <button
                             onClick={createEscrow}
                             className={style.enterBtn}

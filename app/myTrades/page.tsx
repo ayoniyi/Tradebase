@@ -100,7 +100,9 @@ const MyTrades = () => {
                     Click the button below to create a new ad and initiate a
                     trade.
                   </p>
-                  {addressContext !== "" && addressContext !== "null" ? (
+                  {addressContext !== "" &&
+                  addressContext !== "null" &&
+                  addressContext !== null ? (
                     // <button
                     //   onClick={() => setShowConnect(true)}
                     //   className={style.mainBtn}

@@ -73,7 +73,9 @@ const Landing = () => {
                 Simple and efficient trades with built-in escrow on the base
                 network.
               </p>
-              {addressContext !== "null" && addressContext !== "" ? (
+              {addressContext !== "null" &&
+              addressContext !== "" &&
+              addressContext !== null ? (
                 <button className={style.createBtn} onClick={handleModals}>
                   Create Ad
                 </button>
