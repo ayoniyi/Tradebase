@@ -17,15 +17,16 @@ const Landing = () => {
   const { isConnected, isDisconnected, address } = useAccount();
   const [showConnect, setShowConnect] = useState(false);
   const [showCreate, setShowCreate] = useState(false);
+  const [userAddress, setUserAddress] = useState("");
 
   const [userState] = useContext<any>(UserContext);
   const addressContext = address || userState?.address;
-  const userAddress =
+  const userAddressV =
     typeof window !== "undefined"
       ? localStorage.getItem("userAddress")
       : address;
 
-  console.log("userAddress", userAddress);
+  //console.log("userAddress", userAddress);
 
   const handleClose = () => {
     setShowConnect(false);
@@ -51,6 +52,14 @@ const Landing = () => {
     }
     //setShowConnect(true);
   };
+
+  useEffect(() => {
+    setUserAddress(
+      typeof window !== "undefined"
+        ? localStorage.getItem("userAddress")
+        : address
+    );
+  }, [userAddressV, address]);
 
   return (
     <>

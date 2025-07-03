@@ -135,7 +135,22 @@ const Header = ({ currentPage }: HeaderProps) => {
     return true;
   });
 
-  console.log("supported", userState?.supportedChain);
+  //console.log("supported", userState?.supportedChain);
+
+  useEffect(() => {
+    if (address) {
+      localStorage.setItem("userAddress", address);
+    } else {
+      localStorage.setItem("userAddress", "null");
+    }
+  }, [address]);
+
+  console.log(address, "addy");
+
+  console.log(
+    typeof window !== "undefined" ? localStorage.getItem("userAddress") : "",
+    "adddddddd"
+  );
 
   return (
     <>

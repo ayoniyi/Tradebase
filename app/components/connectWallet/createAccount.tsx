@@ -62,24 +62,6 @@ const CreateAccount = (props: any) => {
   //     }
   //   }, [address, docsQuery.data?.docs]);
 
-  useEffect(() => {
-    if (address) {
-      localStorage.setItem("userAddress", address);
-      // setUserState({
-      //   ...userState,
-      //   address: address || "",
-      // });
-    } else if (!address) {
-      localStorage.setItem("userAddress", "");
-      // setUserState({
-      //   ...userState,
-      //   address: "",
-      // });
-    }
-
-    //return () => {};
-  }, [address]);
-
   const createFn = () => {
     if (props.action === "createTrade") {
       props.handleCreate();
@@ -110,8 +92,8 @@ const CreateAccount = (props: any) => {
 
   //   console.log(showRegister, "show reg?");
   //   console.log(online, "online?");
-  console.log(userState?.address, "user state address?");
-  console.log(address, "address?");
+  // console.log(userState?.address, "user state address?");
+  // console.log(address, "address?");
 
   //console.log(userState?.address, "user state address?");
 

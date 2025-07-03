@@ -24,6 +24,7 @@ const MyTrades = () => {
   const [showConnect, setShowConnect] = useState(false);
   const [showCreate, setShowCreate] = useState(false);
   const { address, isConnected, connector: activeConnector } = useAccount();
+  const [userAddress, setUserAddress] = useState("");
 
   const [userState] = useContext<any>(UserContext);
 
@@ -57,7 +58,7 @@ const MyTrades = () => {
   //
 
   const addressContext = address || userState?.address;
-  const userAddress =
+  const userAddressV =
     typeof window !== "undefined"
       ? localStorage.getItem("userAddress")
       : address;
@@ -68,6 +69,14 @@ const MyTrades = () => {
     setShowConnect(false);
     setShowCreate(false);
   };
+
+  useEffect(() => {
+    setUserAddress(
+      typeof window !== "undefined"
+        ? localStorage.getItem("userAddress")
+        : address
+    );
+  }, [userAddressV, address]);
 
   return (
     <>
