@@ -42,6 +42,7 @@ const Header = ({ currentPage }: HeaderProps) => {
   const [isSupported, setIsSupported] = useState(false);
 
   const addressContext = address || userState?.address;
+
   //console.log("addressContext --", addressContext);
 
   const acceptedChains = ["84532"];

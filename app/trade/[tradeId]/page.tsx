@@ -198,6 +198,10 @@ const SingleTrade = () => {
 
   const newTransactionRef = collection(db, "transactions");
   const addressContext = address || userState?.address;
+  const userAddress =
+    typeof window !== "undefined"
+      ? localStorage.getItem("userAddress")
+      : address;
 
   //const { isSupported } = useWalletChecks();
   useEffect(() => {
@@ -498,9 +502,9 @@ const SingleTrade = () => {
                           Cancel
                         </button>
 
-                        {addressContext !== "null" &&
-                        addressContext !== "" &&
-                        addressContext !== null ? (
+                        {userAddress !== "null" &&
+                        userAddress !== "" &&
+                        userAddress !== null ? (
                           <button
                             onClick={createEscrow}
                             className={style.enterBtn}

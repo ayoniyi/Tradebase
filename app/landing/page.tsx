@@ -20,8 +20,12 @@ const Landing = () => {
 
   const [userState] = useContext<any>(UserContext);
   const addressContext = address || userState?.address;
+  const userAddress =
+    typeof window !== "undefined"
+      ? localStorage.getItem("userAddress")
+      : address;
 
-  console.log("addressContext --", addressContext);
+  console.log("userAddress", userAddress);
 
   const handleClose = () => {
     setShowConnect(false);
@@ -73,9 +77,9 @@ const Landing = () => {
                 Simple and efficient trades with built-in escrow on the base
                 network.
               </p>
-              {addressContext !== "null" &&
-              addressContext !== "" &&
-              addressContext !== null ? (
+              {userAddress !== "null" &&
+              userAddress !== "" &&
+              userAddress !== null ? (
                 <button className={style.createBtn} onClick={handleModals}>
                   Create Ad
                 </button>

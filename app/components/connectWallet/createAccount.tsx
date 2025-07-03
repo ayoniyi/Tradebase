@@ -64,15 +64,17 @@ const CreateAccount = (props: any) => {
 
   useEffect(() => {
     if (address) {
-      setUserState({
-        ...userState,
-        address: address || "",
-      });
+      localStorage.setItem("userAddress", address);
+      // setUserState({
+      //   ...userState,
+      //   address: address || "",
+      // });
     } else if (!address) {
-      setUserState({
-        ...userState,
-        address: "",
-      });
+      localStorage.setItem("userAddress", "");
+      // setUserState({
+      //   ...userState,
+      //   address: "",
+      // });
     }
 
     //return () => {};

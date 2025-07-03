@@ -57,6 +57,10 @@ const MyTrades = () => {
   //
 
   const addressContext = address || userState?.address;
+  const userAddress =
+    typeof window !== "undefined"
+      ? localStorage.getItem("userAddress")
+      : address;
   const isSupported = userState?.supportedChain;
   //console.log("addressContext --", addressContext);
 
@@ -100,9 +104,9 @@ const MyTrades = () => {
                     Click the button below to create a new ad and initiate a
                     trade.
                   </p>
-                  {addressContext !== "" &&
-                  addressContext !== "null" &&
-                  addressContext !== null ? (
+                  {userAddress !== "" &&
+                  userAddress !== "null" &&
+                  userAddress !== null ? (
                     // <button
                     //   onClick={() => setShowConnect(true)}
                     //   className={style.mainBtn}
